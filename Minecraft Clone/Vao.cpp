@@ -1,6 +1,5 @@
 #include "Vao.h"
 
-
 Vao::Vao(int stride, std::vector<VertexAttribute> attributes) {
 	glGenVertexArrays(1, &m_id);
 	glBindVertexArray(m_id);

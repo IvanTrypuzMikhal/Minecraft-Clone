@@ -3,6 +3,8 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
+struct AppContext;
+
 class Window
 {
 public:
@@ -14,8 +16,19 @@ public:
 	bool shouldClose() const;
 	
 	static void frameBufferResizeCallback(GLFWwindow* win, int width, int height);
-	void processInput() const;
+	static void mouseCursorCallback(GLFWwindow* win, double xpos, double ypos);
+	static void mouseScrollCallback(GLFWwindow*, double xoffset, double yoffset);
+	void processInput();
+
+	void setWidth(int width);
+	void setHeight(int height);
+
 
 private:
 	GLFWwindow* m_window;
+
+	bool m_lastTabState = false;
+
+	int m_width;
+	int m_height;
 };

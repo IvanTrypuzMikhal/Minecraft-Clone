@@ -1,4 +1,5 @@
 #include "Window.h"
+#include "AppContext.h"
 
 Window::Window(int width, int height, const char* title) {
 
@@ -10,6 +11,8 @@ Window::Window(int width, int height, const char* title) {
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	m_window = glfwCreateWindow(width, height, title, NULL, NULL);
+	m_width = width;
+	m_height = height;
 	if (m_window == nullptr) {
 		throw std::exception("ERROR::Window creation failed!");
 	}
@@ -25,6 +28,11 @@ Window::Window(int width, int height, const char* title) {
 
 	glViewport(0, 0, width, height);
 	glfwSetFramebufferSizeCallback(m_window, Window::frameBufferResizeCallback);
+	glfwSetCursorPosCallback(m_window, Window::mouseCursorCallback);
+	glfwSetScrollCallback(m_window, Window::mouseScrollCallback);
+
+	glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
 	glEnable(GL_DEPTH_TEST);
 }
 
@@ -34,15 +42,46 @@ Window::~Window() {
 }
 
 
-void Window::processInput() const{
+void Window::processInput(){
 	if (glfwGetKey(m_window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(m_window, true);
 		std::cout << "Window closed!\n";
 	}
+	bool currentState = glfwGetKey(m_window, GLFW_KEY_TAB) == GLFW_PRESS;
+	if (currentState && !m_lastTabState) { // rising edge only
+		AppContext* appContext = static_cast<AppContext*>(glfwGetWindowUserPointer(m_window));
+		if (glfwGetInputMode(m_window, GLFW_CURSOR) == GLFW_CURSOR_DISABLED) {
+			glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+			glfwSetCursorPosCallback(m_window, nullptr);
+			appContext->camera->setMovement(false);
+		}
+		else {
+			glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+			appContext->camera->setFirstInput();
+			appContext->camera->setMovement(true);
+			glfwSetCursorPosCallback(m_window, mouseCursorCallback);
+		}
+	}
+
+	m_lastTabState = currentState;
 }
 
+
 void Window::frameBufferResizeCallback(GLFWwindow* win, int width, int height) {
+	AppContext* appContext = static_cast<AppContext*>(glfwGetWindowUserPointer(win));
 	glViewport(0, 0, width, height);
+	appContext->window->setWidth(width);
+	appContext->window->setHeight(height);
+}
+
+void Window::mouseCursorCallback(GLFWwindow* win, double xpos, double ypos) {
+	AppContext* appContext = static_cast<AppContext*>(glfwGetWindowUserPointer(win));
+	appContext->camera->mouseProcessInput(xpos, ypos);
+}
+
+void Window::mouseScrollCallback(GLFWwindow* win, double xoffset, double yoffset) {
+	AppContext* appContext = static_cast<AppContext*>(glfwGetWindowUserPointer(win));
+	appContext->camera->scrollProcessInput(xoffset, yoffset);
 }
 
 
@@ -52,5 +91,12 @@ GLFWwindow* Window::getWindow() const{
 
 bool Window::shouldClose() const{
 	return glfwWindowShouldClose(m_window);
+}
+
+void Window::setWidth(int width) {
+	m_width = width;
+}
+void Window::setHeight(int height) {
+	m_height = height;
 }
 
