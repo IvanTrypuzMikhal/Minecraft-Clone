@@ -84,14 +84,30 @@ ShaderProgram::ShaderProgram(const char* vertexPath, const char* fragmentPath) {
 	std::cerr << "- SHADER: Cleanup successful!\n";
 }
 
-unsigned int ShaderProgram::get() {
+ShaderProgram::~ShaderProgram(){
+	glDeleteProgram(m_id);
+}
+
+unsigned int ShaderProgram::get() const{
 	return m_id;
 }
 
-void ShaderProgram::use() {
+void ShaderProgram::use() const{
 	glUseProgram(m_id);
 }
 
-void ShaderProgram::deleteShader() {
-	glDeleteProgram(m_id);
+void ShaderProgram::setFloat(const char* location, float x) {
+	glUniform1f(glGetUniformLocation(m_id, location), x);
+}
+
+void ShaderProgram::setVec3(const char* location, float x, float y, float z) {
+	glUniform3fv(glGetUniformLocation(m_id, location), 1, glm::value_ptr(glm::vec3(x, y, z)));
+}
+
+void ShaderProgram::setVec3(const char* location, glm::vec3& vec) {
+	glUniform3fv(glGetUniformLocation(m_id, location), 1, glm::value_ptr(vec));
+}
+
+void ShaderProgram::setMat4(const char* location, glm::mat4 mat) {
+	glUniformMatrix4fv(glGetUniformLocation(m_id, location), 1, GL_FALSE, glm::value_ptr(mat));
 }

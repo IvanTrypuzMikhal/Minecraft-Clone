@@ -1,36 +1,44 @@
 #include "Window.h"
 #include "ShaderProgram.h"
+#include "Vao.h"
+#include "Vbo.h"
+#include "Camera.h"
 #include "Globals.h"
+#include "SpaceTransformation.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
+
+unsigned int height = 800;
+unsigned int width = 800;
 
 int main() {
-	Window w(800, 800, "Minecraft");
+	Window w(height, width, "Minecraft");
+	Camera cam  = Camera();
+	SpaceTransformation st(height, width);
 	ShaderProgram shaderProgram("vertex.vert", "fragment.frag");
-
-	unsigned int VAO, VBO;
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
-	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-
+	Vao vao = Vao();
+	Vbo vbo(vertices, sizeof(vertices),  3, 0);
+	
 	while (!w.shouldClose()) {
 		w.processInput();
-		
-		glClearColor(0.416f, 0.329f, 0.459f, 0.5f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glm::mat4 view = cam.view();
 
+		glClearColor(0.416f, 0.329f, 0.459f, 0.5f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		st.setModel(shaderProgram);
+		st.setProjection(shaderProgram);
+		st.setView(shaderProgram, cam);
 
 		shaderProgram.use();
-		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 
+		cam.processInput(w.getWindow());
 		glfwSwapBuffers(w.getWindow());
-		glfwWaitEvents();
-	
+		glfwPollEvents();
 	}
-
 
 	return 0;
 }

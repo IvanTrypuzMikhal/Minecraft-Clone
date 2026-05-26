@@ -26,24 +26,32 @@ Window::Window(int width, int height, const char* title) {
 
 	glViewport(0, 0, width, height);
 	glfwSetFramebufferSizeCallback(m_window, Window::frameBufferResizeCallback);
+	glEnable(GL_DEPTH_TEST);
+}
+
+Window::~Window() {
+	glfwDestroyWindow(m_window);
+	glfwTerminate();
 }
 
 
-void Window::processInput() {
+void Window::processInput() const{
 	if (glfwGetKey(m_window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(m_window, true);
 		std::cout << "Window closed!\n";
 	}
 }
 
-
-
 void Window::frameBufferResizeCallback(GLFWwindow* win, int width, int height) {
 	glViewport(0, 0, width, height);
 }
 
-GLFWwindow* Window::getWindow() { return m_window; }
 
-bool Window::shouldClose() {
+GLFWwindow* Window::getWindow() const{ 
+	return m_window; 
+}
+
+bool Window::shouldClose() const{
 	return glfwWindowShouldClose(m_window);
 }
+

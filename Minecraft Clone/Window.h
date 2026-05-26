@@ -7,13 +7,14 @@ class Window
 {
 public:
 	Window(int width, int height, const char* title);
-	GLFWwindow* getWindow();
+	~Window();
+
+	GLFWwindow* getWindow() const;
 	
-	bool shouldClose();
+	bool shouldClose() const;
 	
 	static void frameBufferResizeCallback(GLFWwindow* win, int width, int height);
-	void processInput();
-	
+	void processInput() const;
 
 private:
 	GLFWwindow* m_window;
