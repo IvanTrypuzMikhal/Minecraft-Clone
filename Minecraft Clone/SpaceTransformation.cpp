@@ -3,7 +3,7 @@
 #include "camera.h"
 
 SpaceTransformation::SpaceTransformation(int width, int height) {
-	m_projection = glm::perspective(glm::radians(45.0f), (float)width / height, 0.1f, 100.0f);
+	setAspectRatio(width, height);
 }
 
 
@@ -25,4 +25,10 @@ void SpaceTransformation::setProjection(ShaderProgram& shader) const {
 
 void SpaceTransformation::setView(ShaderProgram& shader, Camera& camera) const {
 	shader.setMat4("view", camera.view());
+}
+
+void SpaceTransformation::setAspectRatio(int width, int height) {
+	m_width = width;
+	m_height = height;
+	m_projection = glm::perspective(glm::radians(45.0f), (float)m_width / m_height, 0.1f, 100.0f);
 }

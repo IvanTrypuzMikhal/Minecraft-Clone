@@ -11,8 +11,9 @@ public:
 	Camera();
 	~Camera();
 
-	void processInput(GLFWwindow* camera);
+	void processInput(GLFWwindow* camera, float delta);
 	glm::mat4 view() const;
+
 
 private:
 	glm::vec3 m_cameraPosition	= glm::vec3(0.0f, 0.0f, 3.0f);
@@ -25,5 +26,5 @@ private:
 	glm::vec3 m_cameraUp		= glm::cross(m_cameraRight, m_cameraFront);
 	
 	//Other variables
-	float m_cameraSpeed = 0.05f;
+	float m_cameraSpeed = 1.5f;
 };

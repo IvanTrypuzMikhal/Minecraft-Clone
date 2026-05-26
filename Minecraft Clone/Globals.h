@@ -1,45 +1,50 @@
-#pragma once
-
 float vertices[] = {
-    -0.2f, -0.2f,  0.2f, 
-     0.2f, -0.2f,  0.2f, 
-     0.2f,  0.2f,  0.2f, 
-     0.2f,  0.2f,  0.2f, 
-    -0.2f,  0.2f,  0.2f, 
-    -0.2f, -0.2f,  0.2f, 
+    //   X      Y      Z       U     V
+    // --- Cara Frontal (Lateral - Inf. Izq.) ---
+    -0.2f, -0.2f,  0.2f,    0.0f, 0.0f,  // Inferior Izquierda
+     0.2f, -0.2f,  0.2f,    0.5f, 0.0f,  // Inferior Derecha
+     0.2f,  0.2f,  0.2f,    0.5f, 0.5f,  // Superior Derecha
+     0.2f,  0.2f,  0.2f,    0.5f, 0.5f,  // Superior Derecha
+    -0.2f,  0.2f,  0.2f,    0.0f, 0.5f,  // Superior Izquierda
+    -0.2f, -0.2f,  0.2f,    0.0f, 0.0f,  // Inferior Izquierda
 
-    -0.2f, -0.2f, -0.2f, 
-    -0.2f,  0.2f, -0.2f, 
-     0.2f,  0.2f, -0.2f, 
-     0.2f,  0.2f, -0.2f, 
-     0.2f, -0.2f, -0.2f, 
-    -0.2f, -0.2f, -0.2f, 
+    // --- Cara Trasera (Lateral - Inf. Izq.) ---
+    -0.2f, -0.2f, -0.2f,    0.5f, 0.0f,  // Inferior Izquierda
+    -0.2f,  0.2f, -0.2f,    0.5f, 0.5f,  // Superior Izquierda
+     0.2f,  0.2f, -0.2f,    0.0f, 0.5f,  // Superior Derecha
+     0.2f,  0.2f, -0.2f,    0.0f, 0.5f,  // Superior Derecha
+     0.2f, -0.2f, -0.2f,    0.0f, 0.0f,  // Inferior Derecha
+    -0.2f, -0.2f, -0.2f,    0.5f, 0.0f,  // Inferior Izquierda
 
-    -0.2f,  0.2f,  0.2f, 
-    -0.2f,  0.2f, -0.2f, 
-    -0.2f, -0.2f, -0.2f, 
-    -0.2f, -0.2f, -0.2f, 
-    -0.2f, -0.2f,  0.2f, 
-    -0.2f,  0.2f,  0.2f, 
+    // --- Cara Izquierda (Lateral - Inf. Izq.) ---
+    -0.2f,  0.2f,  0.2f,    0.5f, 0.5f,  // Superior Frontal
+    -0.2f,  0.2f, -0.2f,    0.0f, 0.5f,  // Superior Trasera
+    -0.2f, -0.2f, -0.2f,    0.0f, 0.0f,  // Inferior Trasera
+    -0.2f, -0.2f, -0.2f,    0.0f, 0.0f,  // Inferior Trasera
+    -0.2f, -0.2f,  0.2f,    0.5f, 0.0f,  // Inferior Frontal
+    -0.2f,  0.2f,  0.2f,    0.5f, 0.5f,  // Superior Frontal
 
-     0.2f,  0.2f,  0.2f, 
-     0.2f, -0.2f,  0.2f, 
-     0.2f, -0.2f, -0.2f, 
-     0.2f, -0.2f, -0.2f, 
-     0.2f,  0.2f, -0.2f, 
-     0.2f,  0.2f,  0.2f, 
+    // --- Cara Derecha (Lateral - Inf. Izq.) ---
+     0.2f,  0.2f,  0.2f,    0.0f, 0.5f,  // Superior Frontal
+     0.2f, -0.2f,  0.2f,    0.0f, 0.0f,  // Inferior Frontal
+     0.2f, -0.2f, -0.2f,    0.5f, 0.0f,  // Inferior Trasera
+     0.2f, -0.2f, -0.2f,    0.5f, 0.0f,  // Inferior Trasera
+     0.2f,  0.2f, -0.2f,    0.5f, 0.5f,  // Superior Trasera
+     0.2f,  0.2f,  0.2f,    0.0f, 0.5f,  // Superior Frontal
 
-     -0.2f, -0.2f, -0.2f,
-      0.2f, -0.2f, -0.2f,
-      0.2f, -0.2f,  0.2f,
-      0.2f, -0.2f,  0.2f,
-     -0.2f, -0.2f,  0.2f,
-     -0.2f, -0.2f, -0.2f,
+     // --- Cara Inferior (Tierra - Sup. Izq.) ---
+     -0.2f, -0.2f, -0.2f,    0.0f, 0.5f,  // Trasera Izquierda
+      0.2f, -0.2f, -0.2f,    0.5f, 0.5f,  // Trasera Derecha
+      0.2f, -0.2f,  0.2f,    0.5f, 1.0f,  // Frontal Derecha
+      0.2f, -0.2f,  0.2f,    0.5f, 1.0f,  // Frontal Derecha
+     -0.2f, -0.2f,  0.2f,    0.0f, 1.0f,  // Frontal Izquierda
+     -0.2f, -0.2f, -0.2f,    0.0f, 0.5f,  // Trasera Izquierda
 
-     -0.2f,  0.2f, -0.2f,
-     -0.2f,  0.2f,  0.2f,
-      0.2f,  0.2f,  0.2f,
-      0.2f,  0.2f,  0.2f,
-      0.2f,  0.2f, -0.2f,
-     -0.2f,  0.2f, -0.2f,
+     // --- Cara Superior (Césped - Inf. Der.) ---
+     -0.2f,  0.2f, -0.2f,    0.5f, 0.5f,  // Trasera Izquierda
+     -0.2f,  0.2f,  0.2f,    0.5f, 0.0f,  // Frontal Izquierda
+      0.2f,  0.2f,  0.2f,    1.0f, 0.0f,  // Frontal Derecha
+      0.2f,  0.2f,  0.2f,    1.0f, 0.0f,  // Frontal Derecha
+      0.2f,  0.2f, -0.2f,    1.0f, 0.5f,  // Trasera Derecha
+     -0.2f,  0.2f, -0.2f,    0.5f, 0.5f,  // Trasera Izquierda
 };

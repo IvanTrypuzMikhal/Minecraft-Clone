@@ -8,19 +8,24 @@ Camera::~Camera()
 {
 }
 
-void Camera::processInput(GLFWwindow* w) {
+void Camera::processInput(GLFWwindow* w, float delta) {
 	if (glfwGetKey(w, GLFW_KEY_W) == GLFW_PRESS) {
-		m_cameraPosition += m_cameraSpeed * m_cameraFront;
+		m_cameraPosition += m_cameraSpeed * m_cameraFront * delta;
 	}
 	if (glfwGetKey(w, GLFW_KEY_S) == GLFW_PRESS) {
-		m_cameraPosition -= m_cameraSpeed * m_cameraFront;
+		m_cameraPosition -= m_cameraSpeed * m_cameraFront * delta;
 	}
 	if (glfwGetKey(w, GLFW_KEY_A) == GLFW_PRESS) {
-		m_cameraPosition -= m_cameraRight * m_cameraSpeed;
-
+		m_cameraPosition -= m_cameraRight * m_cameraSpeed * delta;
 	}
 	if (glfwGetKey(w, GLFW_KEY_D) == GLFW_PRESS) {
-		m_cameraPosition += m_cameraRight * m_cameraSpeed;
+		m_cameraPosition += m_cameraRight * m_cameraSpeed * delta;
+	}
+	if (glfwGetKey(w, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
+		m_cameraPosition -= m_cameraUp * m_cameraSpeed * delta;
+	}
+	if (glfwGetKey(w, GLFW_KEY_SPACE) == GLFW_PRESS) {
+		m_cameraPosition += m_cameraUp * m_cameraSpeed * delta;
 	}
 }
 

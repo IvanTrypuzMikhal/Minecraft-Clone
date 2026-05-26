@@ -15,12 +15,17 @@ public:
 	void setProjection(ShaderProgram& shader) const;
 	void setView(ShaderProgram& shader, Camera& camera) const;
 	
+	void setAspectRatio(int width, int height);
+
 	glm::mat4 model() const;
 	glm::mat4 projection() const;
 
 private:
 	glm::mat4 m_model		= glm::mat4(1.0f);
 	glm::mat4 m_projection	= glm::mat4(1.0f);
+
+	int m_width;
+	int m_height;
 };
 
 

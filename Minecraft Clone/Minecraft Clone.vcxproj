@@ -142,6 +142,8 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="SpaceTransformation.cpp" />
+    <ClCompile Include="stb_image.cpp" />
+    <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Vao.cpp" />
     <ClCompile Include="Vbo.cpp" />
     <ClCompile Include="Window.cpp" />
@@ -151,6 +153,8 @@
     <ClInclude Include="Globals.h" />
     <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="SpaceTransformation.h" />
+    <ClInclude Include="stb_image.h" />
+    <ClInclude Include="Texture.h" />
     <ClInclude Include="Vao.h" />
     <ClInclude Include="Vbo.h" />
     <ClInclude Include="Window.h" />
@@ -158,6 +162,9 @@
   <ItemGroup>
     <None Include="fragment.frag" />
     <None Include="vertex.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="grass-block.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

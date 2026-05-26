@@ -5,7 +5,7 @@
 class Vbo
 {
 public:
-	Vbo(float(&arr)[], int size, int stride, int offset);
+	Vbo(float(&arr)[], int size);
 	~Vbo();
 	unsigned int get() const;
 
