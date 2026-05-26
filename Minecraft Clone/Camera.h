@@ -1,9 +1,11 @@
 #pragma once
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
+#include "ShaderProgram.h"
 
 class Camera
 {
@@ -14,6 +16,7 @@ public:
 	void processInput(GLFWwindow* camera, float delta);
 	glm::mat4 view() const;
 
+	void setView(ShaderProgram& shader) const;
 
 private:
 	glm::vec3 m_cameraPosition	= glm::vec3(0.0f, 0.0f, 3.0f);

@@ -42,9 +42,7 @@ void Window::processInput() const{
 }
 
 void Window::frameBufferResizeCallback(GLFWwindow* win, int width, int height) {
-	SpaceTransformation* st = static_cast<SpaceTransformation*>(glfwGetWindowUserPointer(win));
 	glViewport(0, 0, width, height);
-	st->setAspectRatio(width, height);
 }
 
 

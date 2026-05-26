@@ -32,3 +32,7 @@ void Camera::processInput(GLFWwindow* w, float delta) {
 glm::mat4 Camera::view() const {
 	return glm::lookAt(m_cameraPosition, m_cameraPosition + m_cameraFront, m_cameraUp);
 }
+
+void Camera::setView(ShaderProgram& shader) const {
+	shader.setMat4("view", view());
+}
