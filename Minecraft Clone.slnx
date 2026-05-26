@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="Minecraft Clone/Minecraft Clone.vcxproj" Id="04343987-0bfb-444b-bae4-d4d92203af08" />
+</Solution>
