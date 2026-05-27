@@ -30,7 +30,7 @@ enum BlockFace : unsigned char {
 class Chunk
 {
 public:
-	Chunk(const Texture* texture, const ShaderProgram* shader);
+	Chunk(const ShaderProgram* shader);
 	~Chunk() = default;
 
 	void buildMesh();
@@ -45,7 +45,6 @@ public:
 private:
 	BlockType m_blocks[16][256][16] = {BlockType::Air};
 	std::vector<float> m_mesh;
-	const Texture* m_texture;
 	const ShaderProgram* m_shader;
 	std::unique_ptr<Vao> m_vao;
 	std::unique_ptr<Vbo> m_vbo;

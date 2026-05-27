@@ -12,8 +12,8 @@ class ShaderProgram;
 class Camera
 {
 public:
-	Camera();
-	~Camera();
+	Camera() = default;
+	~Camera() = default;
 
 	void processInput(GLFWwindow* camera, float delta);
 	void keyboardProcessInput(GLFWwindow* camera, float delta);
@@ -23,6 +23,8 @@ public:
 	float getFov() const;
 
 	glm::mat4 view() const;
+
+	glm::vec3& getCameraPosition();
 
 	void setView(ShaderProgram& shader) const;
 	void setFirstInput();

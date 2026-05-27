@@ -6,13 +6,13 @@ float new_delta = 0.0;
 
 
 int main() {
-	Window window(Globals::height, Globals::width, "Minecraft");
+	Window window(Globals::HEIGHT, Globals::WIDTH, "Minecraft");
 	Camera cam  = Camera();
 	ShaderProgram shaderProgram("vertex.vert", "fragment.frag");
 	Texture texture("textures.png", GL_RGBA);
 	AppContext context{ &window, &cam };
 
-	auto chunk = std::make_unique<Chunk>(&texture, &shaderProgram);
+	auto world = std::make_unique<World>(&shaderProgram);
 	
 	glfwSetWindowUserPointer(window.getWindow(), &context);
 
@@ -29,8 +29,12 @@ int main() {
 		glm::mat4 projection = glm::perspective(glm::radians(cam.getFov()), (float)window.getWidth() / window.getHeight(), 0.1f, 100.0f);
 		glm::mat4 model = glm::mat4(1);
 		
-		
-		chunk->render(projection, model);
+		shaderProgram.use();
+		texture.setTexture();
+
+		glm::vec3 position = cam.getCameraPosition();
+		world->update(position.x, position.y, position. z);
+		world->renderWorld(projection, model);
 		
 
 		last_delta = new_delta;

@@ -3,7 +3,7 @@
 static BlockType getBlockType(int x, int y, int z);
 static std::pair<int, int> getAtlasCoordinates(BlockType type, BlockFace face);
 
-Chunk::Chunk(const Texture* texture, const ShaderProgram* shader) : m_texture{ texture }, m_shader{ shader } {
+Chunk::Chunk(const ShaderProgram* shader) : m_shader{ shader } {
 	m_vbo = std::make_unique<Vbo>();
 	fillBlocks();
 	buildMesh();
@@ -21,8 +21,6 @@ void Chunk::setBuffers() {
 void Chunk::render(const glm::mat4& projection, const glm::mat4& model) {
 	m_shader->setMat4("projection", projection);
 	m_shader->setMat4("model", model);
-	m_texture->setTexture();
-	m_shader->use();
 	m_vao->use();
 	glDrawArrays(GL_TRIANGLES, 0, m_mesh.size()/5);
 }
@@ -38,10 +36,10 @@ void Chunk::buildMesh() {
 				if (isAir(x, y, z - 1)) {
 					auto [atlasX, atlasY] = getAtlasCoordinates(type, BlockFace::Front);
 
-					float uMin = atlasX * Globals::textureSize;
-					float vMin = atlasY * Globals::textureSize;
-					float uMax = uMin + Globals::textureSize;
-					float vMax = vMin + Globals::textureSize;
+					float uMin = atlasX * Globals::TEXTURE_SIZE;
+					float vMin = atlasY * Globals::TEXTURE_SIZE;
+					float uMax = uMin + Globals::TEXTURE_SIZE;
+					float vMax = vMin + Globals::TEXTURE_SIZE;
 					// Top left
 					pushVertex(0.0f + x, 0.0f - y, 0.0f - z, uMin, vMax);
 
@@ -65,10 +63,10 @@ void Chunk::buildMesh() {
 				if (isAir(x, y, z + 1)) {
 					auto [atlasX, atlasY] = getAtlasCoordinates(type, BlockFace::Back);
 
-					float uMin = atlasX * Globals::textureSize;
-					float vMin = atlasY * Globals::textureSize;
-					float uMax = uMin + Globals::textureSize;
-					float vMax = vMin + Globals::textureSize;
+					float uMin = atlasX * Globals::TEXTURE_SIZE;
+					float vMin = atlasY * Globals::TEXTURE_SIZE;
+					float uMax = uMin + Globals::TEXTURE_SIZE;
+					float vMax = vMin + Globals::TEXTURE_SIZE;
 
 					// Vertices positions and texture
 
@@ -95,10 +93,10 @@ void Chunk::buildMesh() {
 				if (isAir(x + 1, y, z)) {
 					auto [atlasX, atlasY] = getAtlasCoordinates(type, BlockFace::Right);
 
-					float uMin = atlasX * Globals::textureSize;
-					float vMin = atlasY * Globals::textureSize;
-					float uMax = uMin + Globals::textureSize;
-					float vMax = vMin + Globals::textureSize;
+					float uMin = atlasX * Globals::TEXTURE_SIZE;
+					float vMin = atlasY * Globals::TEXTURE_SIZE;
+					float uMax = uMin + Globals::TEXTURE_SIZE;
+					float vMax = vMin + Globals::TEXTURE_SIZE;
 
 					// Vertices positions and texture
 
@@ -126,10 +124,10 @@ void Chunk::buildMesh() {
 				if (isAir(x - 1, y, z)) {
 					auto [atlasX, atlasY] = getAtlasCoordinates(type, BlockFace::Left);
 
-					float uMin = atlasX * Globals::textureSize;
-					float vMin = atlasY * Globals::textureSize;
-					float uMax = uMin + Globals::textureSize;
-					float vMax = vMin + Globals::textureSize;
+					float uMin = atlasX * Globals::TEXTURE_SIZE;
+					float vMin = atlasY * Globals::TEXTURE_SIZE;
+					float uMax = uMin + Globals::TEXTURE_SIZE;
+					float vMax = vMin + Globals::TEXTURE_SIZE;
 
 					// Vertices positions and texture
 
@@ -156,10 +154,10 @@ void Chunk::buildMesh() {
 				if (isAir(x, y - 1, z)) {
 					auto [atlasX, atlasY] = getAtlasCoordinates(type, BlockFace::Top);
 
-					float uMin = atlasX * Globals::textureSize;
-					float vMin = atlasY * Globals::textureSize;
-					float uMax = uMin + Globals::textureSize;
-					float vMax = vMin + Globals::textureSize;
+					float uMin = atlasX * Globals::TEXTURE_SIZE;
+					float vMin = atlasY * Globals::TEXTURE_SIZE;
+					float uMax = uMin + Globals::TEXTURE_SIZE;
+					float vMax = vMin + Globals::TEXTURE_SIZE;
 
 					// Vertices positions and texture
 
@@ -186,10 +184,10 @@ void Chunk::buildMesh() {
 				if (isAir(x, y + 1, z)) {
 					auto [atlasX, atlasY] = getAtlasCoordinates(type, BlockFace::Bottom);
 
-					float uMin = atlasX * Globals::textureSize;
-					float vMin = atlasY * Globals::textureSize;
-					float uMax = uMin + Globals::textureSize;
-					float vMax = vMin + Globals::textureSize;
+					float uMin = atlasX * Globals::TEXTURE_SIZE;
+					float vMin = atlasY * Globals::TEXTURE_SIZE;
+					float uMax = uMin + Globals::TEXTURE_SIZE;
+					float vMax = vMin + Globals::TEXTURE_SIZE;
 
 					// Vertices positions and texture
 
@@ -217,7 +215,7 @@ void Chunk::buildMesh() {
 }
 
 bool Chunk::isAir(int x, int y, int z) const{
-	if (x < 0 || x >= 16 || y < 0 || y >= 256 || z < 0 || z >= 16)
+	if (x < 0 || x >= Globals::CHUNK_WIDTH || y < 0 || y >= Globals::CHUNK_HEIGHT || z < 0 || z >= Globals::CHUNK_WIDTH)
 		return true;
 	return m_blocks[x][y][z] == BlockType::Air;
 }

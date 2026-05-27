@@ -32,7 +32,7 @@ Window::Window(int width, int height, const char* title) {
 	glfwSetScrollCallback(m_window, Window::mouseScrollCallback);
 
 	glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
+	glfwSwapInterval(0);
 	glEnable(GL_DEPTH_TEST);
 }
 
@@ -43,11 +43,12 @@ Window::~Window() {
 
 
 void Window::processInput(){
+	bool currentState = false;
 	if (glfwGetKey(m_window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(m_window, true);
 		std::cout << "Window closed!\n";
 	}
-	bool currentState = glfwGetKey(m_window, GLFW_KEY_TAB) == GLFW_PRESS;
+	currentState = glfwGetKey(m_window, GLFW_KEY_TAB) == GLFW_PRESS;
 	if (currentState && !m_lastTabState) { // rising edge only
 		AppContext* appContext = static_cast<AppContext*>(glfwGetWindowUserPointer(m_window));
 		if (glfwGetInputMode(m_window, GLFW_CURSOR) == GLFW_CURSOR_DISABLED) {
@@ -61,6 +62,12 @@ void Window::processInput(){
 			appContext->camera->setMovement(true);
 			glfwSetCursorPosCallback(m_window, mouseCursorCallback);
 		}
+	}
+	currentState = glfwGetKey(m_window, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS;
+	if (currentState && !m_lastTabState) {
+		glfwSwapInterval(m_toggleVSync);
+		m_toggleVSync = !m_toggleVSync;
+
 	}
 
 	m_lastTabState = currentState;

@@ -2,8 +2,13 @@
 
 namespace Globals {
 
-    unsigned int height = 800;
-    unsigned int width = 800;
+    constexpr unsigned int WIDTH = 800;
+    constexpr unsigned int HEIGHT = 800;
 
-    float textureSize = 1.0f / 4.0f;
+    constexpr float TEXTURE_SIZE = 1.0f / 4.0f;
+
+    constexpr int CHUNK_WIDTH = 16;
+    constexpr int CHUNK_HEIGHT = 256;
+
+    constexpr int RENDER_RADIOUS = 4;
 }

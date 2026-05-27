@@ -1,15 +1,6 @@
 #include "Camera.h"
 #include "ShaderProgram.h"
 
-
-Camera::Camera()
-{
-}
-
-Camera::~Camera()
-{
-}
-
 void Camera::keyboardProcessInput(GLFWwindow* w, float delta) {
 	if (m_movementActive) {
 		if (glfwGetKey(w, GLFW_KEY_W) == GLFW_PRESS) {
@@ -89,4 +80,8 @@ void Camera::setMovement(bool trueFalse) {
 
 float Camera::getFov() const {
 	return m_fov;
+}
+
+glm::vec3& Camera::getCameraPosition() {
+	return m_cameraPosition;
 }

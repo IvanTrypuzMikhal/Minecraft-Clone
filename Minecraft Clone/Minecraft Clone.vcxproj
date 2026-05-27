@@ -150,6 +150,7 @@
     <ClCompile Include="Vao.cpp" />
     <ClCompile Include="Vbo.cpp" />
     <ClCompile Include="Window.cpp" />
+    <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppContext.h" />
@@ -164,6 +165,7 @@
     <ClInclude Include="Vao.h" />
     <ClInclude Include="Vbo.h" />
     <ClInclude Include="Window.h" />
+    <ClInclude Include="World.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="fragment.frag" />

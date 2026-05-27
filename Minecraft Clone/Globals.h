@@ -2,8 +2,13 @@
 
 namespace Globals {
 	
-	extern unsigned int height;
-	extern unsigned int width;
+	extern const unsigned int HEIGHT;
+	extern const unsigned int WIDTH;
 
-	extern float textureSize;
+	extern const float TEXTURE_SIZE;
+
+	extern const int CHUNK_WIDTH;
+	extern const int CHUNK_HEIGHT;
+
+	extern const int RENDER_RADIOUS;
 }

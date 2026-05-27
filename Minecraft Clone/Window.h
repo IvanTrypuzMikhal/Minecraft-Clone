@@ -30,6 +30,8 @@ private:
 	GLFWwindow* m_window;
 
 	bool m_lastTabState = false;
+	
+	bool m_toggleVSync = true;
 
 	int m_width;
 	int m_height;
