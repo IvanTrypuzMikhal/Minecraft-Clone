@@ -170,7 +170,7 @@
     <None Include="vertex.vert" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="grass-block.png" />
+    <Image Include="textures.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

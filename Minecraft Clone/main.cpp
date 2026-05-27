@@ -9,7 +9,7 @@ int main() {
 	Window window(Globals::height, Globals::width, "Minecraft");
 	Camera cam  = Camera();
 	ShaderProgram shaderProgram("vertex.vert", "fragment.frag");
-	Texture texture("grass-block.png", GL_RGBA);
+	Texture texture("textures.png", GL_RGBA);
 	AppContext context{ &window, &cam };
 
 	auto chunk = std::make_unique<Chunk>(&texture, &shaderProgram);

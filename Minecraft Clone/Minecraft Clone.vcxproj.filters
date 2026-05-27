@@ -108,7 +108,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="grass-block.png">
+    <Image Include="textures.png">
       <Filter>Textures</Filter>
     </Image>
   </ItemGroup>

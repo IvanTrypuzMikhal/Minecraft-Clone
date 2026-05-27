@@ -1,10 +1,10 @@
 #include "Chunk.h"
 
 static BlockType getBlockType(int x, int y, int z);
+static std::pair<int, int> getAtlasCoordinates(BlockType type, BlockFace face);
 
 Chunk::Chunk(const Texture* texture, const ShaderProgram* shader) : m_texture{ texture }, m_shader{ shader } {
 	m_vbo = std::make_unique<Vbo>();
-	std::cout << m_vbo.get() << std::endl;
 	fillBlocks();
 	buildMesh();
 	setBuffers();
@@ -31,340 +31,186 @@ void Chunk::buildMesh() {
 	for (int y = 0; y < 256; y++) {
 		for (int z = 0; z < 16; z++) {
 			for (int x = 0; x < 16; x++) {
-				if (m_blocks[x][y][z] == BlockType::Air) continue;
-
+				BlockType type = m_blocks[x][y][z];
+				if (type == BlockType::Air) continue;
+				
 				// Frontal face
 				if (isAir(x, y, z - 1)) {
-					// Vertices positions and texture
+					auto [atlasX, atlasY] = getAtlasCoordinates(type, BlockFace::Front);
 
+					float uMin = atlasX * Globals::textureSize;
+					float vMin = atlasY * Globals::textureSize;
+					float uMax = uMin + Globals::textureSize;
+					float vMax = vMin + Globals::textureSize;
 					// Top left
-					m_mesh.push_back(0.0f + x);
-					m_mesh.push_back(0.0f - y);
-					m_mesh.push_back(0.0f - z);
-
-					m_mesh.push_back(0.0f);
-					m_mesh.push_back(0.5f);
-
+					pushVertex(0.0f + x, 0.0f - y, 0.0f - z, uMin, vMax);
 
 					// Bottom left
-					m_mesh.push_back(0.0f + x);
-					m_mesh.push_back(-1.0f - y);
-					m_mesh.push_back(0.0f - z);
-
-					m_mesh.push_back(0.0f);
-					m_mesh.push_back(0.0f);
+					pushVertex(0.0f + x, -1.0f - y, 0.0f - z, uMin, vMin);
 
 					// Top right
-					m_mesh.push_back(1.0f + x);
-					m_mesh.push_back(0.0f - y);
-					m_mesh.push_back(0.0f - z);
-
-					m_mesh.push_back(0.5f);
-					m_mesh.push_back(0.5f);
+					pushVertex(1.0f + x, 0.0f - y, 0.0f - z, uMax, vMax);
 
 					// Bottom left
-					m_mesh.push_back(0.0f + x);
-					m_mesh.push_back(-1.0f - y);
-					m_mesh.push_back(0.0f - z);
-
-					m_mesh.push_back(0.0f);
-					m_mesh.push_back(0.0f);
+					pushVertex(0.0f + x, -1.0f - y, 0.0f - z, uMin, vMin);
 
 					// Top right
-					m_mesh.push_back(1.0f + x);
-					m_mesh.push_back(0.0f - y);
-					m_mesh.push_back(0.0f - z);
-
-					m_mesh.push_back(0.5f);
-					m_mesh.push_back(0.5f);
+					pushVertex(1.0f + x, 0.0f - y, 0.0f - z, uMax, vMax);
 
 					// Bottom right
-					m_mesh.push_back(1.0f + x);
-					m_mesh.push_back(-1.0f - y);
-					m_mesh.push_back(0.0f - z);
-					
-					m_mesh.push_back(0.5f);
-					m_mesh.push_back(0.0f);
+					pushVertex(1.0f + x, -1.0f - y, 0.0f - z, uMax, vMin);
 				}
 
 				// Back face
 				if (isAir(x, y, z + 1)) {
+					auto [atlasX, atlasY] = getAtlasCoordinates(type, BlockFace::Back);
+
+					float uMin = atlasX * Globals::textureSize;
+					float vMin = atlasY * Globals::textureSize;
+					float uMax = uMin + Globals::textureSize;
+					float vMax = vMin + Globals::textureSize;
+
 					// Vertices positions and texture
 
 					// Top left
-					m_mesh.push_back(0.0f + x);
-					m_mesh.push_back(0.0f - y);
-					m_mesh.push_back(-1.0f - z);
-
-					m_mesh.push_back(0.0f);
-					m_mesh.push_back(0.5f);
-
+					pushVertex(0.0f + x, 0.0f - y, -1.0f - z, uMin, vMax);
 
 					// Bottom left
-					m_mesh.push_back(0.0f + x);
-					m_mesh.push_back(-1.0f - y);
-					m_mesh.push_back(-1.0f - z);
-
-					m_mesh.push_back(0.0f);
-					m_mesh.push_back(0.0f);
+					pushVertex(0.0f + x, -1.0f - y, -1.0f - z, uMin, vMin);
 
 					// Top right
-					m_mesh.push_back(1.0f + x);
-					m_mesh.push_back(0.0f - y);
-					m_mesh.push_back(-1.0f - z);
-
-					m_mesh.push_back(0.5f);
-					m_mesh.push_back(0.5f);
+					pushVertex(1.0f + x, 0.0f - y, -1.0f - z, uMax, vMax);
 
 					// Bottom left
-					m_mesh.push_back(0.0f + x);
-					m_mesh.push_back(-1.0f - y);
-					m_mesh.push_back(-1.0f - z);
-
-					m_mesh.push_back(0.0f);
-					m_mesh.push_back(0.0f);
+					pushVertex(0.0f + x, -1.0f - y, -1.0f - z, uMin, vMin);
 
 					// Top right
-					m_mesh.push_back(1.0f + x);
-					m_mesh.push_back(0.0f - y);
-					m_mesh.push_back(-1.0f - z);
-
-					m_mesh.push_back(0.5f);
-					m_mesh.push_back(0.5f);
+					pushVertex(1.0f + x, 0.0f - y, -1.0f - z, uMax, vMax);
 
 					// Bottom right
-					m_mesh.push_back(1.0f + x);
-					m_mesh.push_back(-1.0f - y);
-					m_mesh.push_back(-1.0f - z);
-
-					m_mesh.push_back(0.5f);
-					m_mesh.push_back(0.0f);
+					pushVertex(1.0f + x, -1.0f - y, -1.0f - z, uMax, vMin);
 				}
 
 				// Right face
 				if (isAir(x + 1, y, z)) {
+					auto [atlasX, atlasY] = getAtlasCoordinates(type, BlockFace::Right);
+
+					float uMin = atlasX * Globals::textureSize;
+					float vMin = atlasY * Globals::textureSize;
+					float uMax = uMin + Globals::textureSize;
+					float vMax = vMin + Globals::textureSize;
+
 					// Vertices positions and texture
 
 					// Top left
-					m_mesh.push_back(1.0f + x);
-					m_mesh.push_back(0.0f - y);
-					m_mesh.push_back(0.0f - z);
-
-					m_mesh.push_back(0.0f);
-					m_mesh.push_back(0.5f);
-
+					pushVertex(1.0f + x, 0.0f - y, 0.0f - z, uMin, vMax);
 
 					// Bottom left
-					m_mesh.push_back(1.0f + x);
-					m_mesh.push_back(-1.0f - y);
-					m_mesh.push_back(0.0f - z);
-
-					m_mesh.push_back(0.0f);
-					m_mesh.push_back(0.0f);
+					pushVertex(1.0f + x, -1.0f - y, 0.0f - z, uMin, vMin);
 
 					// Top right
-					m_mesh.push_back(1.0f + x);
-					m_mesh.push_back(0.0f - y);
-					m_mesh.push_back(-1.0f - z);
-
-					m_mesh.push_back(0.5f);
-					m_mesh.push_back(0.5f);
+					pushVertex(1.0f + x, 0.0f - y, -1.0f - z, uMax, vMax);
 
 					// Bottom left
-					m_mesh.push_back(1.0f + x);
-					m_mesh.push_back(-1.0f - y);
-					m_mesh.push_back(0.0f - z);
-
-					m_mesh.push_back(0.0f);
-					m_mesh.push_back(0.0f);
+					pushVertex(1.0f + x, -1.0f - y, 0.0f - z, uMin, vMin);
 
 					// Top right
-					m_mesh.push_back(1.0f + x);
-					m_mesh.push_back(0.0f - y);
-					m_mesh.push_back(-1.0f - z);
-
-					m_mesh.push_back(0.5f);
-					m_mesh.push_back(0.5f);
+					pushVertex(1.0f + x, 0.0f - y, -1.0f - z, uMax, vMax);
 
 					// Bottom right
-					m_mesh.push_back(1.0f + x);
-					m_mesh.push_back(-1.0f - y);
-					m_mesh.push_back(-1.0f - z);
+					pushVertex(1.0f + x, -1.0f - y, -1.0f - z, uMax, vMin);
 
-					m_mesh.push_back(0.5f);
-					m_mesh.push_back(0.0f);
 				}
 
 				// Left face
 				if (isAir(x - 1, y, z)) {
+					auto [atlasX, atlasY] = getAtlasCoordinates(type, BlockFace::Left);
+
+					float uMin = atlasX * Globals::textureSize;
+					float vMin = atlasY * Globals::textureSize;
+					float uMax = uMin + Globals::textureSize;
+					float vMax = vMin + Globals::textureSize;
+
 					// Vertices positions and texture
 
 					// Top left
-					m_mesh.push_back(0.0f + x);
-					m_mesh.push_back(0.0f - y);
-					m_mesh.push_back(-1.0f - z);
-
-					m_mesh.push_back(0.0f);
-					m_mesh.push_back(0.5f);
+					pushVertex(0.0f + x, 0.0f - y, -1.0f - z, uMin, vMax);
 
 					// Bottom left
-					m_mesh.push_back(0.0f + x);
-					m_mesh.push_back(-1.0f - y);
-					m_mesh.push_back(-1.0f - z);
-
-					m_mesh.push_back(0.0f);
-					m_mesh.push_back(0.0f);
+					pushVertex(0.0f + x, -1.0f - y, -1.0f - z, uMin, vMin);
 
 					// Top right
-					m_mesh.push_back(0.0f + x);
-					m_mesh.push_back(0.0f - y);
-					m_mesh.push_back(0.0f - z);
-
-					m_mesh.push_back(0.5f);
-					m_mesh.push_back(0.5f);
+					pushVertex(0.0f + x, 0.0f - y, 0.0f - z, uMax, vMax);
 
 					// Bottom left
-					m_mesh.push_back(0.0f + x);
-					m_mesh.push_back(-1.0f - y);
-					m_mesh.push_back(-1.0f - z);
-
-					m_mesh.push_back(0.0f);
-					m_mesh.push_back(0.0f);
-
+					pushVertex(0.0f + x, -1.0f - y, -1.0f - z, uMin, vMin);
+			
 					// Top right
-					m_mesh.push_back(0.0f + x);
-					m_mesh.push_back(0.0f - y);
-					m_mesh.push_back(0.0f - z);
-
-					m_mesh.push_back(0.5f);
-					m_mesh.push_back(0.5f);
+					pushVertex(0.0f + x, 0.0f - y, 0.0f - z, uMax, vMax);
 
 					// Bottom right
-					m_mesh.push_back(0.0f + x);
-					m_mesh.push_back(-1.0f - y);
-					m_mesh.push_back(0.0f - z);
-
-					m_mesh.push_back(0.5f);
-					m_mesh.push_back(0.0f);
+					pushVertex(0.0f + x, -1.0f - y, 0.0f - z, uMax, vMin);
 				}
 
 				// Top face
 				if (isAir(x, y - 1, z)) {
+					auto [atlasX, atlasY] = getAtlasCoordinates(type, BlockFace::Top);
+
+					float uMin = atlasX * Globals::textureSize;
+					float vMin = atlasY * Globals::textureSize;
+					float uMax = uMin + Globals::textureSize;
+					float vMax = vMin + Globals::textureSize;
+
 					// Vertices positions and texture
 
 					// Top left
-					m_mesh.push_back(0.0f + x);
-					m_mesh.push_back(0.0f - y);
-					m_mesh.push_back(-1.0f - z);
-
-					m_mesh.push_back(0.5f);
-					m_mesh.push_back(0.5f);
+					pushVertex(0.0f + x, 0.0f - y, -1.0f - z, uMin, vMax);
 
 					// Bottom left
-					m_mesh.push_back(0.0f + x);
-					m_mesh.push_back(0.0f - y);
-					m_mesh.push_back(0.0f - z);
-
-					m_mesh.push_back(0.5f);
-					m_mesh.push_back(0.0f);
+					pushVertex(0.0f + x, 0.0f - y, 0.0f - z, uMin, vMin);
 
 					// Top right
-					m_mesh.push_back(1.0f + x);
-					m_mesh.push_back(0.0f - y);
-					m_mesh.push_back(-1.0f - z);
-
-					m_mesh.push_back(1.0f);
-					m_mesh.push_back(0.5f);
+					pushVertex(1.0f + x, 0.0f - y, -1.0f - z, uMax, vMax);
 
 					// Bottom left
-					m_mesh.push_back(0.0f + x);
-					m_mesh.push_back(0.0f - y);
-					m_mesh.push_back(0.0f - z);
-
-					m_mesh.push_back(0.5f);
-					m_mesh.push_back(0.0f);
+					pushVertex(0.0f + x, 0.0f - y, 0.0f - z, uMin, vMin);
 
 					// Top right
-					m_mesh.push_back(1.0f + x);
-					m_mesh.push_back(0.0f - y);
-					m_mesh.push_back(-1.0f - z);
-
-					m_mesh.push_back(1.0f);
-					m_mesh.push_back(0.5f);
+					pushVertex(1.0f + x, 0.0f - y, -1.0f - z, uMax, vMax);
 
 					// Bottom right
-					m_mesh.push_back(1.0f + x);
-					m_mesh.push_back(0.0f - y);
-					m_mesh.push_back(0.0f - z);
-
-					m_mesh.push_back(1.0f);
-					m_mesh.push_back(0.0f);
+					pushVertex(1.0f + x, 0.0f - y, 0.0f - z, uMax, vMin);
 				}
 
 				// Bottom face
 				if (isAir(x, y + 1, z)) {
+					auto [atlasX, atlasY] = getAtlasCoordinates(type, BlockFace::Bottom);
+
+					float uMin = atlasX * Globals::textureSize;
+					float vMin = atlasY * Globals::textureSize;
+					float uMax = uMin + Globals::textureSize;
+					float vMax = vMin + Globals::textureSize;
+
 					// Vertices positions and texture
 
 					// Top left
-					m_mesh.push_back(0.0f + x);
-					m_mesh.push_back(-1.0f - y);
-					m_mesh.push_back(-1.0f - z);
-
-					m_mesh.push_back(0.0f);
-					m_mesh.push_back(1.0f);
-
+					pushVertex(0.0f + x, -1.0f - y, -1.0f - z, uMin, vMax);
 
 					// Bottom left
-					m_mesh.push_back(0.0f + x);
-					m_mesh.push_back(-1.0f - y);
-					m_mesh.push_back(0.0f - z);
-
-					m_mesh.push_back(0.0f);
-					m_mesh.push_back(0.5f);
+					pushVertex(0.0f + x, -1.0f - y, 0.0f - z, uMin, vMin);
 
 					// Top right
-					m_mesh.push_back(1.0f + x);
-					m_mesh.push_back(-1.0f - y);
-					m_mesh.push_back(-1.0f - z);
-
-					m_mesh.push_back(0.5f);
-					m_mesh.push_back(1.0f);
+					pushVertex(1.0f + x, -1.0f - y, -1.0f - z, uMax, vMax);
 
 					// Bottom left
-					m_mesh.push_back(0.0f + x);
-					m_mesh.push_back(-1.0f - y);
-					m_mesh.push_back(0.0f - z);
-
-					m_mesh.push_back(0.0f);
-					m_mesh.push_back(0.5f);
+					pushVertex(0.0f + x, -1.0f - y, 0.0f - z, uMin, vMin);
 
 					// Top right
-					m_mesh.push_back(1.0f + x);
-					m_mesh.push_back(-1.0f - y);
-					m_mesh.push_back(-1.0f - z);
-
-					m_mesh.push_back(0.5f);
-					m_mesh.push_back(1.0f);
+					pushVertex(1.0f + x, -1.0f - y, -1.0f - z, uMax, vMax);
 
 					// Bottom right
-					m_mesh.push_back(1.0f + x);
-					m_mesh.push_back(-1.0f - y);
-					m_mesh.push_back(0.0f - z);
-
-					m_mesh.push_back(0.5f);
-					m_mesh.push_back(0.5f);
+					pushVertex(1.0f + x, -1.0f - y, 0.0f - z, uMax, vMin);
 				}
-			}
-		}
-	}
-	std::cerr << "Mesh size: " << m_mesh.size() << std::endl;
-}
-
-void Chunk::fillBlocks() {
-	for (int y = 0; y < 256; y++) {
-		for (int z = 0; z < 16; z++) {
-			for (int x = 0; x < 16; x++) {
-				m_blocks[x][y][z] = getBlockType(x, y, z);
 			}
 		}
 	}
@@ -380,7 +226,23 @@ std::vector<float> Chunk::getMesh(){
 	return m_mesh;
 }
 
+void Chunk::fillBlocks() {
+	for (int y = 0; y < 256; y++) {
+		for (int z = 0; z < 16; z++) {
+			for (int x = 0; x < 16; x++) {
+				m_blocks[x][y][z] = getBlockType(x, y, z);
+			}
+		}
+	}
+}
 
+void Chunk::pushVertex(float x, float y, float z, float u, float v) {
+	m_mesh.push_back(x);
+	m_mesh.push_back(y);
+	m_mesh.push_back(z);
+	m_mesh.push_back(u);
+	m_mesh.push_back(v);
+}
 
 static BlockType getBlockType(int x, int y, int z) {
 	if (y == 0) {
@@ -389,10 +251,28 @@ static BlockType getBlockType(int x, int y, int z) {
 	else if (y > 0 && y < 10) {
 		return BlockType::Dirt;
 	}
-	else if (y > 10 && y < 254) {
+	else if (y >= 10 && y < 254) {
 		return BlockType::Stone;
 	}
-	else {
+	else if(y >= 254){
 		return BlockType::Bedrock;
+	}
+}
+
+static std::pair<int, int> getAtlasCoordinates(BlockType type, BlockFace face) {
+	switch (type) {
+	case BlockType::Bedrock:
+		return std::pair(2,1);
+
+	case BlockType::Stone:
+		return std::pair(2, 0);
+
+	case BlockType::Dirt:
+		return std::pair(0, 1);
+
+	case BlockType::Grass:
+		if (face == BlockFace::Top) return std::pair(1,0);
+		if (face == BlockFace::Bottom) return std::pair(0, 1);
+		return std::pair(0, 0);
 	}
 }

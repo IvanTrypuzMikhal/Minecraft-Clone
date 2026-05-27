@@ -6,6 +6,7 @@
 #include "Vbo.h"
 #include "Texture.h"
 #include "ShaderProgram.h"
+#include "Globals.h"
 #include <memory>
 
 enum BlockType : unsigned char
@@ -17,6 +18,15 @@ enum BlockType : unsigned char
 	Bedrock,
 };
 
+enum BlockFace : unsigned char {
+	Front,
+	Back,
+	Left,
+	Right,
+	Top,
+	Bottom
+};
+
 class Chunk
 {
 public:
@@ -26,8 +36,9 @@ public:
 	void buildMesh();
 	void render(const glm::mat4& projection, const glm::mat4& model);
 	void fillBlocks();
-	bool isAir(int x, int y, int z) const;
+	void pushVertex(float x, float y, float z, float u, float v);
 	void setBuffers();
+	bool isAir(int x, int y, int z) const;
 
 	std::vector<float> getMesh();
 

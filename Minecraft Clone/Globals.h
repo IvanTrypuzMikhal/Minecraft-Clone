@@ -5,4 +5,5 @@ namespace Globals {
 	extern unsigned int height;
 	extern unsigned int width;
 
+	extern float textureSize;
 }
