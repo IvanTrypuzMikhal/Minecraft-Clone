@@ -13,7 +13,8 @@ class Vao
 {
 public:
 	// Vertices are assumed to be of xyz
-	Vao(int stride, std::vector<VertexAttribute>);
+	Vao(unsigned int vboId, int stride, std::vector<VertexAttribute>);
+	Vao() = default;
 	~Vao();
 	void use() const;
 	unsigned int get() const;

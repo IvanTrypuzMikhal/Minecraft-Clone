@@ -43,7 +43,7 @@ private:
 	float m_pitch = 0.0f;
 
 	//	Other variables
-	float m_cameraSpeed = 1.5f;
+	float m_cameraSpeed = 3.0f;
 	double m_lastX = 0, m_lastY = 0;
 	const float m_sensitivity = 0.1f;
 	float m_fov = 45.0f;

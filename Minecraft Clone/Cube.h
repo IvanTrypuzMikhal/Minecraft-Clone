@@ -13,7 +13,7 @@ public:
 
 	~Cube() = default;
 
-	void renderCube(const glm::mat4& projection, const glm::mat4& view);
+	void renderCube(const glm::mat4& projection, const glm::mat4& model);
 
 private:
 	const Texture* m_texture;
