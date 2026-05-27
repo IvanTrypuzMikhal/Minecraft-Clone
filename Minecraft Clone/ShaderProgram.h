@@ -15,10 +15,10 @@ public:
 	unsigned int get() const;
 	void use() const;
 
-	void setFloat(const char* location, float x);
-	void setVec3(const char* location, float x, float y, float z);
-	void setVec3(const char* location, glm::vec3& vec);
-	void setMat4(const char* location, glm::mat4 mat);
+	void setFloat(const char* location, float x) const;
+	void setVec3(const char* location, float x, float y, float z) const;
+	void setVec3(const char* location, glm::vec3& vec) const;
+	void setMat4(const char* location, glm::mat4 mat) const;
 
 private:
 	unsigned int m_id;

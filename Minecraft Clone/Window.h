@@ -23,6 +23,8 @@ public:
 	void setWidth(int width);
 	void setHeight(int height);
 
+	int getWidth() const;
+	int getHeight() const;
 
 private:
 	GLFWwindow* m_window;

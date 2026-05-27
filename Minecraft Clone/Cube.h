@@ -1,25 +1,22 @@
 #pragma once
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <vector>
+#include "ShaderProgram.h"
+#include "Texture.h"
 
 class Cube
 {
 public:
-	Cube(unsigned int textureId, unsigned int shaderId, glm::vec3 position) : 
-		m_textureId{ textureId }, m_shaderId{ shaderId }, m_position{ position } {}
+	Cube(const Texture* texture,const ShaderProgram* shader) :
+		m_texture{ texture }, m_shader{ shader }{}
 
 	~Cube() = default;
 
-	void createCube() const;
-	void createVAO();
+	void renderCube(const glm::mat4& projection, const glm::mat4& view);
 
 private:
-	unsigned int m_textureId;
-	unsigned int m_shaderId;
-	glm::vec3 m_position;
+	const Texture* m_texture;
+	const ShaderProgram* m_shader;
 
-
-	std::vector<VertexAttribute> m_vertexAttributes{ { 0, 3, 0 }, { 1, 2, 3 } };
-	unsigned int m_VAO;
-	unsigned int m_VBO;
 };

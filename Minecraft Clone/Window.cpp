@@ -100,3 +100,9 @@ void Window::setHeight(int height) {
 	m_height = height;
 }
 
+int Window::getWidth() const{
+	return m_width;
+}
+int Window::getHeight() const {
+	return m_height;
+}

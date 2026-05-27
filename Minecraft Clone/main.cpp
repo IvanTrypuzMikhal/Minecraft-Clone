@@ -17,6 +17,8 @@ int main() {
 	Vao vao(5, grassBlock);
 	AppContext context{ &window, &cam };
 
+	Cube grassBlock(&texture, &shaderProgram);
+
 	glfwSetWindowUserPointer(window.getWindow(), &context);
 
 	
@@ -27,15 +29,20 @@ int main() {
 		glClearColor(0.416f, 0.329f, 0.459f, 0.5f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		glm::mat4 projection = glm::perspective(glm::radians(cam.getFov()), (float)Globals::width / Globals::height, 0.1f, 100.0f);
 		cam.setView(shaderProgram);
-		shaderProgram.setMat4("model", glm::mat4(1));
-		shaderProgram.setMat4("projection", projection);
 
-		texture.setTexture();
+		glm::mat4 projection = glm::perspective(glm::radians(cam.getFov()), (float)window.getWidth() / window.getHeight(), 0.1f, 100.0f);
+
+		for(int y = 0; y < 100; y++) {
+			for (int z = 0; z < 16; z++) {
+				for (int x = 0; x < 16; x++) {
+					glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(x * 0.4f, y * -0.4f, z * 0.4f));
+					grassBlock.renderCube(projection, model);
+				}
+			}
+		}
 		vao.use();
-		shaderProgram.use();
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		
 
 		last_delta = new_delta;
 		new_delta = (float) glfwGetTime();

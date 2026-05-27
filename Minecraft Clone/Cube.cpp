@@ -1,16 +1,13 @@
 #include "Cube.h"
-#include "Vao.h"
-#include "Vbo.h"
 #include "Globals.h"
 
-// Not finished yet, too tired
-void Cube::createCube() const {
 
-
+void Cube::renderCube(const glm::mat4& projection, const glm::mat4& model){
+	m_shader->setMat4("projection", projection);
+	m_shader->setMat4("model", model);
+	m_texture->setTexture();
+	m_shader->use();
+	glDrawArrays(GL_TRIANGLES, 0, 36);
 }
 
 
-void Cube::createVAO() {
-	Vbo vbo(Globals::vertices, sizeof(Globals::vertices));
-	Vao vao(5, m_vertexAttributes);
-}
