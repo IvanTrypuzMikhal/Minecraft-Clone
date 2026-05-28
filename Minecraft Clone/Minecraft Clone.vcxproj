@@ -162,6 +162,7 @@
     <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="TSQueue.h" />
     <ClInclude Include="Vao.h" />
     <ClInclude Include="Vbo.h" />
     <ClInclude Include="Window.h" />

@@ -26,7 +26,7 @@ int main() {
 
 		cam.setView(shaderProgram);
 
-		glm::mat4 projection = glm::perspective(glm::radians(cam.getFov()), (float)window.getWidth() / window.getHeight(), 0.1f, 100.0f);
+		glm::mat4 projection = glm::perspective(glm::radians(cam.getFov()), (float)window.getWidth() / window.getHeight(), 0.1f, 500.0f);
 		glm::mat4 model = glm::mat4(1);
 		
 		shaderProgram.use();

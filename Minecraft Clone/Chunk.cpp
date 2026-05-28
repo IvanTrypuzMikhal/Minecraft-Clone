@@ -4,15 +4,13 @@ static BlockType getBlockType(int x, int y, int z);
 static std::pair<int, int> getAtlasCoordinates(BlockType type, BlockFace face);
 
 Chunk::Chunk(const ShaderProgram* shader) : m_shader{ shader } {
-	m_vbo = std::make_unique<Vbo>();
 	fillBlocks();
 	buildMesh();
-	setBuffers();
 }
 
 void Chunk::setBuffers() {
 	std::vector<VertexAttribute> block{ { 0, 3, 0 }, { 1, 2, 3 } };
-
+	m_vbo = std::make_unique<Vbo>();
 	m_vao = std::make_unique<Vao>(m_vbo->get(), 5, block);
 	m_vbo->upload(m_mesh);
 
