@@ -7,6 +7,7 @@
 #include "Texture.h"
 #include "ShaderProgram.h"
 #include "Globals.h"
+#include "FastNoiseLite.h"
 #include <memory>
 
 enum BlockType : unsigned char
@@ -30,7 +31,7 @@ enum BlockFace : unsigned char {
 class Chunk
 {
 public:
-	Chunk(const ShaderProgram* shader);
+	Chunk(const ShaderProgram* shader, int worldX, int worldZ);
 	~Chunk() = default;
 
 	void buildMesh(	
@@ -54,4 +55,6 @@ private:
 	const ShaderProgram* m_shader;
 	std::unique_ptr<Vao> m_vao;
 	std::unique_ptr<Vbo> m_vbo;
+	FastNoiseLite m_noise;
+	std::pair<int, int> m_worldPosition;
 };

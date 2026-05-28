@@ -14,7 +14,7 @@ struct PairHash {
 	}
 };
 
-enum State
+enum State : unsigned char
 {
 	NOT_CREATED,
 	TERRAIN_READY,
@@ -61,7 +61,6 @@ public:
 	void asyncTerrainLoading();
 	void asyncMeshLoading();
 private:
-	void rebuildChunkMesh(int x, int z);
 
 
 	std::map<std::pair<int, int>, ChunkState> m_chunks;

@@ -10,7 +10,6 @@ World::~World() {
 	m_meshThread.join();     
 }
 
-
 void World::renderWorld(const glm::mat4& projection, const glm::mat4& model) {
 	int positiveZ = m_cameraPosition.z + Globals::RENDER_RADIOUS;
 	int negativeZ = m_cameraPosition.z - Globals::RENDER_RADIOUS;
@@ -39,7 +38,6 @@ void World::renderWorld(const glm::mat4& projection, const glm::mat4& model) {
 			if (it != m_chunks.end() && it->second.state == TERRAIN_READY) {
 				if (checkNearbyChunks(coord.first, coord.second)) {
 
-					// Cambiamos el estado INMEDIATAMENTE para blindarlo contra re-encolados
 					it->second.state = MESH_BUILDING;
 
 					ChunkPackage package;
@@ -116,7 +114,7 @@ void World::asyncTerrainLoading() {
 
 		}
 
-		auto newChunk = std::make_unique<Chunk>(m_shader);
+		auto newChunk = std::make_unique<Chunk>(m_shader, coords.first, coords.second);
 		ChunkState chunkState = { std::move(newChunk), TERRAIN_READY };
 		m_finishedTerrainChunks.push({ std::move(chunkState), coords});
 	}
@@ -139,39 +137,11 @@ void World::asyncMeshLoading() {
 			package = m_meshQueue.pop();
 			std::cout << "Creating mesh around chunk: " << package.coords.first << " " << package.coords.second << std::endl;
 		}
-		// I guess here i have to call rebuild Chunk Mesh for each chunk
-		// or do i just create its mesh separatedly?
 		package.center->buildMesh(package.left, package.right, package.front, package.back);
 		m_finishedMeshChunks.push(package.coords);
 	}
 }
 
-void World::rebuildChunkMesh(int x, int z) {
-	auto it = m_chunks.find({x, z});
-	if (it == m_chunks.end()) return;
-
-	Chunk* actual = it->second.chunk.get();
-
-	Chunk* left = nullptr;
-	Chunk* right = nullptr;
-	Chunk* back = nullptr;
-	Chunk* front = nullptr;
-
-	auto itVecino = m_chunks.find({ x - 1, z });
-	if (itVecino != m_chunks.end()) left = itVecino->second.chunk.get();
-
-	itVecino = m_chunks.find({ x + 1, z });
-	if (itVecino != m_chunks.end()) right = itVecino->second.chunk.get();
-	
-	itVecino = m_chunks.find({ x, z - 1 });
-	if (itVecino != m_chunks.end()) back = itVecino->second.chunk.get();
-
-	itVecino = m_chunks.find({ x, z + 1 });
-	if (itVecino != m_chunks.end()) front = itVecino->second.chunk.get();
-	
-	actual->buildMesh(left, right, front, back);
-
-}
 
 bool World::checkNearbyChunks(int x, int z) {
 	std::pair<int, int> targets[5] = { {x, z}, {x + 1, z}, {x - 1, z}, {x, z + 1}, {x, z - 1} };

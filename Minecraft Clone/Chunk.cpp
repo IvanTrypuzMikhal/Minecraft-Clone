@@ -1,10 +1,12 @@
 #include "Chunk.h"
 
-static BlockType getBlockType(int x, int y, int z);
+static BlockType getBlockType(int x, int y, int z, FastNoiseLite& noise);
 static std::pair<int, int> getAtlasCoordinates(BlockType type, BlockFace face);
 
-Chunk::Chunk(const ShaderProgram* shader) : m_shader{ shader } {
+Chunk::Chunk(const ShaderProgram* shader, int x, int z) : m_shader{ shader }, m_worldPosition{x, z} {
+	m_noise.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
 	fillBlocks();
+
 }
 
 void Chunk::setBuffers() {
@@ -216,6 +218,7 @@ void Chunk::buildMesh(
 	}
 }
 
+// TODO: Revise back and front condition ( bugged )
 bool Chunk::isAir(int x, int y, int z, const Chunk* left, const Chunk* right, const Chunk* front, const Chunk* back) const {
 	if (y < 0 || y >= Globals::CHUNK_HEIGHT)
 		return true;
@@ -243,7 +246,8 @@ void Chunk::fillBlocks() {
 	for (int y = 0; y < 256; y++) {
 		for (int z = 0; z < 16; z++) {
 			for (int x = 0; x < 16; x++) {
-				m_blocks[x][y][z] = getBlockType(x, y, z);
+
+				m_blocks[x][y][z] = getBlockType(m_worldPosition.first * 16 + x, y, m_worldPosition.second * 16 + z, m_noise);
 			}
 		}
 	}
@@ -257,23 +261,23 @@ void Chunk::pushVertex(float x, float y, float z, float u, float v) {
 	m_mesh.push_back(v);
 }
 
-static BlockType getBlockType(int x, int y, int z) {
-	if (x >= 6 && x <= 9 && y < 15) {
+static BlockType getBlockType(int x, int y, int z, FastNoiseLite& noise) {
+
+	float noiseHeight = noise.GetNoise((float)x, (float)z);
+
+	int maxHeight = 50 + int(noiseHeight * 40);
+	
+	if (y < maxHeight) {
 		return BlockType::Air;
 	}
-
-	if (y == 0) {
+	else if (y == maxHeight ) {
 		return BlockType::Grass;
 	}
-	else if (y > 0 && y < 10) {
+	else if (y > maxHeight && y < maxHeight - 3) {
 		return BlockType::Dirt;
 	}
-	else if (y >= 10 && y < 254) {
-		return BlockType::Stone;
-	}
-	else if(y >= 254){
-		return BlockType::Bedrock;
-	}
+	if (y == 255 || y == 254) return BlockType::Bedrock;
+	return BlockType::Stone;
 }
 
 static std::pair<int, int> getAtlasCoordinates(BlockType type, BlockFace face) {
