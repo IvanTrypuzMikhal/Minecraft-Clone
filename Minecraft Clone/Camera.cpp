@@ -90,3 +90,7 @@ float Camera::getFov() const {
 glm::vec3& Camera::getCameraPosition() {
 	return m_cameraPosition;
 }
+
+glm::vec3 Camera::getCameraLookAt() const{
+	return m_cameraFront;
+}

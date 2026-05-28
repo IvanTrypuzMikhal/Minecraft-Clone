@@ -16,7 +16,7 @@ int main() {
 	
 	glfwSetWindowUserPointer(window.getWindow(), &context);
 
-	
+
 	while (!window.shouldClose()) {
 		window.processInput();
 		glm::mat4 view = cam.view();
@@ -32,8 +32,7 @@ int main() {
 		shaderProgram.use();
 		texture.setTexture();
 
-		glm::vec3 position = cam.getCameraPosition();
-		world->update(position.x, position.y, position. z);
+		world->update(cam.getCameraPosition());
 		world->renderWorld(projection, model);
 		
 

@@ -33,14 +33,20 @@ public:
 	Chunk(const ShaderProgram* shader);
 	~Chunk() = default;
 
-	void buildMesh();
+	void buildMesh(	
+		const Chunk* left = nullptr, const Chunk* right = nullptr,
+		const Chunk* front = nullptr, const Chunk* back = nullptr);
 	void render(const glm::mat4& projection, const glm::mat4& model);
 	void fillBlocks();
 	void pushVertex(float x, float y, float z, float u, float v);
 	void setBuffers();
-	bool isAir(int x, int y, int z) const;
+	bool isAir(
+		int x, int y, int z, 
+		const Chunk* left = nullptr, const Chunk* right = nullptr,
+		const Chunk* front = nullptr, const Chunk* back = nullptr) const;
 
 	std::vector<float> getMesh();
+	BlockType getBlock(int x, int y, int z) const;
 
 private:
 	BlockType m_blocks[16][256][16] = {BlockType::Air};

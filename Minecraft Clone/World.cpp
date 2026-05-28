@@ -1,9 +1,13 @@
 #include "World.h"
 
 World::~World() {
-	m_running = false;
-	m_cond.notify_one();
-	m_workerThread.join();
+	m_terrainRunning = false;
+	m_terrainCond.notify_one();
+	m_terrainThread.join();
+
+	m_meshRunning = false;
+	m_meshCond.notify_one(); 
+	m_meshThread.join();     
 }
 
 
@@ -13,58 +17,170 @@ void World::renderWorld(const glm::mat4& projection, const glm::mat4& model) {
 	int positiveX = m_cameraPosition.x + Globals::RENDER_RADIOUS;
 	int negativeX = m_cameraPosition.x - Globals::RENDER_RADIOUS;
 
-	while (!m_finishedChunks.empty()) {
-		FinishedChunk fc = m_finishedChunks.pop();
-		fc.chunk->setBuffers();
-		m_chunks.insert({ fc.coords, std::move(fc.chunk) });
+	while (!m_finishedTerrainChunks.empty()) {
+
+		FinishedChunk fc = m_finishedTerrainChunks.pop();
+		std::pair<int, int> current = fc.coords;
+
+		m_chunks.insert({ current, std::move(fc.chunkState) });
 		m_requestedChunks.erase(fc.coords);
-		std::cout << "Popping chunk: " <<  fc.coords.first << " " << fc.coords.second << std::endl;
+		
+		std::pair<int, int> candidatos[5] = {
+			{current.first, current.second},     // Center
+			{current.first + 1, current.second}, // Right
+			{current.first - 1, current.second}, // Left
+			{current.first, current.second + 1}, // Front
+			{current.first, current.second - 1}  // Back
+		};
+
+		for (const auto& coord : candidatos) {
+			auto it = m_chunks.find(coord);
+
+			if (it != m_chunks.end() && it->second.state == TERRAIN_READY) {
+				if (checkNearbyChunks(coord.first, coord.second)) {
+
+					// Cambiamos el estado INMEDIATAMENTE para blindarlo contra re-encolados
+					it->second.state = MESH_BUILDING;
+
+					ChunkPackage package;
+					package.coords = coord;
+					package.center = it->second.chunk.get();
+					package.left = m_chunks[{coord.first - 1, coord.second}].chunk.get();
+					package.right = m_chunks[{coord.first + 1, coord.second}].chunk.get();
+					package.front = m_chunks[{coord.first, coord.second + 1}].chunk.get();
+					package.back = m_chunks[{coord.first, coord.second - 1}].chunk.get();
+
+					m_meshQueue.push(package);
+					m_meshCond.notify_one();
+				}
+			}
+
+
+		}
+		
 	}
+
+	while (!m_finishedMeshChunks.empty()) {
+		std::pair<int, int> coords = m_finishedMeshChunks.pop();
+
+		auto it = m_chunks.find(coords);
+		if (it != m_chunks.end()) {
+			it->second.chunk->setBuffers();
+			it->second.state = MESH_READY;
+		}
+	}
+
 
 	for (int z = negativeZ; z < positiveZ; z++) {
 		for (int x = negativeX; x < positiveX; x++) {
-
 			std::pair<int, int> coords = std::pair<int, int>(x, z);
 			if (m_chunks.contains(coords)) {
-				m_chunks[coords]->render(projection, glm::translate(model, glm::vec3(16.0f * x, 0.0f, 16.0f * z)));
+				if (m_chunks[coords].state == MESH_READY) {
+					m_chunks[coords].chunk->render(projection, glm::translate(model, glm::vec3(16.0f * x, 0.0f, 16.0f * z)));
+				}
 			}
 			else {
 				if (!m_requestedChunks.contains(coords)) {
 					m_requestedChunks.insert(coords);
-					m_chunksQueue.push(coords);
+					m_terrainQueue.push(coords);
 				}
-				if (!m_requestedChunks.empty()) m_cond.notify_one();
+				if (!m_requestedChunks.empty()) m_terrainCond.notify_one();
 			}
 		}
 	}
 }
 
-void World::update(float x, float y, float z) {
-	m_cameraPosition.x = std::floor(x / Globals::CHUNK_WIDTH);
-	m_cameraPosition.y = std::floor(y / Globals::CHUNK_WIDTH);
-	m_cameraPosition.z = std::floor(z / Globals::CHUNK_WIDTH);
+void World::update(const glm::vec3& position) {
+	m_cameraPosition.x = std::floor(position.x / Globals::CHUNK_WIDTH);
+	m_cameraPosition.y = std::floor(position.y / Globals::CHUNK_WIDTH);
+	m_cameraPosition.z = std::floor(position.z / Globals::CHUNK_WIDTH);
 }
 
-void World::asyncChunkLoading() {
-	std::cout << "Worker thread started!" << std::endl;
+void World::asyncTerrainLoading() {
+	std::cout << "Terrain thread started!" << std::endl;
 
-	while (m_running) {
+	while (m_terrainRunning) {
 		std::pair<int, int> coords;
 
 		{
-			std::unique_lock<std::mutex> lock(m_mutex);
+			std::unique_lock<std::mutex> lock(m_terrainMutex);
 
-			m_cond.wait(lock, [this] {
-				return !m_chunksQueue.empty() || !m_running;
+			m_terrainCond.wait(lock, [this] {
+				return !m_terrainQueue.empty() || !m_terrainRunning;
 				});
 
-			if (!m_running) break;
+			if (!m_terrainRunning) break;
 
-			coords = m_chunksQueue.pop();
+			coords = m_terrainQueue.pop();
+			std::cout << "Creating terrain for chunk: " << coords.first << " " << coords.second << std::endl;
+
 		}
-		std::cout << "Generating chunk: " << coords.first << " " << coords.second << std::endl;
 
 		auto newChunk = std::make_unique<Chunk>(m_shader);
-		m_finishedChunks.push({ std::move(newChunk), coords});
+		ChunkState chunkState = { std::move(newChunk), TERRAIN_READY };
+		m_finishedTerrainChunks.push({ std::move(chunkState), coords});
 	}
+}
+
+void World::asyncMeshLoading() {
+	std::cout << "Mesh thread started!" << std::endl;
+	while (m_meshRunning) {
+		ChunkPackage package;
+
+		{
+			std::unique_lock<std::mutex> lock(m_meshMutex);
+
+			m_meshCond.wait(lock, [this] {
+				return !m_meshQueue.empty() || !m_meshRunning;
+				});
+
+			if (!m_meshRunning) break;
+
+			package = m_meshQueue.pop();
+			std::cout << "Creating mesh around chunk: " << package.coords.first << " " << package.coords.second << std::endl;
+		}
+		// I guess here i have to call rebuild Chunk Mesh for each chunk
+		// or do i just create its mesh separatedly?
+		package.center->buildMesh(package.left, package.right, package.front, package.back);
+		m_finishedMeshChunks.push(package.coords);
+	}
+}
+
+void World::rebuildChunkMesh(int x, int z) {
+	auto it = m_chunks.find({x, z});
+	if (it == m_chunks.end()) return;
+
+	Chunk* actual = it->second.chunk.get();
+
+	Chunk* left = nullptr;
+	Chunk* right = nullptr;
+	Chunk* back = nullptr;
+	Chunk* front = nullptr;
+
+	auto itVecino = m_chunks.find({ x - 1, z });
+	if (itVecino != m_chunks.end()) left = itVecino->second.chunk.get();
+
+	itVecino = m_chunks.find({ x + 1, z });
+	if (itVecino != m_chunks.end()) right = itVecino->second.chunk.get();
+	
+	itVecino = m_chunks.find({ x, z - 1 });
+	if (itVecino != m_chunks.end()) back = itVecino->second.chunk.get();
+
+	itVecino = m_chunks.find({ x, z + 1 });
+	if (itVecino != m_chunks.end()) front = itVecino->second.chunk.get();
+	
+	actual->buildMesh(left, right, front, back);
+
+}
+
+bool World::checkNearbyChunks(int x, int z) {
+	std::pair<int, int> targets[5] = { {x, z}, {x + 1, z}, {x - 1, z}, {x, z + 1}, {x, z - 1} };
+
+	for (const auto& target : targets) {
+		auto it = m_chunks.find(target);
+		if (it == m_chunks.end() || it->second.state < TERRAIN_READY) {
+			return false;
+		}
+	}
+	return true;
 }

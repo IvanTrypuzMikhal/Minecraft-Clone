@@ -5,7 +5,6 @@ static std::pair<int, int> getAtlasCoordinates(BlockType type, BlockFace face);
 
 Chunk::Chunk(const ShaderProgram* shader) : m_shader{ shader } {
 	fillBlocks();
-	buildMesh();
 }
 
 void Chunk::setBuffers() {
@@ -23,7 +22,12 @@ void Chunk::render(const glm::mat4& projection, const glm::mat4& model) {
 	glDrawArrays(GL_TRIANGLES, 0, m_mesh.size()/5);
 }
 
-void Chunk::buildMesh() {
+void Chunk::buildMesh(
+	const Chunk* left, const Chunk* right,
+	const Chunk* front, const Chunk* back)
+
+{
+	m_mesh.clear();
 	for (int y = 0; y < 256; y++) {
 		for (int z = 0; z < 16; z++) {
 			for (int x = 0; x < 16; x++) {
@@ -31,7 +35,7 @@ void Chunk::buildMesh() {
 				if (type == BlockType::Air) continue;
 				
 				// Frontal face
-				if (isAir(x, y, z - 1)) {
+				if (isAir(x, y, z - 1, left, right, front, back)) {
 					auto [atlasX, atlasY] = getAtlasCoordinates(type, BlockFace::Front);
 
 					float uMin = atlasX * Globals::TEXTURE_SIZE;
@@ -58,7 +62,7 @@ void Chunk::buildMesh() {
 				}
 
 				// Back face
-				if (isAir(x, y, z + 1)) {
+				if (isAir(x, y, z + 1, left, right, front, back)) {
 					auto [atlasX, atlasY] = getAtlasCoordinates(type, BlockFace::Back);
 
 					float uMin = atlasX * Globals::TEXTURE_SIZE;
@@ -88,7 +92,7 @@ void Chunk::buildMesh() {
 				}
 
 				// Right face
-				if (isAir(x + 1, y, z)) {
+				if (isAir(x + 1, y, z, left, right, front, back)) {
 					auto [atlasX, atlasY] = getAtlasCoordinates(type, BlockFace::Right);
 
 					float uMin = atlasX * Globals::TEXTURE_SIZE;
@@ -119,7 +123,7 @@ void Chunk::buildMesh() {
 				}
 
 				// Left face
-				if (isAir(x - 1, y, z)) {
+				if (isAir(x - 1, y, z, left, right, front, back)) {
 					auto [atlasX, atlasY] = getAtlasCoordinates(type, BlockFace::Left);
 
 					float uMin = atlasX * Globals::TEXTURE_SIZE;
@@ -149,7 +153,7 @@ void Chunk::buildMesh() {
 				}
 
 				// Top face
-				if (isAir(x, y - 1, z)) {
+				if (isAir(x, y - 1, z, left, right, front, back)) {
 					auto [atlasX, atlasY] = getAtlasCoordinates(type, BlockFace::Top);
 
 					float uMin = atlasX * Globals::TEXTURE_SIZE;
@@ -179,7 +183,7 @@ void Chunk::buildMesh() {
 				}
 
 				// Bottom face
-				if (isAir(x, y + 1, z)) {
+				if (isAir(x, y + 1, z, left, right, front, back)) {
 					auto [atlasX, atlasY] = getAtlasCoordinates(type, BlockFace::Bottom);
 
 					float uMin = atlasX * Globals::TEXTURE_SIZE;
@@ -212,9 +216,22 @@ void Chunk::buildMesh() {
 	}
 }
 
-bool Chunk::isAir(int x, int y, int z) const{
-	if (x < 0 || x >= Globals::CHUNK_WIDTH || y < 0 || y >= Globals::CHUNK_HEIGHT || z < 0 || z >= Globals::CHUNK_WIDTH)
+bool Chunk::isAir(int x, int y, int z, const Chunk* left, const Chunk* right, const Chunk* front, const Chunk* back) const {
+	if (y < 0 || y >= Globals::CHUNK_HEIGHT)
 		return true;
+
+	if (x < 0)
+		return left ? (left->getBlock(Globals::CHUNK_WIDTH - 1, y, z) == BlockType::Air) : true;
+
+	if (x >= Globals::CHUNK_WIDTH)
+		return right ? (right->getBlock(0, y, z) == BlockType::Air) : true;
+
+	if (z < 0)
+		return back ? (back->getBlock(x, y, Globals::CHUNK_WIDTH - 1) == BlockType::Air) : true;
+
+	if (z >= Globals::CHUNK_WIDTH)
+		return front ? (front->getBlock(x, y, 0) == BlockType::Air) : true;
+
 	return m_blocks[x][y][z] == BlockType::Air;
 }
 
@@ -241,6 +258,10 @@ void Chunk::pushVertex(float x, float y, float z, float u, float v) {
 }
 
 static BlockType getBlockType(int x, int y, int z) {
+	if (x >= 6 && x <= 9 && y < 15) {
+		return BlockType::Air;
+	}
+
 	if (y == 0) {
 		return BlockType::Grass;
 	}
@@ -271,4 +292,8 @@ static std::pair<int, int> getAtlasCoordinates(BlockType type, BlockFace face) {
 		if (face == BlockFace::Bottom) return std::pair(0, 1);
 		return std::pair(0, 0);
 	}
+}
+
+BlockType Chunk::getBlock(int x, int y, int z) const {
+	return m_blocks[x][y][z];
 }

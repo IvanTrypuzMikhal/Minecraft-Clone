@@ -9,6 +9,7 @@
 class ShaderProgram;
 
 
+
 class Camera
 {
 public:
@@ -21,11 +22,10 @@ public:
 	void scrollProcessInput(double xoffset, double yoffset);
 
 	float getFov() const;
-
-	glm::mat4 view() const;
-
+	glm::vec3 getCameraLookAt() const;
 	glm::vec3& getCameraPosition();
-
+	glm::mat4 view() const;
+	
 	void setView(ShaderProgram& shader) const;
 	void setFirstInput();
 	void setMovement(bool trueFalse);
