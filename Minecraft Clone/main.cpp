@@ -31,7 +31,7 @@ int main() {
 		
 		shaderProgram.use();
 		texture.setTexture();
-
+		
 		world->update(cam.getCameraPosition());
 		world->renderWorld(projection, model);
 		

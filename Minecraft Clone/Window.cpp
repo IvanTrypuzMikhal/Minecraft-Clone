@@ -34,6 +34,7 @@ Window::Window(int width, int height, const char* title) {
 	glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSwapInterval(0);
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
 }
 
 Window::~Window() {

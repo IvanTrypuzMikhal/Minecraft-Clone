@@ -16,8 +16,8 @@ struct PairHash {
 
 enum State : unsigned char
 {
-	NOT_CREATED,
 	TERRAIN_READY,
+	DECORATED,
 	MESH_BUILDING,
 	MESH_READY
 };
@@ -55,11 +55,13 @@ public:
 
 	void renderWorld(const glm::mat4& projection, const glm::mat4& model);
 	void update(const glm::vec3& position);
-	bool checkNearbyChunks(int x, int z);
-
+	bool checkNearbyChunksTerrainReady(int x, int z);
+	bool checkNearbyChunksDecorationReady(int x, int z);
+	
 	// Threads
 	void asyncTerrainLoading();
 	void asyncMeshLoading();
+
 private:
 
 

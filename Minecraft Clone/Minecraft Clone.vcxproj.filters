@@ -107,7 +107,7 @@
     <ClInclude Include="TSQueue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FastNoiseLite.h">
+    <ClInclude Include="CubeData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -121,6 +121,12 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="textures.png">
+      <Filter>Textures</Filter>
+    </Image>
+    <Image Include="oak-wood.png">
+      <Filter>Textures</Filter>
+    </Image>
+    <Image Include="oak-leaves-normal-original-default.png">
       <Filter>Textures</Filter>
     </Image>
   </ItemGroup>

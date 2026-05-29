@@ -11,4 +11,8 @@ namespace Globals {
     constexpr int CHUNK_HEIGHT = 256;
 
     constexpr int RENDER_RADIOUS = 10;
+
+    constexpr int GRASS_LEVEL   = 128;
+    constexpr int DIRT_DEPTH    = 138;
+    constexpr int STONE_DEPTH   = 254;
 }

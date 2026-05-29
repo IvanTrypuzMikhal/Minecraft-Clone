@@ -11,4 +11,9 @@ namespace Globals {
 	extern const int CHUNK_HEIGHT;
 
 	extern const int RENDER_RADIOUS;
+
+	extern const int GRASS_LEVEL;
+	extern const int DIRT_DEPTH;
+	extern const int STONE_DEPTH;
+
 }

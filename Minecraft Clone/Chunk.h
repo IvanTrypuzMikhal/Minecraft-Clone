@@ -7,26 +7,11 @@
 #include "Texture.h"
 #include "ShaderProgram.h"
 #include "Globals.h"
-#include "FastNoiseLite.h"
+#include "CubeData.h"
 #include <memory>
+#include <random>
 
-enum BlockType : unsigned char
-{
-	Air,
-	Grass,
-	Dirt,
-	Stone,
-	Bedrock,
-};
 
-enum BlockFace : unsigned char {
-	Front,
-	Back,
-	Left,
-	Right,
-	Top,
-	Bottom
-};
 
 class Chunk
 {
@@ -39,6 +24,9 @@ public:
 		const Chunk* front = nullptr, const Chunk* back = nullptr);
 	void render(const glm::mat4& projection, const glm::mat4& model);
 	void fillBlocks();
+	void generateTrees(
+		Chunk* left = nullptr, Chunk* right = nullptr,
+		Chunk* front = nullptr, Chunk* back = nullptr);
 	void pushVertex(float x, float y, float z, float u, float v);
 	void setBuffers();
 	bool isAir(
@@ -55,6 +43,5 @@ private:
 	const ShaderProgram* m_shader;
 	std::unique_ptr<Vao> m_vao;
 	std::unique_ptr<Vbo> m_vbo;
-	FastNoiseLite m_noise;
 	std::pair<int, int> m_worldPosition;
 };
