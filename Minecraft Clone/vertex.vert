@@ -7,6 +7,7 @@ uniform vec3 chunkPos;
 
 
 out vec2 TextCoord;
+out float aoIntensity;
 
 const float TEXTURE_SIZE = 1.0f / 4.0f;
 
@@ -18,6 +19,9 @@ void main(){
 	uint u = (packedData >> 19u) & 1u;
 	uint v = (packedData >> 20u) & 1u;
 	uint textureID = (packedData >> 21u) & 255u;
+	uint ao = (packedData >> 29u) & 3u;
+
+	float aoValues[4] = float[](0.4f, 0.6f, 0.8f, 1.0f);
 
 	vec3 localPosition = vec3(float(x), -float(y), -float(z));
     
@@ -35,5 +39,5 @@ void main(){
     float finalV = vMin + (float(v) * TEXTURE_SIZE);
 
     TextCoord = vec2(finalU, finalV); 
-
+	aoIntensity = aoValues[ao];
 }

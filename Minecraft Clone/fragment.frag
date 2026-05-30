@@ -2,6 +2,7 @@
 out vec4 FragColor;
 
 in vec2 TextCoord;
+in float aoIntensity;
 
 uniform sampler2D ourTexture;
 
@@ -10,5 +11,6 @@ void main()
     vec4 texColor = texture(ourTexture, TextCoord);
     if(texColor.a < 0.1)
         discard;
-    FragColor = texColor;
+
+    FragColor = vec4(texColor.rgb * aoIntensity, 1.0f);
 } 

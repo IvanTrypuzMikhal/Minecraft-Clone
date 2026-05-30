@@ -20,8 +20,10 @@ public:
 	~Chunk() = default;
 
 	void buildMesh(	
-		const Chunk* left = nullptr, const Chunk* right = nullptr,
-		const Chunk* front = nullptr, const Chunk* back = nullptr);
+		 Chunk* left = nullptr,  Chunk* right = nullptr,
+		 Chunk* front = nullptr,  Chunk* back = nullptr,
+		 Chunk* topLeft = nullptr,  Chunk* topRight = nullptr,
+		 Chunk* bottomLeft = nullptr,  Chunk* bottomRight = nullptr);
 	void render(const glm::mat4& projection);
 	void fillBlocks();
 	void generateTrees(
@@ -31,8 +33,12 @@ public:
 	void setBuffers();
 	bool isAir(
 		int x, int y, int z, 
-		const Chunk* left = nullptr, const Chunk* right = nullptr,
-		const Chunk* front = nullptr, const Chunk* back = nullptr) const;
+		 Chunk* left = nullptr,  Chunk* right = nullptr,
+		 Chunk* front = nullptr,  Chunk* back = nullptr,
+		 Chunk * topLeft = nullptr,  Chunk * topRight = nullptr,
+		 Chunk * bottomLeft = nullptr,  Chunk * bottomRight = nullptr) ;
+	bool castsAO(BlockType type);
+
 
 	std::vector<uint32_t> getMesh();
 	BlockType getBlock(int x, int y, int z) const;

@@ -2,7 +2,7 @@
 
 static BlockType getBlockType(int x, int y, int z);
 static std::pair<int, int> getAtlasCoordinates(BlockType type, BlockFace face);
-uint32_t packVertex(float x, float y, float z, float u, float v, int textureId);
+uint32_t packVertex(float x, float y, float z, float u, float v, int textureId, int ao);
 
 Chunk::Chunk(const ShaderProgram* shader, int x, int z) : m_shader{ shader }, m_worldPosition{x, z} {
 	fillBlocks();
@@ -30,8 +30,10 @@ void Chunk::render(const glm::mat4& projection) {
 }
 
 void Chunk::buildMesh(
-	const Chunk* left, const Chunk* right,
-	const Chunk* front, const Chunk* back)
+	Chunk* left,  Chunk* right,
+	Chunk* front,  Chunk* back,
+	Chunk* topLeft,  Chunk* topRight,
+	Chunk* bottomLeft,  Chunk* bottomRight)
 
 {
 	m_mesh.clear();
@@ -43,19 +45,27 @@ void Chunk::buildMesh(
 
 				for (const auto& cubeData : CubeData::CUBE_FACES) {
 
-					if (isAir(cubeData.dx + x, cubeData.dy + y, cubeData.dz + z, left, right, front, back) || type == BlockType::OakLog) {
+					if (isAir(cubeData.dx + x, cubeData.dy + y, cubeData.dz + z, left, right, front, back)) {
 						for (int i = 0; i < 6; i++) {
-							float vx = x + cubeData.vertices[i][0];
-							float vy = - y + cubeData.vertices[i][1];
-							float vz = - z + cubeData.vertices[i][2];
+							float vx = x + cubeData.vertices[i].x;
+							float vy = - y + cubeData.vertices[i].y;
+							float vz = - z + cubeData.vertices[i].z;
 							
-							float u = cubeData.vertices[i][3];
-							float v = cubeData.vertices[i][4];
+							float u = cubeData.vertices[i].u;
+							float v = cubeData.vertices[i].v;
 							
 							auto [textureX, textureY] = getAtlasCoordinates(type, cubeData.faceDirection);
 							int textureId = (textureY * 4) + textureX;
 
-							uint32_t packedVertex = packVertex(vx, vy, vz, u, v, textureId);
+							// TODO: Add calculations for AO
+
+							int ao1 = !isAir(x + cubeData.vertices[i].side1.x, y - cubeData.vertices[i].side1.y, z - cubeData.vertices[i].side1.z, left, right, front, back, topLeft, topRight, bottomLeft, bottomRight);
+							int ao2 = !isAir(x + cubeData.vertices[i].side2.x, y - cubeData.vertices[i].side2.y, z - cubeData.vertices[i].side2.z, left, right, front, back, topLeft, topRight, bottomLeft, bottomRight);
+							int ao3 = !isAir(x + cubeData.vertices[i].diagonal.x, y - cubeData.vertices[i].diagonal.y, z - cubeData.vertices[i].diagonal.z, left, right, front, back, topLeft, topRight, bottomLeft, bottomRight);
+							
+							int ao = (ao1 && ao2) ? 0 : 3 - (ao1 + ao2 + ao3);
+							
+							uint32_t packedVertex = packVertex(vx, vy, vz, u, v, textureId, ao);
 							pushVertex(packedVertex);
 						}
 					}
@@ -67,24 +77,65 @@ void Chunk::buildMesh(
 	}
 }
 
+bool Chunk::castsAO(BlockType type) {
+	switch (type) {
+	case BlockType::Air:
+	case BlockType::OakLeaf:
+		return false;
+	default:
+		return true; 
+	}
+}
 
-bool Chunk::isAir(int x, int y, int z, const Chunk* left, const Chunk* right, const Chunk* front, const Chunk* back) const {
-	if (y < 0 || y >= Globals::CHUNK_HEIGHT)
-		return true;
+// FIX: Some AO spawn on chunks vertices apparently with randomness .-.
+bool Chunk::isAir(
+	int x, int y, int z, 
+	Chunk* left,  Chunk* right, 
+	Chunk* front,  Chunk* back,
+	Chunk* topLeft,  Chunk* topRight,
+	Chunk* bottomLeft,  Chunk* bottomRight) {
 
-	if (x < 0)
-		return left ? (left->getBlock(Globals::CHUNK_WIDTH - 1, y, z) == BlockType::Air) : true;
+	if (y < 0 || y >= Globals::CHUNK_HEIGHT) return true;
 
-	if (x >= Globals::CHUNK_WIDTH)
-		return right ? (right->getBlock(0, y, z) == BlockType::Air) : true;
+	
+	int chunkX = 0; 
+	int chunkZ = 0; 
 
-	if (z < 0)
-		return front ? (front->getBlock(x, y, Globals::CHUNK_WIDTH - 1) == BlockType::Air) : true;
+	if (x < 0) {
+		chunkX = -1;
+		x += Globals::CHUNK_WIDTH;
+	}
+	else if (x >= Globals::CHUNK_WIDTH) {
+		chunkX = 1;
+		x -= Globals::CHUNK_WIDTH;
+	}
 
-	if (z >= Globals::CHUNK_WIDTH)
-		return back ? (back->getBlock(x, y, 0) == BlockType::Air) : true;
+	if (z < 0) {
+		chunkZ = -1;
+		z += Globals::CHUNK_WIDTH;
+	}
+	else if (z >= Globals::CHUNK_WIDTH) {
+		chunkZ = 1;
+		z -= Globals::CHUNK_WIDTH;
+	}
 
-	return m_blocks[x][y][z] == BlockType::Air;
+	
+	Chunk* targetChunk = nullptr;
+
+	if (chunkX == 0 && chunkZ == 0)   targetChunk = this;
+	else if (chunkX == -1 && chunkZ == 0)  targetChunk = left;
+	else if (chunkX == 1 && chunkZ == 0)   targetChunk = right;
+	else if (chunkX == 0 && chunkZ == -1)  targetChunk = front;
+	else if (chunkX == 0 && chunkZ == 1)   targetChunk = back;
+	
+	else if (chunkX == -1 && chunkZ == -1) targetChunk = topLeft;     
+	else if (chunkX == 1 && chunkZ == -1)  targetChunk = topRight;    
+	else if (chunkX == -1 && chunkZ == 1)  targetChunk = bottomLeft;  
+	else if (chunkX == 1 && chunkZ == 1)   targetChunk = bottomRight; 
+
+	if (!targetChunk) return true; 
+
+	return targetChunk->m_blocks[x][y][z] == BlockType::Air;
 }
 
 std::vector<uint32_t> Chunk::getMesh(){
@@ -99,7 +150,7 @@ void Chunk::generateTrees(
 	std::random_device rd;
 	std::mt19937 gen(rd());
 	std::uniform_int_distribution<> location(0, Globals::CHUNK_WIDTH-1);
-	std::uniform_int_distribution<> randomHeight(5, 8);
+	std::uniform_int_distribution<> randomHeight(5, 7);
 
 	int treeX = location(gen);
 	int treeY = 0;
@@ -183,22 +234,23 @@ void Chunk::pushVertex(uint32_t packedVertex) {
 	m_mesh.push_back(packedVertex);
 }
 
-uint32_t packVertex(float x, float y, float z, float u, float v, int textureId) {
+uint32_t packVertex(float x, float y, float z, float u, float v, int textureId, int ao) {
 	uint32_t intX = static_cast<uint32_t>(x);
 	uint32_t intY = static_cast<uint32_t>(std::abs(y));
 	uint32_t intZ = static_cast<uint32_t>(std::abs(z));
 	uint32_t intU = static_cast<uint32_t>(u);
 	uint32_t intV = static_cast<uint32_t>(v);
 	uint32_t intTextureId = static_cast<uint32_t>(textureId);
+	uint32_t intAo = static_cast<uint32_t>(ao);
 	
-	// 3 bits left
 	uint32_t packedVertex{ 0 };
-	packedVertex |= (intX & 0x1F);
-	packedVertex |= (intZ & 0x1F)  << 5; 
-	packedVertex |= (intY & 0x1FF) << 10;
-	packedVertex |= (intU & 0x1)   << 19;
-	packedVertex |= (intV & 0x1)   << 20;
-	packedVertex |= (intTextureId & 0xFF) << 21;
+	packedVertex |= (intX & 0x1F);					// 5 bits
+	packedVertex |= (intZ & 0x1F)  << 5;			// 5 bits
+	packedVertex |= (intY & 0x1FF) << 10;			// 9 bits
+	packedVertex |= (intU & 0x1)   << 19;			// 1 bit
+	packedVertex |= (intV & 0x1)   << 20;			// 1 bit
+	packedVertex |= (intTextureId & 0xFF) << 21;	// 8 bits
+	packedVertex |= (intAo & 0x3) << 29;			// 2 bits	
 	return packedVertex;
 }
 

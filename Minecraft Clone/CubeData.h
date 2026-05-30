@@ -21,12 +21,24 @@ enum BlockFace : unsigned char {
 	Bottom
 };
 
+struct AOBlock {
+	float x, y, z;
+};
+
+struct Vertex {
+	float x, y, z;
+	float u, v;
+
+	AOBlock side1;
+	AOBlock side2;
+	AOBlock diagonal;
+};
 
 struct FaceData
 {
 	int dx, dy, dz;
 	BlockFace faceDirection;
-	float vertices[6][5];
+	Vertex vertices[6];
 };
 
 namespace CubeData {
@@ -35,78 +47,108 @@ namespace CubeData {
 			// Frontal face
 			0, 0, -1,
 			BlockFace::Front,
-			{	//{x, y, z, u_isMin, z_isMax}
-				{0.0f, 0.0f, 0.0f, 0.0f, 1.0f},
-				{0.0f, -1.0f, 0.0f, 0.0f, 0.0f},
-				{1.0f, 0.0f, 0.0f, 1.0f, 1.0f},
-				{0.0f, -1.0f, 0.0f, 0.0f, 0.0f},
-				{1.0f, 0.0f, 0.0f, 1.0f, 1.0f},
-				{1.0f, -1.0f, 0.0f, 1.0f, 0.0f}
+			{	//{x, y, z, u_isMin, z_isMax} | Neighbors: LEFT            TOP           DIAGONAL TOP LEFT 
+				{0.0f, 0.0f, 0.0f, 0.0f, 1.0f, {-1.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 1.0f}, {-1.0f, 1.0f, 1.0f}},		// Top left
+				//							   |        LEFT                 BOTTOM         DIAGONAL BTOOM LEFT												
+				{0.0f, -1.0f, 0.0f, 0.0f, 0.0f, {-1.0f, 0.0f, 1.0f}, {0.0f, -1.0f, 1.0f}, {-1.0f, -1.0f, 1.0f}},	// Bottom left
+				//                            |		   RIGHT              TOP           DIAGONAL TOP RIGHT 
+				{1.0f, 0.0f, 0.0f, 1.0f, 1.0f, {1.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 1.0f}, {1.0f, 1.0f, 1.0f}},			// Top right
+				//							   |        LEFT                 BOTTOM         DIAGONAL BTOOM LEFT												
+				{0.0f, -1.0f, 0.0f, 0.0f, 0.0f, {-1.0f, 0.0f, 1.0f}, {0.0f, -1.0f, 1.0f}, {-1.0f, -1.0f, 1.0f}},	// Bottom left
+				//                            |		   RIGHT              TOP           DIAGONAL TOP RIGHT 
+				{1.0f, 0.0f, 0.0f, 1.0f, 1.0f, {1.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 1.0f}, {1.0f, 1.0f, 1.0f}},			// Top right
+				//							   |       RIGHT              BOTTOM         DIAGONAL BOTTOM RIGHT
+ 				{1.0f, -1.0f, 0.0f, 1.0f, 0.0f, {1.0f, 0.0f, 1.0f}, {0.0f, -1.0f, 1.0f}, {1.0f, -1.0f, 1.0f}}		// Bottom right
 			}
 		},
 		{
 			// Back face
 			0, 0, +1,
 			BlockFace::Back,
-			{	
-				{0.0f,  0.0f, -1.0f, 0.0f, 1.0f},
-				{0.0f, -1.0f, -1.0f, 0.0f, 0.0f},
-				{1.0f,  0.0f, -1.0f, 1.0f, 1.0f},
-				{0.0f, -1.0f, -1.0f, 0.0f, 0.0f},
-				{1.0f,  0.0f, -1.0f, 1.0f, 1.0f},
-				{1.0f, -1.0f, -1.0f, 1.0f, 0.0f}
+			{	//								| Neighbors: LEFT            TOP           DIAGONAL TOP LEFT 
+				{0.0f,  0.0f, -1.0f, 0.0f, 1.0f, {-1.0f, 0.0f, -1.0f}, {0.0f, 1.0f, -1.0f}, {-1.0f, 1.0f, -1.0f}},		// Top left
+				//								 |        LEFT                 BOTTOM         DIAGONAL BTOOM LEFT						
+				{0.0f, -1.0f, -1.0f, 0.0f, 0.0f, {-1.0f, 0.0f, -1.0f}, {0.0f, -1.0f, -1.0f}, {-1.0f, -1.0f, -1.0f}},	// Bottom left
+				//								|		   RIGHT              TOP           DIAGONAL TOP RIGHT 
+				{1.0f,  0.0f, -1.0f, 1.0f, 1.0f, {1.0f, 0.0f, -1.0f}, {0.0f, 1.0f, -1.0f}, {1.0f, 1.0f, -1.0f}},		// Top right
+				//								 |        LEFT                 BOTTOM         DIAGONAL BTOOM LEFT						
+				{0.0f, -1.0f, -1.0f, 0.0f, 0.0f, {-1.0f, 0.0f, -1.0f}, {0.0f, -1.0f, -1.0f}, {-1.0f, -1.0f, -1.0f}},	// Bottom left
+				//								|		   RIGHT              TOP           DIAGONAL TOP RIGHT 
+				{1.0f,  0.0f, -1.0f, 1.0f, 1.0f, {1.0f, 0.0f, -1.0f}, {0.0f, 1.0f, -1.0f}, {1.0f, 1.0f, -1.0f}},		// Top right
+				//								 |       RIGHT              BOTTOM         DIAGONAL BOTTOM RIGHT
+				{1.0f, -1.0f, -1.0f, 1.0f, 0.0f, {1.0f, 0.0f, -1.0f}, {0.0f, -1.0f, -1.0f}, {1.0f, -1.0f, -1.0f}}		// Bottom right
 			},
 		},
 		{
 			// Right face
 			1, 0, 0,
 			BlockFace::Right,
-			{	
-				{1.0f,  0.0f, 0.0f, 0.0f, 1.0f},
-				{1.0f, -1.0f, 0.0f, 0.0f, 0.0f},
-				{1.0f,  0.0f, -1.0f, 1.0f, 1.0f},
-				{1.0f, -1.0f, 0.0f, 0.0f, 0.0f},
-				{1.0f,  0.0f, -1.0f, 1.0f, 1.0f},
-				{1.0f, -1.0f, -1.0f, 1.0f, 0.0f}
+			{	//								| Neighbors: LEFT          TOP          DIAGONAL TOP LEFT
+				{1.0f,  0.0f, 0.0f, 0.0f, 1.0f,	{1.0f, 0.0f, 1.0f}, {1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, 1.0f}},		// Top left
+				//								 |      LEFT               BOTTOM         DIAGONAL BTOOM LEFT
+				{1.0f, -1.0f, 0.0f, 0.0f, 0.0f,	{1.0f, 0.0f, 1.0f}, {1.0f, -1.0f, 0.0f}, {1.0f, -1.0f, 1.0f}},		// Bottom left
+				//								|       RIGHT                TOP            DIAGONAL TOP RIGHT
+				{1.0f,  0.0f, -1.0f, 1.0f, 1.0f, {1.0f, 0.0f, -1.0f}, {1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, -1.0f}},		// Top right
+				//								 |      LEFT               BOTTOM         DIAGONAL BTOOM LEFT
+				{1.0f, -1.0f, 0.0f, 0.0f, 0.0f,	{1.0f, 0.0f, 1.0f}, {1.0f, -1.0f, 0.0f}, {1.0f, -1.0f, 1.0f}},		// Bottom left
+				//								|       RIGHT                TOP            DIAGONAL TOP RIGHT
+				{1.0f,  0.0f, -1.0f, 1.0f, 1.0f, {1.0f, 0.0f, -1.0f}, {1.0f, 1.0f, 0.0f}, {1.0f, 1.0f, -1.0f}},		// Top right
+				//								 |      RIGHT              BOTTOM           DIAGONAL BOTTOM RIGHT
+				{1.0f, -1.0f, -1.0f, 1.0f, 0.0f, {1.0f, 0.0f, -1.0f}, {1.0f, -1.0f, 0.0f}, {1.0f, -1.0f, -1.0f}}	// Bottom right
 			},
 		},
 		{
 			// Left face
 			-1, 0, 0,
 			BlockFace::Left,
-			{	//{x, y, z, u_isMin, z_isMax}
-				{0.0f,  0.0f, -1.0f, 0.0f, 1.0f},
-				{0.0f, -1.0f, -1.0f, 0.0f, 0.0f},
-				{0.0f,  0.0f, 0.0f, 1.0f, 1.0f},
-				{0.0f, -1.0f, -1.0f, 0.0f, 0.0f},
-				{0.0f,  0.0f, 0.0f, 1.0f, 1.0f},
-				{0.0f, -1.0f, 0.0f, 1.0f, 0.0f}
+			{	//{x, y, z, u_isMin, z_isMax}   | Neighbors: LEFT          TOP          DIAGONAL TOP LEFT
+				{0.0f,  0.0f, -1.0f, 0.0f, 1.0f, {-1.0f, 0.0f, -1.0f}, {-1.0f, 1.0f, 0.0f}, {-1.0f, 1.0f, -1.0f}},		// Top left
+				//								|		LEFT               BOTTOM         DIAGONAL BTOOM LEFT
+				{0.0f, -1.0f, -1.0f, 0.0f, 0.0f, {-1.0f, 0.0f, -1.0f}, {-1.0f, -1.0f, 0.0f}, {-1.0f, -1.0f, -1.0f}},		// Bottom left
+				//							   |		RIGHT                TOP            DIAGONAL TOP RIGHT
+				{0.0f,  0.0f, 0.0f, 1.0f, 1.0f,	{-1.0f, 0.0f, 1.0f}, {-1.0f, 1.0f, 0.0f}, {-1.0f, 1.0f, 1.0f}},		// Top right
+				//								|		LEFT               BOTTOM         DIAGONAL BTOOM LEFT
+				{0.0f, -1.0f, -1.0f, 0.0f, 0.0f, {-1.0f, 0.0f, -1.0f}, {-1.0f, -1.0f, 0.0f}, {-1.0f, -1.0f, -1.0f}},		// Bottom left
+				//							   |	   RIGHT                TOP            DIAGONAL TOP RIGHT
+				{0.0f,  0.0f, 0.0f, 1.0f, 1.0f, {-1.0f, 0.0f, 1.0f}, {-1.0f, 1.0f, 0.0f}, {-1.0f, 1.0f, 1.0f}},		// Top right
+				//							   |		RIGHT              BOTTOM           DIAGONAL BOTTOM RIGHT
+				{0.0f, -1.0f, 0.0f, 1.0f, 0.0f,	{-1.0f, 0.0f, 1.0f}, {-1.0f, -1.0f, 0.0f}, {-1.0f, -1.0f, 1.0f}}	// Bottom right
 			}
 		},
 		{
 			// Top face
 			0, -1, 0,
 			BlockFace::Top,
-			{	//{x, y, z, u_isMin, z_isMax}
-				{0.0f, 0.0f, -1.0f, 0.0f, 1.0f},
-				{0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
-				{1.0f, 0.0f, -1.0f, 1.0f, 1.0f},
-				{0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
-				{1.0f, 0.0f, -1.0f, 1.0f, 1.0f},
-				{1.0f, 0.0f, 0.0f, 1.0f, 0.0f}
+			{	//{x, y, z, u_isMin, z_isMax}  | Neighbors: LEFT          TOP          DIAGONAL TOP LEFT  
+				{0.0f, 0.0f, -1.0f, 0.0f, 1.0f, {-1.0f, 1.0f, 0.0f}, {0.0f, 1.0f, -1.0f}, {-1.0f, 1.0f, -1.0f}},	// Top left
+				//							   |		  LEFT               BOTTOM         DIAGONAL BTOOM LEFT
+				{0.0f, 0.0f, 0.0f, 0.0f, 0.0f, {-1.0f, 1.0f, 0.0f}, {0.0f, 1.0f, 1.0f}, {-1.0f, 1.0f, 1.0f}},		// Bottom left
+				//							   |	   RIGHT                TOP            DIAGONAL TOP RIGHT
+				{1.0f, 0.0f, -1.0f, 1.0f, 1.0f,	{1.0f, 1.0f, 0.0f}, {0.0f, 1.0f, -1.0f}, {1.0f, 1.0f, -1.0f}},		// Top right
+				//							   |		  LEFT               BOTTOM         DIAGONAL BTOOM LEFT
+				{0.0f, 0.0f, 0.0f, 0.0f, 0.0f,{-1.0f, 1.0f, 0.0f}, {0.0f, 1.0f, 1.0f}, {-1.0f, 1.0f, 1.0f}},		// Bottom left
+				//							   |	   RIGHT                TOP            DIAGONAL TOP RIGHT
+				{1.0f, 0.0f, -1.0f, 1.0f, 1.0f,{1.0f, 1.0f, 0.0f}, {0.0f, 1.0f, -1.0f}, {1.0f, 1.0f, -1.0f}},		// Top right
+				//							   |		  RIGHT              BOTTOM           DIAGONAL BOTTOM RIGHT
+				{1.0f, 0.0f, 0.0f, 1.0f, 0.0f, {1.0f, 1.0f, 0.0f}, {0.0f, 1.0f, 1.0f}, {1.0f, 1.0f, 1.0f}}			// Bottom right
 			},
 		},
 		{
 			// Bottom face
 			0, 1, 0,
-			BlockFace::Bottom,
-			{	//{x, y, z, u_isMin, z_isMax}
-				{0.0f, -1.0f, -1.0f, 0.0f, 1.0f},
-				{0.0f, -1.0f, 0.0f, 0.0f, 0.0f},
-				{1.0f, -1.0f, -1.0f, 1.0f, 1.0f},
-				{0.0f, -1.0f, 0.0f, 0.0f, 0.0f},
-				{1.0f, -1.0f, -1.0f, 1.0f, 1.0f},
-				{1.0f, -1.0f, 0.0f, 1.0f, 0.0f}
+			BlockFace::Bottom,	
+			{	//{x, y, z, u_isMin, z_isMax}   | Neighbors: LEFT          TOP          DIAGONAL TOP LEFT  
+				{0.0f, -1.0f, -1.0f, 0.0f, 1.0f, {-1.0f, -1.0f, 0.0f}, {0.0f, -1.0f, -1.0f}, {-1.0f, -1.0f, -1.0f}},	// Top left
+				//								|		LEFT               BOTTOM         DIAGONAL BTOOM LEFT
+				{0.0f, -1.0f, 0.0f, 0.0f, 0.0f,	{-1.0f, -1.0f, 0.0f}, {0.0f, -1.0f, 1.0f}, {-1.0f, -1.0f, 1.0f}},		// Bottom left
+				//								|		RIGHT                TOP            DIAGONAL TOP RIGHT
+				{1.0f, -1.0f, -1.0f, 1.0f, 1.0f, {1.0f, -1.0f, 0.0f}, {0.0f, -1.0f, -1.0f}, {1.0f, -1.0f, -1.0f}},		// Top right
+				//								|		LEFT               BOTTOM         DIAGONAL BTOOM LEFT
+				{0.0f, -1.0f, 0.0f, 0.0f, 0.0f,	{-1.0f, -1.0f, 0.0f}, {0.0f, -1.0f, 1.0f}, {-1.0f, -1.0f, 1.0f}},		// Bottom left
+				//								|		RIGHT                TOP            DIAGONAL TOP RIGHT
+				{1.0f, -1.0f, -1.0f, 1.0f, 1.0f, {1.0f, -1.0f, 0.0f}, {0.0f, -1.0f, -1.0f}, {1.0f, -1.0f, -1.0f}},		// Top right
+				//								|		RIGHT              BOTTOM           DIAGONAL BOTTOM RIGHT
+				{1.0f, -1.0f, 0.0f, 1.0f, 0.0f,	{1.0f, -1.0f, 0.0f}, {0.0f, -1.0f, 1.0f}, {1.0f, -1.0f, 1.0f}}			// Bottom right
 			},
 		} 
 	};

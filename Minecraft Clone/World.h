@@ -42,6 +42,10 @@ struct ChunkPackage
 	Chunk* right;
 	Chunk* front;
 	Chunk* back;
+	Chunk* topLeft;
+	Chunk* topRight;
+	Chunk* bottomLeft;
+	Chunk* bottomRight;
 };
 
 class World

@@ -82,7 +82,7 @@ void World::asyncMeshLoading() {
 			package = m_meshQueue.pop();
 			std::cout << "Creating mesh around chunk: " << package.coords.first << " " << package.coords.second << std::endl;
 		}
-		package.center->buildMesh(package.left, package.right, package.front, package.back);
+		package.center->buildMesh(package.left, package.right, package.front, package.back, package.topLeft, package.topRight, package.bottomLeft, package.bottomRight);
 		m_finishedMeshChunks.push(package.coords);
 	}
 }
@@ -145,6 +145,8 @@ void World::checkChunksWithTerrain() {
 					// If every chunk its redy then we build mesh around the center chunk
 					it->second.state = MESH_BUILDING;
 
+
+					// This shit needs to be fixed
 					ChunkPackage package;
 					package.coords = coord;
 					package.center = it->second.chunk.get();
@@ -152,6 +154,12 @@ void World::checkChunksWithTerrain() {
 					package.right = m_chunks[{coord.first + 1, coord.second}].chunk.get();
 					package.front = m_chunks[{coord.first, coord.second + 1}].chunk.get();
 					package.back = m_chunks[{coord.first, coord.second - 1}].chunk.get();
+					// Diagonals
+					package.topLeft = m_chunks[{coord.first - 1, coord.second - 1}].chunk.get();
+					package.topRight = m_chunks[{coord.first + 1, coord.second - 1}].chunk.get();
+					package.bottomLeft = m_chunks[{coord.first - 1, coord.second + 1}].chunk.get();
+					package.bottomRight = m_chunks[{coord.first + 1, coord.second + 1}].chunk.get();
+
 
 					// Notify the mesh generation thread
 					m_meshQueue.push(package);

@@ -2,8 +2,8 @@
 
 namespace Globals {
 
-    constexpr unsigned int WIDTH = 800;
-    constexpr unsigned int HEIGHT = 800;
+    constexpr unsigned int WIDTH = 1080;
+    constexpr unsigned int HEIGHT = 1980;
 
     constexpr float TEXTURE_SIZE = 1.0f / 4.0f;
 
