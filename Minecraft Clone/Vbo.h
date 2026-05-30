@@ -8,10 +8,12 @@ class Vbo
 public:
 	Vbo(float(&arr)[], int size);
 	Vbo(std::vector<float>& mesh);
+	Vbo(std::vector<uint32_t>& mesh);
 	Vbo();
 	~Vbo();
 
 	void upload(std::vector<float>& mesh) const;
+	void upload(std::vector<uint32_t>& mesh);
 
 	unsigned int get() const;
 

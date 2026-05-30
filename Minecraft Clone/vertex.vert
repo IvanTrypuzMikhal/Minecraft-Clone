@@ -1,6 +1,5 @@
 #version 330 core
-layout (location = 0) in vec3 aPos;
-layout (location = 1) in vec2 aTextCoord;
+layout (location = 0) in uint packedData;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -8,7 +7,28 @@ uniform mat4 projection;
 
 out vec2 TextCoord;
 
+const float TEXTURE_SIZE = 1.0f / 4.0f;
+
 void main(){
-	gl_Position = projection * view * model * vec4(aPos, 1.0);
-	TextCoord = aTextCoord; 
+
+	uint x = packedData & 31u;
+	uint z = (packedData >> 5u) & 31u;
+	uint y = (packedData >> 10u) & 511u;
+	uint u = (packedData >> 19u) & 1u;
+	uint v = (packedData >> 20u) & 1u;
+	uint textureID = (packedData >> 21u) & 255u;
+
+	gl_Position = projection * view * model * vec4(float(x), -float(y), -float(z) , 1.0);
+
+	uint atlasX = textureID % 4u;
+	uint atlasY = textureID / 4u;
+
+	float uMin = float(atlasX) * TEXTURE_SIZE;
+    float vMin = float(atlasY) * TEXTURE_SIZE;
+
+    float finalU = uMin + (float(u) * TEXTURE_SIZE);
+    float finalV = vMin + (float(v) * TEXTURE_SIZE);
+
+    TextCoord = vec2(finalU, finalV); 
+
 }

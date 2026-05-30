@@ -2,15 +2,16 @@
 
 static BlockType getBlockType(int x, int y, int z);
 static std::pair<int, int> getAtlasCoordinates(BlockType type, BlockFace face);
+uint32_t packVertex(float x, float y, float z, float u, float v, int textureId);
 
 Chunk::Chunk(const ShaderProgram* shader, int x, int z) : m_shader{ shader }, m_worldPosition{x, z} {
 	fillBlocks();
 }
 
 void Chunk::setBuffers() {
-	std::vector<VertexAttribute> block{ { 0, 3, 0 }, { 1, 2, 3 } };
+	std::vector<VertexAttribute> block{ {0, 1, 0, GL_UNSIGNED_INT } };
 	m_vbo = std::make_unique<Vbo>();
-	m_vao = std::make_unique<Vao>(m_vbo->get(), 5, block);
+	m_vao = std::make_unique<Vao>(m_vbo->get(), 1, block);
 	m_vbo->upload(m_mesh);
 
 }
@@ -19,7 +20,7 @@ void Chunk::render(const glm::mat4& projection, const glm::mat4& model) {
 	m_shader->setMat4("projection", projection);
 	m_shader->setMat4("model", model);
 	m_vao->use();
-	glDrawArrays(GL_TRIANGLES, 0, m_mesh.size()/5);
+	glDrawArrays(GL_TRIANGLES, 0, m_mesh.size());
 }
 
 void Chunk::buildMesh(
@@ -37,22 +38,19 @@ void Chunk::buildMesh(
 				for (const auto& cubeData : CubeData::CUBE_FACES) {
 
 					if (isAir(cubeData.dx + x, cubeData.dy + y, cubeData.dz + z, left, right, front, back) || type == BlockType::OakLog) {
-						auto [atlasX, atlasY] = getAtlasCoordinates(type, cubeData.faceDirection);
-
-						float uMin = atlasX * Globals::TEXTURE_SIZE;
-						float vMin = atlasY * Globals::TEXTURE_SIZE;
-						float uMax = uMin + Globals::TEXTURE_SIZE;
-						float vMax = vMin + Globals::TEXTURE_SIZE;
-						
 						for (int i = 0; i < 6; i++) {
 							float vx = x + cubeData.vertices[i][0];
 							float vy = - y + cubeData.vertices[i][1];
 							float vz = - z + cubeData.vertices[i][2];
 							
-							float u = (cubeData.vertices[i][3] == 1.0f) ? uMax : uMin;
-							float v = (cubeData.vertices[i][4] == 1.0f) ? vMax : vMin;
+							float u = cubeData.vertices[i][3];
+							float v = cubeData.vertices[i][4];
 							
-							pushVertex(vx, vy, vz, u, v);
+							auto [textureX, textureY] = getAtlasCoordinates(type, cubeData.faceDirection);
+							int textureId = (textureY * 4) + textureX;
+
+							uint32_t packedVertex = packVertex(vx, vy, vz, u, v, textureId);
+							pushVertex(packedVertex);
 						}
 					}
 
@@ -83,7 +81,7 @@ bool Chunk::isAir(int x, int y, int z, const Chunk* left, const Chunk* right, co
 	return m_blocks[x][y][z] == BlockType::Air;
 }
 
-std::vector<float> Chunk::getMesh(){
+std::vector<uint32_t> Chunk::getMesh(){
 	return m_mesh;
 }
 
@@ -169,12 +167,26 @@ void Chunk::fillBlocks() {
 	}
 }
 
-void Chunk::pushVertex(float x, float y, float z, float u, float v) {
-	m_mesh.push_back(x);
-	m_mesh.push_back(y);
-	m_mesh.push_back(z);
-	m_mesh.push_back(u);
-	m_mesh.push_back(v);
+void Chunk::pushVertex(uint32_t packedVertex) {
+	m_mesh.push_back(packedVertex);
+}
+
+uint32_t packVertex(float x, float y, float z, float u, float v, int textureId) {
+	uint32_t intX = static_cast<uint32_t>(x);
+	uint32_t intY = static_cast<uint32_t>(std::abs(y));
+	uint32_t intZ = static_cast<uint32_t>(std::abs(z));
+	uint32_t intU = static_cast<uint32_t>(u);
+	uint32_t intV = static_cast<uint32_t>(v);
+	uint32_t intTextureId = static_cast<uint32_t>(textureId);
+
+	uint32_t packedVertex{ 0 };
+	packedVertex |= (intX & 0x1F);
+	packedVertex |= (intZ & 0x1F)  << 5; 
+	packedVertex |= (intY & 0x1FF) << 10;
+	packedVertex |= (intU & 0x1)   << 19;
+	packedVertex |= (intV & 0x1)   << 20;
+	packedVertex |= (intTextureId & 0xFF) << 21;
+	return packedVertex;
 }
 
 static BlockType getBlockType(int x, int y, int z) {

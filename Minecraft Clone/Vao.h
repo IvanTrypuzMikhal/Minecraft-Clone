@@ -7,6 +7,7 @@ struct VertexAttribute {
 	int index;
 	int size;
 	int offset;
+	GLenum type = GL_FLOAT;
 };
 
 class Vao

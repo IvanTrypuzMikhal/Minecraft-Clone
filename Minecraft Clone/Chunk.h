@@ -27,19 +27,19 @@ public:
 	void generateTrees(
 		Chunk* left = nullptr, Chunk* right = nullptr,
 		Chunk* front = nullptr, Chunk* back = nullptr);
-	void pushVertex(float x, float y, float z, float u, float v);
+	void pushVertex(uint32_t packedVertex);
 	void setBuffers();
 	bool isAir(
 		int x, int y, int z, 
 		const Chunk* left = nullptr, const Chunk* right = nullptr,
 		const Chunk* front = nullptr, const Chunk* back = nullptr) const;
 
-	std::vector<float> getMesh();
+	std::vector<uint32_t> getMesh();
 	BlockType getBlock(int x, int y, int z) const;
 
 private:
 	BlockType m_blocks[16][256][16] = {BlockType::Air};
-	std::vector<float> m_mesh;
+	std::vector<uint32_t> m_mesh;
 	const ShaderProgram* m_shader;
 	std::unique_ptr<Vao> m_vao;
 	std::unique_ptr<Vbo> m_vbo;

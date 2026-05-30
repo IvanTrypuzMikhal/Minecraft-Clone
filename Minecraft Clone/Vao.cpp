@@ -7,7 +7,13 @@ Vao::Vao(unsigned int vboId, int stride, std::vector<VertexAttribute> attributes
 	glBindBuffer(GL_ARRAY_BUFFER, vboId);
 
 	for (VertexAttribute va : attributes) {
-		glVertexAttribPointer(va.index, va.size, GL_FLOAT, GL_FALSE, stride * sizeof(float), (void*)(va.offset*sizeof(float)));
+
+		if (va.type == GL_UNSIGNED_INT || va.type == GL_INT) {
+			glVertexAttribIPointer(va.index, va.size, va.type, stride * sizeof(float), (void*)(va.offset * sizeof(uint32_t)));
+		}
+		else {
+			glVertexAttribPointer(va.index, va.size, va.type, GL_FALSE, stride * sizeof(float), (void*)(va.offset * sizeof(float)));
+		}
 		glEnableVertexAttribArray(va.index);
 	}
 }
