@@ -100,6 +100,15 @@ void ShaderProgram::setFloat(const char* location, float x) const {
 	glUniform1f(glGetUniformLocation(m_id, location), x);
 }
 
+
+void ShaderProgram::setVec2(const char* location, float x, float y) const{
+	glUniform3fv(glGetUniformLocation(m_id, location), 1, glm::value_ptr(glm::vec2(x, y)));
+}
+
+void ShaderProgram::setVec2(const char* location, glm::vec2& vec) const {
+	glUniform3fv(glGetUniformLocation(m_id, location), 1, glm::value_ptr(vec));
+}
+
 void ShaderProgram::setVec3(const char* location, float x, float y, float z) const {
 	glUniform3fv(glGetUniformLocation(m_id, location), 1, glm::value_ptr(glm::vec3(x, y, z)));
 }

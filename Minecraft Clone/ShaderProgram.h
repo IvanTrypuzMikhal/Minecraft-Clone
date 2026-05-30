@@ -16,6 +16,8 @@ public:
 	void use() const;
 
 	void setFloat(const char* location, float x) const;
+	void setVec2(const char* location, float x, float y) const;
+	void setVec2(const char* location, glm::vec2& vec) const;
 	void setVec3(const char* location, float x, float y, float z) const;
 	void setVec3(const char* location, glm::vec3& vec) const;
 	void setMat4(const char* location, glm::mat4 mat) const;

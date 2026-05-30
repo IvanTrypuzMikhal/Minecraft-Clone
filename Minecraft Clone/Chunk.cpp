@@ -16,9 +16,15 @@ void Chunk::setBuffers() {
 
 }
 
-void Chunk::render(const glm::mat4& projection, const glm::mat4& model) {
+void Chunk::render(const glm::mat4& projection) {
 	m_shader->setMat4("projection", projection);
-	m_shader->setMat4("model", model);
+
+	glm::vec3 chunkPos(
+		static_cast<float>(m_worldPosition.first * Globals::CHUNK_WIDTH),
+		0.0f,
+		static_cast<float>(m_worldPosition.second * Globals::CHUNK_WIDTH)
+	);
+	m_shader->setVec3("chunkPos", chunkPos);
 	m_vao->use();
 	glDrawArrays(GL_TRIANGLES, 0, m_mesh.size());
 }
@@ -112,9 +118,15 @@ void Chunk::generateTrees(
 	}
 
 	int leafStartHeight = treeY - 7;
-	for (int x = -2; x <= 2; x++) {
-		for (int y = 0; y < 4; y++) {
-			for (int z = -2; z <= 2; z++) {
+	for (int y = 0; y < 4; y++) {
+
+		int radius = (y >= 2) ? 2 : 1;
+
+		for (int x = -radius; x <= radius; x++) {
+			for (int z = -radius; z <= radius; z++) {
+
+				if ((radius == 2 && std::abs(x) == 2 && std::abs(z) == 2) ||(radius == 1 && std::abs(x) == 1 && std::abs(z) == 1 && y == 0)) continue;
+
 				int leafX = treeX + x;
 				int leafY = leafStartHeight + y;
 				int leafZ = treeZ + z;
@@ -178,7 +190,8 @@ uint32_t packVertex(float x, float y, float z, float u, float v, int textureId) 
 	uint32_t intU = static_cast<uint32_t>(u);
 	uint32_t intV = static_cast<uint32_t>(v);
 	uint32_t intTextureId = static_cast<uint32_t>(textureId);
-
+	
+	// 3 bits left
 	uint32_t packedVertex{ 0 };
 	packedVertex |= (intX & 0x1F);
 	packedVertex |= (intZ & 0x1F)  << 5; 

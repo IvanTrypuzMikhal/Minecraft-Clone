@@ -21,19 +21,19 @@ int main() {
 		window.processInput();
 		glm::mat4 view = cam.view();
 		 
-		glClearColor(0.416f, 0.329f, 0.459f, 0.5f);
+		glClearColor(0.482f, 0.647f, 1.000f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		cam.setView(shaderProgram);
 
 		glm::mat4 projection = glm::perspective(glm::radians(cam.getFov()), (float)window.getWidth() / window.getHeight(), 0.1f, 500.0f);
-		glm::mat4 model = glm::mat4(1);
 		
 		shaderProgram.use();
 		texture.setTexture();
 		
-		world->update(cam.getCameraPosition());
-		world->renderWorld(projection, model);
+		world->updateCameraPosition(cam.getCameraPosition());
+		world->updateWorldState();
+		world->renderWorld(projection);
 		
 
 		last_delta = new_delta;

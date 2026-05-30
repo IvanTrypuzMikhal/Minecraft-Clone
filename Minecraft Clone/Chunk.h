@@ -22,7 +22,7 @@ public:
 	void buildMesh(	
 		const Chunk* left = nullptr, const Chunk* right = nullptr,
 		const Chunk* front = nullptr, const Chunk* back = nullptr);
-	void render(const glm::mat4& projection, const glm::mat4& model);
+	void render(const glm::mat4& projection);
 	void fillBlocks();
 	void generateTrees(
 		Chunk* left = nullptr, Chunk* right = nullptr,

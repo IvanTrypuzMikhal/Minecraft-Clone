@@ -12,100 +12,19 @@ World::~World() {
 
 
 // TODO: Rewrite this behemoth
-void World::renderWorld(const glm::mat4& projection, const glm::mat4& model) {
+void World::renderWorld(const glm::mat4& projection) {
 	int positiveZ = static_cast<int>(m_cameraPosition.z + Globals::RENDER_RADIOUS);
 	int negativeZ = static_cast<int>(m_cameraPosition.z - Globals::RENDER_RADIOUS);
 	int positiveX = static_cast<int>(m_cameraPosition.x + Globals::RENDER_RADIOUS);
 	int negativeX = static_cast<int>(m_cameraPosition.x - Globals::RENDER_RADIOUS);
 	
-	// Check chunks with generated terrain
-	while (!m_finishedTerrainChunks.empty()) {
-
-		FinishedChunk fc = m_finishedTerrainChunks.pop();
-		std::pair<int, int> current = fc.coords;
-
-		// Add it to the chunk map
-		m_chunks.insert({ current, std::move(fc.chunkState) });
-		m_requestedChunks.erase(fc.coords);
-		
-		// Retreive its neighbors in a 5x5 grid
-		std::pair<int, int> candidatos[25];
-		for (int dz = -2; dz <= 2; dz++) {
-			for (int dx = -2; dx <= 2; dx++) {
-				// Index is calculated as: 
-				//int index = (dz + dx + 4) + 4 * (dz + 2);
-				int index = 5 * dz + dx + 12;
-				candidatos[index] = { current.first + dx, current.second + dz };
-			}
-		}
-
-
-		// For each candidate chunk to be decorated
-		for (const auto& coord : candidatos) {
-			auto it = m_chunks.find(coord);
-
-			// We check that its ready for mesh generation and its neighbors
-			if (it != m_chunks.end() && it->second.state == TERRAIN_READY) {
-				if (checkNearbyChunksTerrainReady(coord.first, coord.second)) {
-
-					Chunk* left = m_chunks[{coord.first - 1, coord.second}].chunk.get();
-					Chunk* right = m_chunks[{coord.first + 1, coord.second}].chunk.get();
-					Chunk* front = m_chunks[{coord.first, coord.second + 1}].chunk.get();
-					Chunk* back = m_chunks[{coord.first, coord.second - 1}].chunk.get();
-
-					it->second.chunk->generateTrees(left, right, front, back);
-					it->second.state = DECORATED;
-				}
-			}
-		}
-
-
-		// For each candidate chunk to be rendered
-		for (const auto& coord : candidatos) {
-			auto it = m_chunks.find(coord);
-
-			// We check that its ready for mesh generation and its neighbors
-			if (it != m_chunks.end() && it->second.state == DECORATED) {
-				if (checkNearbyChunksDecorationReady(coord.first, coord.second)) {
-
-					// If every chunk its redy then we build mesh around the center chunk
-					it->second.state = MESH_BUILDING;
-
-					ChunkPackage package;
-					package.coords = coord;
-					package.center = it->second.chunk.get();
-					package.left = m_chunks[{coord.first - 1, coord.second}].chunk.get();
-					package.right = m_chunks[{coord.first + 1, coord.second}].chunk.get();
-					package.front = m_chunks[{coord.first, coord.second + 1}].chunk.get();
-					package.back = m_chunks[{coord.first, coord.second - 1}].chunk.get();
-
-					// Notify the mesh generation thread
-					m_meshQueue.push(package);
-					m_meshCond.notify_one();
-				}
-			}
-		}
-
-	}
-
-	// We update each chunk with finished mesh to be ready for rendering
-	while (!m_finishedMeshChunks.empty()) {
-		std::pair<int, int> coords = m_finishedMeshChunks.pop();
-
-		auto it = m_chunks.find(coords);
-		if (it != m_chunks.end()) {
-			it->second.chunk->setBuffers();
-			it->second.state = MESH_READY;
-		}
-	}
-
 	// Chen in radious -+ x, -+ z which chunks are ready to render and which not
 	for (int z = negativeZ; z < positiveZ; z++) {
 		for (int x = negativeX; x < positiveX; x++) {
 			std::pair<int, int> coords = std::pair<int, int>(x, z);
 			if (m_chunks.contains(coords)) {
 				if (m_chunks[coords].state == MESH_READY) {
-					m_chunks[coords].chunk->render(projection, glm::translate(model, glm::vec3(16.0f * x, 0.0f, 16.0f * z)));
+					m_chunks[coords].chunk->render(projection);
 				}
 			}
 			else {
@@ -168,12 +87,99 @@ void World::asyncMeshLoading() {
 	}
 }
 
-void World::update(const glm::vec3& position) {
+void World::updateWorldState() {
+	// Check chunks with generated terrain
+	checkChunksWithTerrain();
+	// We update each chunk with finished mesh to be ready for rendering
+	checkFinishedChunksWithMesh();
+}
+
+void World::checkChunksWithTerrain() {
+	while (!m_finishedTerrainChunks.empty()) {
+
+		FinishedChunk fc = m_finishedTerrainChunks.pop();
+		std::pair<int, int> current = fc.coords;
+
+		// Add it to the chunk map
+		m_chunks.insert({ current, std::move(fc.chunkState) });
+		m_requestedChunks.erase(fc.coords);
+
+		// Retreive its neighbors in a 5x5 grid
+		std::pair<int, int> candidatos[25];
+		for (int dz = -2; dz <= 2; dz++) {
+			for (int dx = -2; dx <= 2; dx++) {
+				// Index is calculated as: 
+				//int index = (dz + dx + 4) + 4 * (dz + 2);
+				int index = 5 * dz + dx + 12;
+				candidatos[index] = { current.first + dx, current.second + dz };
+			}
+		}
+
+		// For each candidate chunk to be decorated
+		for (const auto& coord : candidatos) {
+			auto it = m_chunks.find(coord);
+
+			// We check that its ready for mesh generation and its neighbors
+			if (it != m_chunks.end() && it->second.state == TERRAIN_READY) {
+				if (checkNearbyChunksTerrainReady(coord.first, coord.second)) {
+
+					Chunk* left = m_chunks[{coord.first - 1, coord.second}].chunk.get();
+					Chunk* right = m_chunks[{coord.first + 1, coord.second}].chunk.get();
+					Chunk* front = m_chunks[{coord.first, coord.second + 1}].chunk.get();
+					Chunk* back = m_chunks[{coord.first, coord.second - 1}].chunk.get();
+
+					it->second.chunk->generateTrees(left, right, front, back);
+					it->second.state = DECORATED;
+				}
+			}
+		}
+
+		// For each candidate chunk to be rendered
+		for (const auto& coord : candidatos) {
+			auto it = m_chunks.find(coord);
+
+			// We check that its ready for mesh generation and its neighbors
+			if (it != m_chunks.end() && it->second.state == DECORATED) {
+				if (checkNearbyChunksDecorationReady(coord.first, coord.second)) {
+
+					// If every chunk its redy then we build mesh around the center chunk
+					it->second.state = MESH_BUILDING;
+
+					ChunkPackage package;
+					package.coords = coord;
+					package.center = it->second.chunk.get();
+					package.left = m_chunks[{coord.first - 1, coord.second}].chunk.get();
+					package.right = m_chunks[{coord.first + 1, coord.second}].chunk.get();
+					package.front = m_chunks[{coord.first, coord.second + 1}].chunk.get();
+					package.back = m_chunks[{coord.first, coord.second - 1}].chunk.get();
+
+					// Notify the mesh generation thread
+					m_meshQueue.push(package);
+					m_meshCond.notify_one();
+				}
+			}
+		}
+
+	}
+}
+
+void World::checkFinishedChunksWithMesh() {
+	while (!m_finishedMeshChunks.empty()) {
+		std::pair<int, int> coords = m_finishedMeshChunks.pop();
+
+		auto it = m_chunks.find(coords);
+		if (it != m_chunks.end()) {
+			it->second.chunk->setBuffers();
+			it->second.state = MESH_READY;
+		}
+	}
+}
+
+void World::updateCameraPosition(const glm::vec3& position) {
 	m_cameraPosition.x = std::floor(position.x / Globals::CHUNK_WIDTH);
 	m_cameraPosition.y = std::floor(position.y / Globals::HEIGHT);
 	m_cameraPosition.z = std::floor(position.z / Globals::CHUNK_WIDTH);
 }										
-
 
 bool World::checkNearbyChunksTerrainReady(int x, int z) {
 	std::pair<int, int> targets[5] = { {x, z}, {x + 1, z}, {x - 1, z}, {x, z + 1}, {x, z - 1} };

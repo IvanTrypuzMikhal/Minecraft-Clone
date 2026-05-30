@@ -53,11 +53,17 @@ public:
 	}
 	~World();
 
-	void renderWorld(const glm::mat4& projection, const glm::mat4& model);
-	void update(const glm::vec3& position);
+	void renderWorld(const glm::mat4& projection);
+	void updateCameraPosition(const glm::vec3& position);
 	bool checkNearbyChunksTerrainReady(int x, int z);
 	bool checkNearbyChunksDecorationReady(int x, int z);
 	
+	
+	void updateWorldState();
+	void checkChunksWithTerrain();
+	void checkFinishedChunksWithMesh();
+
+
 	// Threads
 	void asyncTerrainLoading();
 	void asyncMeshLoading();

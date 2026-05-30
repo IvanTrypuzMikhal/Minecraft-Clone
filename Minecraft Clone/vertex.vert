@@ -1,9 +1,10 @@
 #version 330 core
 layout (location = 0) in uint packedData;
 
-uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
+uniform vec3 chunkPos;
+
 
 out vec2 TextCoord;
 
@@ -18,7 +19,11 @@ void main(){
 	uint v = (packedData >> 20u) & 1u;
 	uint textureID = (packedData >> 21u) & 255u;
 
-	gl_Position = projection * view * model * vec4(float(x), -float(y), -float(z) , 1.0);
+	vec3 localPosition = vec3(float(x), -float(y), -float(z));
+    
+    vec3 worldPosition = localPosition + chunkPos;
+    
+    gl_Position = projection * view * vec4(worldPosition, 1.0);
 
 	uint atlasX = textureID % 4u;
 	uint atlasY = textureID / 4u;
