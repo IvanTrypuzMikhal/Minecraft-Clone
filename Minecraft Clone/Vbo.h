@@ -9,6 +9,7 @@ public:
 	Vbo(float(&arr)[], int size);
 	Vbo(std::vector<float>& mesh);
 	Vbo(std::vector<uint32_t>& mesh);
+	Vbo(int size);
 	Vbo();
 	~Vbo();
 

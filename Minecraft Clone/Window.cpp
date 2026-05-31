@@ -33,8 +33,10 @@ Window::Window(int width, int height, const char* title) {
 
 	glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSwapInterval(0);
+
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 Window::~Window() {
@@ -67,9 +69,10 @@ void Window::processInput(){
 		}
 	}
 	currentShiftState = glfwGetKey(m_window, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS;
-	if (currentShiftState && !m_lastTabState) {
-		glfwSwapInterval(m_toggleVSync);
+	if (currentShiftState && !m_lastShiftState) {
 		m_toggleVSync = !m_toggleVSync;
+		glfwSwapInterval(m_toggleVSync ? 1 : 0);
+		std::cout << m_toggleVSync << std::endl;
 	}
 
 	m_lastTabState = currentTabState;

@@ -25,23 +25,30 @@ public:
 		 Chunk* front = nullptr,  Chunk* back = nullptr,
 		 Chunk* topLeft = nullptr,  Chunk* topRight = nullptr,
 		 Chunk* bottomLeft = nullptr,  Chunk* bottomRight = nullptr);
+
 	void render(const glm::mat4& projection);
+
 	void fillBlocks(const TerrainGenerator& terrain);
+
 	void generateTrees(
 		Chunk* left = nullptr, Chunk* right = nullptr,
 		Chunk* front = nullptr, Chunk* back = nullptr);
+
 	void pushVertex(uint32_t packedVertex);
+
 	void setBuffers();
+
 	bool isAir(
 		int x, int y, int z, 
 		 Chunk* left = nullptr,  Chunk* right = nullptr,
 		 Chunk* front = nullptr,  Chunk* back = nullptr,
 		 Chunk * topLeft = nullptr,  Chunk * topRight = nullptr,
 		 Chunk * bottomLeft = nullptr,  Chunk * bottomRight = nullptr) ;
+
 	bool castsAO(BlockType type);
 
-
 	std::vector<uint32_t> getMesh();
+
 	BlockType getBlock(int x, int y, int z) const;
 
 private:

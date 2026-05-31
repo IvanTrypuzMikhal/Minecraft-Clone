@@ -52,6 +52,8 @@ void Camera::mouseProcessInput(double xpos, double ypos) {
 
 	if (m_pitch >  89.0f) m_pitch =  89.0f;
 	if (m_pitch < -89.0f) m_pitch = -89.0f;
+	if (m_yaw > 360.0f) m_yaw -= 360.0f;
+	if (m_yaw < -360.0f) m_yaw += 360.0f;
 
 	m_cameraFront = glm::vec3(	cos(glm::radians(m_yaw)) * cos(glm::radians(m_pitch)),	// x
 								sin(glm::radians(m_pitch)),								// y
@@ -83,14 +85,26 @@ void Camera::setMovement(bool trueFalse) {
 	m_movementActive = trueFalse;
 }
 
-float Camera::getFov() const {
-	return m_fov;
-}
-
 glm::vec3& Camera::getCameraPosition() {
 	return m_cameraPosition;
 }
 
 glm::vec3 Camera::getCameraLookAt() const{
 	return m_cameraFront;
+}
+
+float Camera::getFov() const { 
+	return m_fov; 
+}
+
+float Camera::getYaw() const {
+	return m_yaw;
+}
+
+float Camera::getPitch() const {
+	return m_pitch;
+}
+
+const glm::vec3& Camera::getCameraPosition() const {
+	return m_cameraPosition;
 }

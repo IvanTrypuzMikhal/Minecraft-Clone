@@ -19,6 +19,9 @@
     <Filter Include="Textures">
       <UniqueIdentifier>{40dc06ce-ead6-4735-8620-ef3c5bc42164}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Fonts">
+      <UniqueIdentifier>{4becf73f-954f-47ab-8b8c-428e80080c7b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -64,6 +67,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TerrainGeneration.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Text.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Time.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -119,12 +131,27 @@
     <ClInclude Include="TerrainGeneration.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Text.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugUI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Time.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="fragment.frag">
       <Filter>Shaders</Filter>
     </None>
     <None Include="vertex.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="text.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="text.frag">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
@@ -138,5 +165,10 @@
     <Image Include="oak-leaves-normal-original-default.png">
       <Filter>Textures</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="1_Minecraft-Regular.otf">
+      <Filter>Fonts</Filter>
+    </Font>
   </ItemGroup>
 </Project>
