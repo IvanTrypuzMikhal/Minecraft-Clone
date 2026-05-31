@@ -9,7 +9,7 @@ Vao::Vao(unsigned int vboId, int stride, std::vector<VertexAttribute> attributes
 	for (VertexAttribute va : attributes) {
 
 		if (va.type == GL_UNSIGNED_INT || va.type == GL_INT) {
-			glVertexAttribIPointer(va.index, va.size, va.type, stride * sizeof(float), (void*)(va.offset * sizeof(uint32_t)));
+			glVertexAttribIPointer(va.index, va.size, va.type, stride * sizeof(uint32_t), (void*)(va.offset * sizeof(uint32_t)));
 		}
 		else {
 			glVertexAttribPointer(va.index, va.size, va.type, GL_FALSE, stride * sizeof(float), (void*)(va.offset * sizeof(float)));

@@ -1,11 +1,11 @@
 #include "Chunk.h"
 
-static BlockType getBlockType(int x, int y, int z);
+static BlockType getBlockType(int x, int y, int z, const TerrainGenerator& terrain);
 static std::pair<int, int> getAtlasCoordinates(BlockType type, BlockFace face);
 uint32_t packVertex(float x, float y, float z, float u, float v, int textureId, int ao);
 
-Chunk::Chunk(const ShaderProgram* shader, int x, int z) : m_shader{ shader }, m_worldPosition{x, z} {
-	fillBlocks();
+Chunk::Chunk(const ShaderProgram* shader, int x, int z, const TerrainGenerator& terrain) : m_shader{ shader }, m_worldPosition{x, z} {
+	fillBlocks(terrain);
 }
 
 void Chunk::setBuffers() {
@@ -48,8 +48,8 @@ void Chunk::buildMesh(
 					if (isAir(cubeData.dx + x, cubeData.dy + y, cubeData.dz + z, left, right, front, back)) {
 						for (int i = 0; i < 6; i++) {
 							float vx = x + cubeData.vertices[i].x;
-							float vy = - y + cubeData.vertices[i].y;
-							float vz = - z + cubeData.vertices[i].z;
+							float vy = y + cubeData.vertices[i].y;
+							float vz = z + cubeData.vertices[i].z;
 							
 							float u = cubeData.vertices[i].u;
 							float v = cubeData.vertices[i].v;
@@ -146,7 +146,7 @@ std::vector<uint32_t> Chunk::getMesh(){
 void Chunk::generateTrees(
 	Chunk* left, Chunk* right,
 	Chunk* front, Chunk* back) {
-
+	
 	std::random_device rd;
 	std::mt19937 gen(rd());
 	std::uniform_int_distribution<> location(0, Globals::CHUNK_WIDTH-1);
@@ -217,14 +217,18 @@ void Chunk::generateTrees(
 			}
 		}
 	}
-
+	
 }
 
-void Chunk::fillBlocks() {
+void Chunk::fillBlocks(const TerrainGenerator& terrain) {
 	for (int x = 0; x < Globals::CHUNK_WIDTH; x++) {
-		for (int y = 0; y < Globals::CHUNK_HEIGHT; y++) {
-			for (int z = 0; z < Globals::CHUNK_WIDTH; z++) {
-				m_blocks[x][y][z] = getBlockType(x, y, z);
+		for (int z = 0; z < Globals::CHUNK_WIDTH; z++) {
+			int worldX = m_worldPosition.first * Globals::CHUNK_WIDTH + x;
+			int worldZ = m_worldPosition.second * Globals::CHUNK_WIDTH + (Globals::CHUNK_WIDTH - 1 - z); 
+
+			for (int y = 0; y < Globals::CHUNK_HEIGHT; y++) {
+				
+				m_blocks[x][y][z] = getBlockType(worldX, y, worldZ, terrain);
 			}
 		}
 	}
@@ -236,8 +240,8 @@ void Chunk::pushVertex(uint32_t packedVertex) {
 
 uint32_t packVertex(float x, float y, float z, float u, float v, int textureId, int ao) {
 	uint32_t intX = static_cast<uint32_t>(x);
-	uint32_t intY = static_cast<uint32_t>(std::abs(y));
-	uint32_t intZ = static_cast<uint32_t>(std::abs(z));
+	uint32_t intY = static_cast<uint32_t>(y);
+	uint32_t intZ = static_cast<uint32_t>(z);
 	uint32_t intU = static_cast<uint32_t>(u);
 	uint32_t intV = static_cast<uint32_t>(v);
 	uint32_t intTextureId = static_cast<uint32_t>(textureId);
@@ -254,20 +258,15 @@ uint32_t packVertex(float x, float y, float z, float u, float v, int textureId, 
 	return packedVertex;
 }
 
-static BlockType getBlockType(int x, int y, int z) {
+static BlockType getBlockType(int x, int y, int z, const TerrainGenerator& terrain) {
+	int surfaceY = terrain.getHeight(x, z);
 
-	if (y == Globals::GRASS_LEVEL) {
-		return BlockType::Grass;
-	}
-	else if (y > Globals::GRASS_LEVEL && y < Globals::DIRT_DEPTH) {
-		return BlockType::Dirt;
-	}
-	else if (y >= Globals::DIRT_DEPTH && y < Globals::STONE_DEPTH) {
-		return BlockType::Stone;
-	}
-	else if (y >= Globals::CHUNK_HEIGHT-2) {
-		return BlockType::Bedrock;
-	}
+	if (y < surfaceY)							return BlockType::Air;
+	else if (y == surfaceY) 					return BlockType::Grass;
+	else if (y < surfaceY + 4) 					return BlockType::Dirt;
+	else if (y > Globals::CHUNK_HEIGHT - 2) 	return BlockType::Bedrock;
+	else 										return BlockType::Stone;
+
 	return BlockType::Air;
 }
 

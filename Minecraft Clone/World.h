@@ -2,6 +2,7 @@
 #include "Chunk.h"
 #include "ShaderProgram.h"
 #include "TSQueue.h"
+#include "TerrainGeneration.h"
 #include <unordered_set>
 #include <utility>
 #include <map>
@@ -54,6 +55,7 @@ public:
 	World(ShaderProgram* shader) : m_shader{ shader }, m_terrainRunning{ true }, m_meshRunning{ true } {
 		m_terrainThread = std::thread(&World::asyncTerrainLoading, this);
 		m_meshThread = std::thread(&World::asyncMeshLoading, this);
+		m_terrain = TerrainGenerator();
 	}
 	~World();
 
@@ -99,4 +101,7 @@ private:
 
 	// Camera
 	glm::vec3 m_cameraPosition;
+
+	// Terrain
+	TerrainGenerator m_terrain;
 };

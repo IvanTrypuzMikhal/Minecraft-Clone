@@ -8,6 +8,7 @@
 #include "ShaderProgram.h"
 #include "Globals.h"
 #include "CubeData.h"
+#include "TerrainGeneration.h"
 #include <memory>
 #include <random>
 
@@ -16,7 +17,7 @@
 class Chunk
 {
 public:
-	Chunk(const ShaderProgram* shader, int worldX, int worldZ);
+	Chunk(const ShaderProgram* shader, int worldX, int worldZ, const TerrainGenerator& terrain);
 	~Chunk() = default;
 
 	void buildMesh(	
@@ -25,7 +26,7 @@ public:
 		 Chunk* topLeft = nullptr,  Chunk* topRight = nullptr,
 		 Chunk* bottomLeft = nullptr,  Chunk* bottomRight = nullptr);
 	void render(const glm::mat4& projection);
-	void fillBlocks();
+	void fillBlocks(const TerrainGenerator& terrain);
 	void generateTrees(
 		Chunk* left = nullptr, Chunk* right = nullptr,
 		Chunk* front = nullptr, Chunk* back = nullptr);

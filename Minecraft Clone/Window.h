@@ -30,6 +30,7 @@ private:
 	GLFWwindow* m_window;
 
 	bool m_lastTabState = false;
+	bool m_lastShiftState = false;
 	
 	bool m_toggleVSync = true;
 

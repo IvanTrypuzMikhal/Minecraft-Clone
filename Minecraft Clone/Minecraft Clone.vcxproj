@@ -146,6 +146,7 @@
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="stb_image.cpp" />
+    <ClCompile Include="TerrainGeneration.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Vao.cpp" />
     <ClCompile Include="Vbo.cpp" />
@@ -158,10 +159,12 @@
     <ClInclude Include="Chunk.h" />
     <ClInclude Include="Cube.h" />
     <ClInclude Include="CubeData.h" />
+    <ClInclude Include="FastNoiseLite.h" />
     <ClInclude Include="Globals.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="stb_image.h" />
+    <ClInclude Include="TerrainGeneration.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TSQueue.h" />
     <ClInclude Include="Vao.h" />

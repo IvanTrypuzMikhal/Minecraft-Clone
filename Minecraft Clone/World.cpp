@@ -59,7 +59,7 @@ void World::asyncTerrainLoading() {
 
 		}
 
-		auto newChunk = std::make_unique<Chunk>(m_shader, coords.first, coords.second);
+		auto newChunk = std::make_unique<Chunk>(m_shader, coords.first, coords.second, m_terrain);
 		ChunkState chunkState = { std::move(newChunk), TERRAIN_READY };
 		m_finishedTerrainChunks.push({ std::move(chunkState), coords});
 	}
@@ -185,13 +185,16 @@ void World::checkFinishedChunksWithMesh() {
 
 void World::updateCameraPosition(const glm::vec3& position) {
 	m_cameraPosition.x = std::floor(position.x / Globals::CHUNK_WIDTH);
-	m_cameraPosition.y = std::floor(position.y / Globals::HEIGHT);
+	m_cameraPosition.y = position.y;
 	m_cameraPosition.z = std::floor(position.z / Globals::CHUNK_WIDTH);
 }										
 
 bool World::checkNearbyChunksTerrainReady(int x, int z) {
-	std::pair<int, int> targets[5] = { {x, z}, {x + 1, z}, {x - 1, z}, {x, z + 1}, {x, z - 1} };
-
+	std::pair<int, int> targets[9] = {
+			{x,   z},
+			{x + 1, z}, {x - 1, z}, {x, z + 1}, {x, z - 1},
+			{x + 1, z + 1}, {x - 1, z + 1}, {x + 1, z - 1}, {x - 1, z - 1}
+	};
 	for (const auto& target : targets) {
 		auto it = m_chunks.find(target);
 		if (it == m_chunks.end() || it->second.state < TERRAIN_READY) {
@@ -202,7 +205,11 @@ bool World::checkNearbyChunksTerrainReady(int x, int z) {
 }
 
 bool World::checkNearbyChunksDecorationReady(int x, int z) {
-	std::pair<int, int> targets[5] = { {x, z}, {x + 1, z}, {x - 1, z}, {x, z + 1}, {x, z - 1} };
+	std::pair<int, int> targets[9] = {
+		{x,   z},
+		{x + 1, z}, {x - 1, z}, {x, z + 1}, {x, z - 1},
+		{x + 1, z + 1}, {x - 1, z + 1}, {x + 1, z - 1}, {x - 1, z - 1}
+	};
 
 	for (const auto& target : targets) {
 		auto it = m_chunks.find(target);

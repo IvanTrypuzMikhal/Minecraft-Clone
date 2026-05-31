@@ -44,13 +44,15 @@ Window::~Window() {
 
 
 void Window::processInput(){
-	bool currentState = false;
+	bool currentTabState = false;
+	bool currentShiftState = false;
+
 	if (glfwGetKey(m_window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(m_window, true);
 		std::cout << "Window closed!\n";
 	}
-	currentState = glfwGetKey(m_window, GLFW_KEY_TAB) == GLFW_PRESS;
-	if (currentState && !m_lastTabState) { // rising edge only
+	currentTabState = glfwGetKey(m_window, GLFW_KEY_TAB) == GLFW_PRESS;
+	if (currentTabState && !m_lastTabState) { // rising edge only
 		AppContext* appContext = static_cast<AppContext*>(glfwGetWindowUserPointer(m_window));
 		if (glfwGetInputMode(m_window, GLFW_CURSOR) == GLFW_CURSOR_DISABLED) {
 			glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
@@ -64,14 +66,14 @@ void Window::processInput(){
 			glfwSetCursorPosCallback(m_window, mouseCursorCallback);
 		}
 	}
-	currentState = glfwGetKey(m_window, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS;
-	if (currentState && !m_lastTabState) {
+	currentShiftState = glfwGetKey(m_window, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS;
+	if (currentShiftState && !m_lastTabState) {
 		glfwSwapInterval(m_toggleVSync);
 		m_toggleVSync = !m_toggleVSync;
-
 	}
 
-	m_lastTabState = currentState;
+	m_lastTabState = currentTabState;
+	m_lastShiftState = currentShiftState;
 }
 
 
