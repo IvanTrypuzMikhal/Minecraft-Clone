@@ -142,11 +142,13 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Chunk.cpp" />
     <ClCompile Include="Cube.cpp" />
+    <ClCompile Include="CubeSelection.cpp" />
     <ClCompile Include="DebugUI.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="Globals.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="pch.cpp" />
+    <ClCompile Include="Raycaster.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="TerrainGeneration.cpp" />
@@ -164,10 +166,12 @@
     <ClInclude Include="Chunk.h" />
     <ClInclude Include="Cube.h" />
     <ClInclude Include="CubeData.h" />
+    <ClInclude Include="CubeSelection.h" />
     <ClInclude Include="DebugUI.h" />
     <ClInclude Include="FastNoiseLite.h" />
     <ClInclude Include="Globals.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Raycaster.h" />
     <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="TerrainGeneration.h" />
@@ -181,6 +185,8 @@
     <ClInclude Include="World.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="cubeSelection.frag" />
+    <None Include="cubeSelection.vert" />
     <None Include="fragment.frag" />
     <None Include="text.frag" />
     <None Include="text.vert" />

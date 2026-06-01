@@ -219,3 +219,25 @@ bool World::checkNearbyChunksDecorationReady(int x, int z) {
 	}
 	return true;
 }
+
+BlockType World::getBlockAt(int x, int y, int z) const {
+	std::pair<int, int> chunkPos = std::pair(x >> 4, z >> 4);
+
+	auto it = m_chunks.find(chunkPos);
+	if (it == m_chunks.end()) {
+		return BlockType::Air;
+	}
+
+	int localX = x & 15;
+	int localZ = z & 15;
+	int localY = y - 1;
+
+	if (localY < 0 || localY >= 256) {
+		return BlockType::Air;
+	}
+
+	return it->second.chunk->getBlock(localX, localY, localZ);
+}
+
+
+

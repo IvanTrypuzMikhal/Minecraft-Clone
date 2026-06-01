@@ -23,7 +23,7 @@ void main(){
 
 	float aoValues[4] = float[](0.4f, 0.6f, 0.8f, 1.0f);
 
-	vec3 localPosition = vec3(float(x), -float(y), -float(z));
+	vec3 localPosition = vec3(float(x), -float(y), float(z));
     
     vec3 worldPosition = localPosition + chunkPos;
     

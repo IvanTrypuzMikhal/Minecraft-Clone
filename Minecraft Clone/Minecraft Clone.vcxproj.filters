@@ -78,6 +78,12 @@
     <ClCompile Include="Time.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Raycaster.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CubeSelection.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h">
@@ -140,6 +146,12 @@
     <ClInclude Include="Time.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Raycaster.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CubeSelection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="fragment.frag">
@@ -152,6 +164,12 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="text.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="cubeSelection.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="cubeSelection.frag">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

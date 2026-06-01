@@ -16,4 +16,5 @@ namespace Globals {
 	extern const int DIRT_DEPTH;
 	extern const int STONE_DEPTH;
 
+	extern const int INTERACTION_DISTANCE;
 }

@@ -1,10 +1,13 @@
 #include "DebugUI.h"
 
-void DebugUI::renderText(const Camera& cam, const Window& window, const Time& time) {
+void DebugUI::renderText(const std::unique_ptr<World>& world, const Camera& cam, const Window& window, const Time& time) {
 	glm::vec3 camPosition = cam.getCameraPosition();
 	float pitch = cam.getPitch();
 	float yaw = cam.getYaw();
 	float fov = cam.getFov();
+	float lookAtX = cam.getCameraLookAtX();
+	float lookAtY = cam.getCameraLookAtY();
+	float lookAtZ = cam.getCameraLookAtZ();
 
 	int height = window.getHeight();
 	int width = window.getWidth();
@@ -13,6 +16,11 @@ void DebugUI::renderText(const Camera& cam, const Window& window, const Time& ti
 	int chunkZ = static_cast<int>(std::floor(camPosition.z / 16.0f));
 
 	int fps = time.getFps();
+	std::string hitBlockString = std::format("Block look at: x: {} y: {} z: {}", 0, 0, 0);
+	BlockHit hit;
+	if (Raycaster::traceRay(world, cam, Globals::INTERACTION_DISTANCE, hit)) {
+		hitBlockString = std::format("Block look at: x: {} y: {} z: {}", hit.x, hit.y, hit.z);
+	}
 
 	std::string camPositionString	= std::format("Camera x: {:.2f} y: {:.2f} z: {:.2f}", camPosition.x, camPosition.y, camPosition.z);
 	std::string pitchString			= std::format("Pitch: {:.2f}", pitch);
@@ -21,6 +29,8 @@ void DebugUI::renderText(const Camera& cam, const Window& window, const Time& ti
 	std::string ratioString			= std::format("Window: {} x {}", width, height);
 	std::string chunkString			= std::format("Chunk: {}, {}", chunkX, chunkZ);
 	std::string fpsString			= std::format("FPS: {}", fps);
+	std::string lookAtString		= std::format("Look at: x: {:.2f} y: {:.2f} z: {:.2f}", lookAtX, lookAtY, lookAtZ);
+
 
 	m_textRenderer.renderText(fpsString, 10.0f, height - 30.f, 0.7f, glm::vec3(1.0f), width, height);
 	m_textRenderer.renderText(fpsString, 12.0f, height - 32.f, 0.7f, glm::vec3(0.25f), width, height);
@@ -42,5 +52,11 @@ void DebugUI::renderText(const Camera& cam, const Window& window, const Time& ti
 
 	m_textRenderer.renderText(chunkString, 10.0f, height - 150.f, 0.7f, glm::vec3(1.0f), width, height);
 	m_textRenderer.renderText(chunkString, 12.0f, height - 152.f, 0.7f, glm::vec3(0.25f), width, height);
+
+	m_textRenderer.renderText(lookAtString, 10.0f, height - 170.f, 0.7f, glm::vec3(1.0f), width, height);
+	m_textRenderer.renderText(lookAtString, 12.0f, height - 172.f, 0.7f, glm::vec3(0.25f), width, height);
+
+	m_textRenderer.renderText(hitBlockString, 10.0f, height - 190.f, 0.7f, glm::vec3(1.0f), width, height);
+	m_textRenderer.renderText(hitBlockString, 12.0f, height - 192.f, 0.7f, glm::vec3(0.25f), width, height);
 
 }

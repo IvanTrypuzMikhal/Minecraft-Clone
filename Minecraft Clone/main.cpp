@@ -8,7 +8,7 @@ int main() {
 	Texture texture("textures.png", GL_RGBA);
 	AppContext context{ &window, &cam };
 	Time time;
-
+	CubeSelection cubeSelection;
 	DebugUI debugUI;
 
 	auto world = std::make_unique<World>(&shaderProgram);
@@ -35,7 +35,14 @@ int main() {
 		world->updateWorldState();
 		world->renderWorld(projection);
 
-		debugUI.renderText(cam, window, time);
+		BlockHit hit;
+		if (Raycaster::traceRay(world, cam, Globals::INTERACTION_DISTANCE, hit)) {
+			cubeSelection.renderOutline(hit.x, hit.y, hit.z, projection, cam.view());
+		}
+
+		// TODO: Horrendous performance reduction when rendering fuking text. 
+		// Gotta change this. Will leave it for now. Just for testing purposes.
+		debugUI.renderText(world , cam, window, time);
 
 		time.update();
 

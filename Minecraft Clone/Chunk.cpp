@@ -124,8 +124,8 @@ bool Chunk::isAir(
 	if (chunkX == 0 && chunkZ == 0)   targetChunk = this;
 	else if (chunkX == -1 && chunkZ == 0)  targetChunk = left;
 	else if (chunkX == 1 && chunkZ == 0)   targetChunk = right;
-	else if (chunkX == 0 && chunkZ == -1)  targetChunk = front;
-	else if (chunkX == 0 && chunkZ == 1)   targetChunk = back;
+	else if (chunkX == 0 && chunkZ == -1)  targetChunk = back;
+	else if (chunkX == 0 && chunkZ == 1)   targetChunk = front;
 	
 	else if (chunkX == -1 && chunkZ == -1) targetChunk = topLeft;     
 	else if (chunkX == 1 && chunkZ == -1)  targetChunk = topRight;    
@@ -198,13 +198,13 @@ void Chunk::generateTrees(
 
 				if (leafZ >= 16) {
 					leafZ = leafZ - 16;
-					if (targetChunk == this) targetChunk = back;
+					if (targetChunk == this) targetChunk = front;
 					else targetChunk = nullptr;
 				}
 
 				else if (leafZ < 0) {
 					leafZ = leafZ + 16;
-					if (targetChunk == this) targetChunk = front;
+					if (targetChunk == this) targetChunk = back;
 					else targetChunk = nullptr;
 				}
 
@@ -223,7 +223,7 @@ void Chunk::fillBlocks(const TerrainGenerator& terrain) {
 	for (int x = 0; x < Globals::CHUNK_WIDTH; x++) {
 		for (int z = 0; z < Globals::CHUNK_WIDTH; z++) {
 			int worldX = m_worldPosition.first * Globals::CHUNK_WIDTH + x;
-			int worldZ = m_worldPosition.second * Globals::CHUNK_WIDTH + (Globals::CHUNK_WIDTH - 1 - z); 
+			int worldZ = m_worldPosition.second * Globals::CHUNK_WIDTH + z; 
 			int surfaceY = terrain.getHeight(worldX, worldZ);
 
 			for (int y = 0; y < Globals::CHUNK_HEIGHT; y++) {

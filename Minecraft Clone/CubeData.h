@@ -152,5 +152,26 @@ namespace CubeData {
 			},
 		} 
 	};
+
+
+	static float wireframeVertices[] = {
+		// Bottom
+		0.0f, 0.0f, 0.0f,  1.0f, 0.0f, 0.0f, // Line 1
+		1.0f, 0.0f, 0.0f,  1.0f, 0.0f, 1.0f, // Line 2
+		1.0f, 0.0f, 1.0f,  0.0f, 0.0f, 1.0f, // Line 3
+		0.0f, 0.0f, 1.0f,  0.0f, 0.0f, 0.0f, // Line 4
+												
+		// Top									
+		0.0f, 1.0f, 0.0f,  1.0f, 1.0f, 0.0f, // Line 5
+		1.0f, 1.0f, 0.0f,  1.0f, 1.0f, 1.0f, // Line 6
+		1.0f, 1.0f, 1.0f,  0.0f, 1.0f, 1.0f, // Line 7
+		0.0f, 1.0f, 1.0f,  0.0f, 1.0f, 0.0f, // Line 8
+												
+		// Columns								
+		0.0f, 0.0f, 0.0f,  0.0f, 1.0f, 0.0f, // Line 9
+		1.0f, 0.0f, 0.0f,  1.0f, 1.0f, 0.0f, // Line 10
+		1.0f, 0.0f, 1.0f,  1.0f, 1.0f, 1.0f, // Line 11
+		0.0f, 0.0f, 1.0f,  0.0f, 1.0f, 1.0f  // Line 12
+	};
 }
 

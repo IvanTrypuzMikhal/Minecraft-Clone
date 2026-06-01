@@ -108,3 +108,23 @@ float Camera::getPitch() const {
 const glm::vec3& Camera::getCameraPosition() const {
 	return m_cameraPosition;
 }
+
+float Camera::getCameraPositionX() const {
+	return m_cameraPosition.x;
+}
+float Camera::getCameraPositionY() const {
+	return m_cameraPosition.y;
+}
+float Camera::getCameraPositionZ() const {
+	return m_cameraPosition.z;
+}
+
+float Camera::getCameraLookAtX() const {
+	return m_cameraFront.x;
+}
+float Camera::getCameraLookAtY() const {
+	return m_cameraFront.y;
+}
+float Camera::getCameraLookAtZ() const {
+	return m_cameraFront.z;
+}

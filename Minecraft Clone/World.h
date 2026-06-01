@@ -69,6 +69,7 @@ public:
 	void checkChunksWithTerrain();
 	void checkFinishedChunksWithMesh();
 
+	BlockType getBlockAt(int x, int y, int z) const;
 
 	// Threads
 	void asyncTerrainLoading();

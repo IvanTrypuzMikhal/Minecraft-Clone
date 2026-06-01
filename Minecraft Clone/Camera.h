@@ -25,17 +25,23 @@ public:
 	float getYaw() const;
 	float getPitch() const;
 	const glm::vec3& getCameraPosition() const;
+	float getCameraPositionX() const;
+	float getCameraPositionY() const;
+	float getCameraPositionZ() const;
+	float getCameraLookAtX() const;
+	float getCameraLookAtY() const;
+	float getCameraLookAtZ() const;
 	glm::vec3 getCameraLookAt() const;
 	glm::vec3& getCameraPosition();
 	glm::mat4 view() const;
-	
+
 	void setView(ShaderProgram& shader) const;
 	void setFirstInput();
 	void setMovement(bool trueFalse);
 private:
 	// Setup axes
-	glm::vec3 m_cameraPosition = glm::vec3(0.0f, -100.0f, 3.0f);
-	glm::vec3 m_cameraTarget = glm::vec3(0.0f, -100.0f, -1.0f);
+	glm::vec3 m_cameraPosition = glm::vec3(0.0f, -100.0f, 0.0f);
+	glm::vec3 m_cameraTarget = glm::vec3(0.0f, -100.0f, -3.0f);
 	glm::vec3 m_up = glm::vec3(0.0f, 1.0f, 0.0f);
 
 	// Camear axes

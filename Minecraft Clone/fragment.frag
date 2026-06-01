@@ -12,5 +12,5 @@ void main()
     if(texColor.a < 0.1)
         discard;
 
-    FragColor = vec4(texColor.rgb * aoIntensity, 1.0f);
+    FragColor = vec4(texColor.rgb * aoIntensity * 0.9, 1.0f);
 } 

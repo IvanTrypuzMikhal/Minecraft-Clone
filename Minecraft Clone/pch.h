@@ -1,3 +1,4 @@
+#pragma once
 #include "Window.h"
 #include "ShaderProgram.h"
 #include "Vao.h"
@@ -13,6 +14,8 @@
 #include "Text.h"
 #include "DebugUI.h"
 #include "Time.h"
+#include "Raycaster.h"
+#include "CubeSelection.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
