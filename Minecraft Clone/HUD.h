@@ -18,4 +18,5 @@ private:
 	void drawHotbar();
 	void drawXPBar();
 	void drawHearts();
+	void drawFood();
 };

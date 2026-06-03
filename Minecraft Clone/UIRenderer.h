@@ -15,6 +15,7 @@ public:
 	void begin();
 	void drawQuad(float x, float y, float w, float h, float u0, float v0, float u1, float v1);
 	void flush(const Window* window);
+	void fushInverted(const Window* window);
 
 private:
 	std::vector<float> m_batch;

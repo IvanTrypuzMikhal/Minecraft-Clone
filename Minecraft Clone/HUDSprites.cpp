@@ -7,8 +7,8 @@ namespace HUDSprites {
 	constexpr float WIDTH{ 1024.0f }, HEIGHT{ 512.0f };
 
 	// Crosshair
-	constexpr float CROSSHAIR_U0{ 142.0f }, CROSSHAIR_V0{ 321.0f };
-	constexpr float CROSSHAIR_U1{ 151.0f }, CROSSHAIR_V1{ 330.0f };
+	constexpr float CROSSHAIR_U0{ 152.0f }, CROSSHAIR_V0{ 321.0f };
+	constexpr float CROSSHAIR_U1{ 159.0f }, CROSSHAIR_V1{ 330.0f };
 
 	constexpr float CROSSHAIR_SIZE_5{ 45.0f };
 	constexpr float CROSSHAIR_SIZE_4{ 36.0f };
@@ -30,11 +30,26 @@ namespace HUDSprites {
 
 
 	// Hearts
-	constexpr float HEART_U0{ 145.0f }, HEART_V0{ 4.0f };
-	constexpr float HEART_U1{ 152.0f }, HEART_V1{ 11.0f };
+	constexpr float HEART_U0{ 144.0f }, HEART_V0{ 3.0f };
+	constexpr float HEART_U1{ 153.0f }, HEART_V1{ 12.0f };
+
+	extern  const float HEART_HOLDER_U0{36.0f}, HEART_HOLDER_V0{3.0f};
+	extern  const float HEART_HOLDER_U1{45.0f}, HEART_HOLDER_V1{12.0f};
+
 
 	constexpr float HEART_HEIGHT{ HEART_V1 - HEART_V0 };
 	constexpr float HEART_WIDTH{ HEART_U1 - HEART_U0 };
+
+
+	// Food
+	constexpr float FOOD_U0{ 224.0f }, FOOD_V0{ 322.0f };
+	constexpr float FOOD_U1{ 230.0f }, FOOD_V1{ 329.0f };
+
+	constexpr float FOOD_HOLDER_U0{ 205.0f }, FOOD_HOLDER_V0{ 321.0f };
+	constexpr float FOOD_HOLDER_U1{ 214.0f }, FOOD_HOLDER_V1{ 330.0f };
+	
+	constexpr float FOOD_HEIGHT{ FOOD_V1 - FOOD_V0 };
+	constexpr float FOOD_WIDTH{ FOOD_U1 - FOOD_U0 };
 
 }
 

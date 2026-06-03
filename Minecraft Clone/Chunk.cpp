@@ -36,7 +36,7 @@ void Chunk::buildMesh(
 	Chunk* bottomLeft,  Chunk* bottomRight)
 
 {
-	m_mesh.clear();
+	m_buildMesh.clear();
 	for (int x = 0; x < Globals::CHUNK_WIDTH; x++) {
 		for (int y = 0; y < Globals::CHUNK_HEIGHT; y++) {
 			for (int z = 0; z < Globals::CHUNK_WIDTH; z++) {
@@ -234,7 +234,7 @@ void Chunk::fillBlocks(const TerrainGenerator& terrain) {
 }
 
 void Chunk::pushVertex(uint32_t packedVertex) {
-	m_mesh.push_back(packedVertex);
+	m_buildMesh.push_back(packedVertex);
 }
 
 uint32_t packVertex(float x, float y, float z, float u, float v, int textureId, int ao) {
@@ -297,4 +297,13 @@ static std::pair<int, int> getAtlasCoordinates(BlockType type, BlockFace face) {
 
 BlockType Chunk::getBlock(int x, int y, int z) const {
 	return m_blocks[x][y][z];
+}
+
+
+void Chunk::deleteBlock(int x, int y, int z) {
+	m_blocks[x][y][z] = BlockType::Air;
+}
+
+void Chunk::swapMesh() {
+	std::swap(m_mesh, m_buildMesh);
 }

@@ -11,6 +11,7 @@ void UIRenderer::begin() {
 }
 
 void UIRenderer::flush(const Window* window) {
+    glDisable(GL_DEPTH_TEST);
     if (m_batch.empty()) return;
     m_vbo->upload(m_batch);
     m_shaderProgram.use();
@@ -18,6 +19,14 @@ void UIRenderer::flush(const Window* window) {
     m_shaderProgram.setMat4("projection",glm::ortho(0.0f, (float)window->getWidth(), (float)window->getHeight(), 0.0f));
     m_vao->use();
     glDrawArrays(GL_TRIANGLES, 0, m_batch.size() / 4);
+    glEnable(GL_DEPTH_TEST);
+}
+
+void UIRenderer::fushInverted(const Window* window) {
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ZERO);
+    flush(window);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void UIRenderer::drawQuad(float x, float y, float w, float h, float u0, float v0, float u1, float v1) {

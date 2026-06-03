@@ -50,10 +50,13 @@ public:
 	std::vector<uint32_t> getMesh();
 
 	BlockType getBlock(int x, int y, int z) const;
+	void deleteBlock(int x, int y, int z);
+	void swapMesh();
 
 private:
 	BlockType m_blocks[16][256][16] = {BlockType::Air};
 	std::vector<uint32_t> m_mesh;
+	std::vector<uint32_t> m_buildMesh;
 	const ShaderProgram* m_shader;
 	std::unique_ptr<Vao> m_vao;
 	std::unique_ptr<Vbo> m_vbo;

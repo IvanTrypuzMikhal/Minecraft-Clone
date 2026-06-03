@@ -1,7 +1,10 @@
 #include "Raycaster.h"
 
 bool Raycaster::traceRay(const std::unique_ptr<World>& world, const Camera& camera, float maxDistance, BlockHit& outHit) {
+    return traceRay(world.get(), camera, maxDistance, outHit);
+}
 
+bool Raycaster::traceRay(World* world, const Camera& camera, float maxDistance, BlockHit& outHit) {
     glm::vec3 camPos(camera.getCameraPositionX(), camera.getCameraPositionY(), camera.getCameraPositionZ());
     glm::vec3 camDir(camera.getCameraLookAtX(), camera.getCameraLookAtY(), camera.getCameraLookAtZ());
 
@@ -59,7 +62,7 @@ bool Raycaster::traceRay(const std::unique_ptr<World>& world, const Camera& came
 
             if (block != BlockType::Air) {
                 outHit.x = static_cast<int>(position.x);
-                outHit.y = static_cast<int>(position.y); 
+                outHit.y = static_cast<int>(position.y);
                 outHit.z = static_cast<int>(position.z);
                 outHit.face = hitFace;
                 return true;

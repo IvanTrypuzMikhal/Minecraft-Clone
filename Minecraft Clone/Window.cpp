@@ -30,6 +30,7 @@ Window::Window(int width, int height, const char* title) {
 	glfwSetFramebufferSizeCallback(m_window, Window::frameBufferResizeCallback);
 	glfwSetCursorPosCallback(m_window, Window::mouseCursorCallback);
 	glfwSetScrollCallback(m_window, Window::mouseScrollCallback);
+	glfwSetMouseButtonCallback(m_window, Window::mouseInputCallback);
 
 	glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSwapInterval(0);
@@ -95,6 +96,11 @@ void Window::mouseCursorCallback(GLFWwindow* win, double xpos, double ypos) {
 void Window::mouseScrollCallback(GLFWwindow* win, double xoffset, double yoffset) {
 	AppContext* appContext = static_cast<AppContext*>(glfwGetWindowUserPointer(win));
 	appContext->camera->scrollProcessInput(xoffset, yoffset);
+}
+
+void Window::mouseInputCallback(GLFWwindow* win, int button, int action, int mods) {
+	AppContext* appContext = static_cast<AppContext*>(glfwGetWindowUserPointer(win));
+	appContext->world->mouseButtonProcessInput(appContext->camera ,button, action, mods);
 }
 
 

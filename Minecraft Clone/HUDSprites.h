@@ -29,6 +29,17 @@ namespace HUDSprites {
 	extern const float HEART_U0, HEART_V0;
 	extern const float HEART_U1, HEART_V1;
 
+	extern  const float HEART_HOLDER_U0, HEART_HOLDER_V0;
+	extern  const float HEART_HOLDER_U1, HEART_HOLDER_V1;
+
 	extern const float HEART_HEIGHT, HEART_WIDTH;
 
+	// Food
+	extern const float FOOD_U0, FOOD_V0;
+	extern const float FOOD_U1, FOOD_V1;
+	
+	extern  const float FOOD_HOLDER_U0, FOOD_HOLDER_V0;
+	extern  const float FOOD_HOLDER_U1, FOOD_HOLDER_V1;
+
+	extern const float FOOD_HEIGHT, FOOD_WIDTH;
 }

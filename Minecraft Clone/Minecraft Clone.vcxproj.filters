@@ -93,6 +93,12 @@
     <ClCompile Include="HUDSprites.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TerrainThread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshThread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h">
@@ -168,6 +174,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="HUDSprites.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TerrainThread.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshThread.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

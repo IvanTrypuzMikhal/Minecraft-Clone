@@ -6,18 +6,18 @@ int main() {
 	ShaderProgram shaderProgram("vertex.vert", "fragment.frag");
 	ShaderProgram textShaderProgram("text.vert", "text.frag");
 	Texture texture("textures.png", GL_RGBA);
-	AppContext context{ &window, &cam };
 	Time time;
 	CubeSelection cubeSelection;
 	UIRenderer uiRender;
 	HUD hud(uiRender, window);
-	//DebugUI debugUI;
-
-
-
+	DebugUI debugUI;
 
 	auto world = std::make_unique<World>(&shaderProgram);
 	
+
+
+
+	AppContext context{ &window, &cam, world.get()};
 	glfwSetWindowUserPointer(window.getWindow(), &context);
 
 
@@ -41,14 +41,14 @@ int main() {
 		world->renderWorld(projection);
 
 		BlockHit hit;
-		if (Raycaster::traceRay(world, cam, Globals::INTERACTION_DISTANCE, hit)) {
+		if (Raycaster::traceRay(world.get(), cam, Globals::INTERACTION_DISTANCE, hit)) {
 			cubeSelection.renderOutline(hit.x, hit.y, hit.z, projection, cam.view());
 		}
 
 		hud.render();
 		// TODO: Horrendous performance reduction when rendering fuking text. 
 		// Gotta change this. Will leave it for now. Just for testing purposes.
-		//debugUI.renderText(world , cam, window, time);
+		debugUI.renderText(world , cam, window, time);
 
 		
 		time.update();

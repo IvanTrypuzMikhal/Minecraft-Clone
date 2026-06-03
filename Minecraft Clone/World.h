@@ -3,6 +3,7 @@
 #include "ShaderProgram.h"
 #include "TSQueue.h"
 #include "TerrainGeneration.h"
+#include "Camera.h"
 #include <unordered_set>
 #include <utility>
 #include <map>
@@ -71,9 +72,14 @@ public:
 
 	BlockType getBlockAt(int x, int y, int z) const;
 
+	void getNearbyChunks(std::pair<int, int> chunkPos, ChunkPackage& package);
+
 	// Threads
 	void asyncTerrainLoading();
 	void asyncMeshLoading();
+
+	// Inputs
+	void mouseButtonProcessInput(Camera* cam ,int button, int action, int mods);
 
 private:
 

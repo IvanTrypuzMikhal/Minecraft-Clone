@@ -149,11 +149,13 @@
     <ClCompile Include="HUD.cpp" />
     <ClCompile Include="HUDSprites.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MeshThread.cpp" />
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="Raycaster.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="TerrainGeneration.cpp" />
+    <ClCompile Include="TerrainThread.cpp" />
     <ClCompile Include="Text.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Time.cpp" />
@@ -175,11 +177,13 @@
     <ClInclude Include="Globals.h" />
     <ClInclude Include="HUD.h" />
     <ClInclude Include="HUDSprites.h" />
+    <ClInclude Include="MeshThread.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Raycaster.h" />
     <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="TerrainGeneration.h" />
+    <ClInclude Include="TerrainThread.h" />
     <ClInclude Include="Text.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Time.h" />
