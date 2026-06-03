@@ -84,6 +84,15 @@
     <ClCompile Include="CubeSelection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="UIRenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HUD.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HUDSprites.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h">
@@ -152,6 +161,15 @@
     <ClInclude Include="CubeSelection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="UIRenderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HUD.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HUDSprites.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="fragment.frag">
@@ -172,6 +190,12 @@
     <None Include="cubeSelection.frag">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="UIShader.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="UIShader.frag">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="textures.png">
@@ -181,6 +205,9 @@
       <Filter>Textures</Filter>
     </Image>
     <Image Include="oak-leaves-normal-original-default.png">
+      <Filter>Textures</Filter>
+    </Image>
+    <Image Include="gui-atlas.png">
       <Filter>Textures</Filter>
     </Image>
   </ItemGroup>

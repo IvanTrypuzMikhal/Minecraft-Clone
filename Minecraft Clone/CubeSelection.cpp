@@ -21,7 +21,7 @@ void CubeSelection::renderOutline(int x, int y, int z, const glm::mat4& projecti
 	m_shaderProgram.setVec3("cubePos", cubePos);
 	m_vao->use();
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	glLineWidth(5.0f); 
+	glLineWidth(2.0f); 
 
 	glDrawArrays(GL_LINES, 0, 24);
 

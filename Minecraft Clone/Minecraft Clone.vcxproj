@@ -146,6 +146,8 @@
     <ClCompile Include="DebugUI.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="Globals.cpp" />
+    <ClCompile Include="HUD.cpp" />
+    <ClCompile Include="HUDSprites.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="Raycaster.cpp" />
@@ -155,6 +157,7 @@
     <ClCompile Include="Text.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Time.cpp" />
+    <ClCompile Include="UIRenderer.cpp" />
     <ClCompile Include="Vao.cpp" />
     <ClCompile Include="Vbo.cpp" />
     <ClCompile Include="Window.cpp" />
@@ -170,6 +173,8 @@
     <ClInclude Include="DebugUI.h" />
     <ClInclude Include="FastNoiseLite.h" />
     <ClInclude Include="Globals.h" />
+    <ClInclude Include="HUD.h" />
+    <ClInclude Include="HUDSprites.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Raycaster.h" />
     <ClInclude Include="ShaderProgram.h" />
@@ -179,6 +184,7 @@
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Time.h" />
     <ClInclude Include="TSQueue.h" />
+    <ClInclude Include="UIRenderer.h" />
     <ClInclude Include="Vao.h" />
     <ClInclude Include="Vbo.h" />
     <ClInclude Include="Window.h" />
@@ -190,9 +196,12 @@
     <None Include="fragment.frag" />
     <None Include="text.frag" />
     <None Include="text.vert" />
+    <None Include="UIShader.frag" />
+    <None Include="UIShader.vert" />
     <None Include="vertex.vert" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="gui-atlas.png" />
     <Image Include="oak-leaves-normal-original-default.png" />
     <Image Include="oak-wood.png" />
     <Image Include="textures.png" />

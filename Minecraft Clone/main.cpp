@@ -9,7 +9,12 @@ int main() {
 	AppContext context{ &window, &cam };
 	Time time;
 	CubeSelection cubeSelection;
-	DebugUI debugUI;
+	UIRenderer uiRender;
+	HUD hud(uiRender, window);
+	//DebugUI debugUI;
+
+
+
 
 	auto world = std::make_unique<World>(&shaderProgram);
 	
@@ -40,10 +45,12 @@ int main() {
 			cubeSelection.renderOutline(hit.x, hit.y, hit.z, projection, cam.view());
 		}
 
+		hud.render();
 		// TODO: Horrendous performance reduction when rendering fuking text. 
 		// Gotta change this. Will leave it for now. Just for testing purposes.
-		debugUI.renderText(world , cam, window, time);
+		//debugUI.renderText(world , cam, window, time);
 
+		
 		time.update();
 
  		cam.keyboardProcessInput(window.getWindow(), time.getDelta());

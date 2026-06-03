@@ -86,7 +86,6 @@ bool Chunk::castsAO(BlockType type) {
 	}
 }
 
-// FIX: Some AO spawn on chunks vertices apparently with randomness .-.
 bool Chunk::isAir(
 	int x, int y, int z, 
 	Chunk* left,  Chunk* right, 
