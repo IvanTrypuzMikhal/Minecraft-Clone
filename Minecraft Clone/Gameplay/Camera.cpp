@@ -3,6 +3,7 @@
 
 void Camera::keyboardProcessInput(GLFWwindow* w, float delta) {
 	float lastY = m_cameraPosition.y;
+
 	if (m_movementActive) {
 		if (glfwGetKey(w, GLFW_KEY_W) == GLFW_PRESS) {
 			m_cameraPosition += m_cameraFront * m_cameraSpeed * delta;
@@ -62,6 +63,9 @@ void Camera::mouseProcessInput(double xpos, double ypos) {
 	m_cameraRight = glm::cross(m_cameraFront, m_up);
 }
 
+void Camera::updatePosition(glm::vec3 newPos) {
+	m_cameraPosition = newPos;
+}
 
 void Camera::scrollProcessInput(double xoffset, double yoffset) {
 	m_fov -= (float)yoffset;

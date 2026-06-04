@@ -13,13 +13,19 @@ class ShaderProgram;
 class Camera
 {
 public:
-	Camera() = default;
+	Camera(
+		glm::vec3 cameraPosition = glm::vec3(0.0f, -100.0f, 0.0f),
+		glm::vec3 cameraTarget = glm::vec3(0.0f, -100.0f, -3.0f),
+		glm::vec3 upVector = glm::vec3(0.0f, 1.0f, 0.0f)
+	) : m_cameraPosition{ cameraPosition }, m_cameraTarget{ cameraTarget }, m_up{ upVector } {}
 	~Camera() = default;
 
 	void processInput(GLFWwindow* camera, float delta);
 	void keyboardProcessInput(GLFWwindow* camera, float delta);
 	void mouseProcessInput(double xpos, double ypos);
 	void scrollProcessInput(double xoffset, double yoffset);
+
+	void updatePosition(glm::vec3 newPos);
 
 	float getFov() const;
 	float getYaw() const;
@@ -40,9 +46,9 @@ public:
 	void setMovement(bool trueFalse);
 private:
 	// Setup axes
-	glm::vec3 m_cameraPosition = glm::vec3(0.0f, -100.0f, 0.0f);
-	glm::vec3 m_cameraTarget = glm::vec3(0.0f, -100.0f, -3.0f);
-	glm::vec3 m_up = glm::vec3(0.0f, 1.0f, 0.0f);
+	glm::vec3 m_cameraPosition;
+	glm::vec3 m_cameraTarget;
+	glm::vec3 m_up;
 
 	// Camear axes
 	glm::vec3 m_cameraFront = glm::normalize(m_cameraTarget - m_cameraPosition);

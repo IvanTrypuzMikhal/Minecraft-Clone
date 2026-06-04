@@ -2,7 +2,8 @@
 
 int main() {
 	Window window(Globals::HEIGHT, Globals::WIDTH, "Minecraft");
-	Camera cam  = Camera();
+	Player player;
+	Camera* cam  = player.getCamera();
 	ShaderProgram shaderProgram("Rendering/Shaders/vertex.vert", "Rendering/Shaders/fragment.frag");
 	ShaderProgram textShaderProgram("Rendering/Shaders/text.vert", "Rendering/Shaders/text.frag");
 	Texture texture("Assets/Textures/textures.png", GL_RGBA);
@@ -14,31 +15,31 @@ int main() {
 
 	auto world = std::make_unique<World>(&shaderProgram);
 	
-	AppContext context{ &window, &cam, world.get()};
+	AppContext context{ &window, &player ,cam, world.get()};
 	glfwSetWindowUserPointer(window.getWindow(), &context);
 
 	while (!window.shouldClose()) {
 		window.processInput();
-		glm::mat4 view = cam.view();
+		glm::mat4 view = cam->view();
 		 
 		glClearColor(0.482f, 0.647f, 1.000f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		shaderProgram.use();
 
-		cam.setView(shaderProgram);
+		cam->setView(shaderProgram);
 		
-		glm::mat4 projection = glm::perspective(glm::radians(cam.getFov()), (float)window.getWidth() / window.getHeight(), 0.1f, 500.0f);
+		glm::mat4 projection = glm::perspective(glm::radians(cam->getFov()), (float)window.getWidth() / window.getHeight(), 0.1f, 500.0f);
 		
 		texture.setTexture();
 		
-		world->updateCameraPosition(cam.getCameraPosition());
+		world->updateCameraPosition(cam->getCameraPosition());
 		world->updateWorldState();
 		world->renderWorld(projection);
 		
 		BlockHit hit;
 		if (Raycaster::traceRay(world.get(), cam, Globals::INTERACTION_DISTANCE, hit)) {
-			cubeSelection.renderOutline(hit.x, hit.y, hit.z, projection, cam.view());
+			cubeSelection.renderOutline(hit.x, hit.y, hit.z, projection, cam->view());
 		}
 
 		hud.render();
@@ -48,7 +49,7 @@ int main() {
 
 		time.update();
 
- 		cam.keyboardProcessInput(window.getWindow(), time.getDelta());
+ 		player.keyboardProcessInput(window.getWindow(), time.getDelta());
 		glfwSwapBuffers(window.getWindow());
 		glfwPollEvents();
 	}

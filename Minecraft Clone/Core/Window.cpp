@@ -90,7 +90,7 @@ void Window::frameBufferResizeCallback(GLFWwindow* win, int width, int height) {
 
 void Window::mouseCursorCallback(GLFWwindow* win, double xpos, double ypos) {
 	AppContext* appContext = static_cast<AppContext*>(glfwGetWindowUserPointer(win));
-	appContext->camera->mouseProcessInput(xpos, ypos);
+	appContext->player->mouseProcessInput(xpos, ypos);
 }
 
 void Window::mouseScrollCallback(GLFWwindow* win, double xoffset, double yoffset) {

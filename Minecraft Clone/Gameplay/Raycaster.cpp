@@ -4,6 +4,11 @@ bool Raycaster::traceRay(const std::unique_ptr<World>& world, const Camera& came
     return traceRay(world.get(), camera, maxDistance, outHit);
 }
 
+bool Raycaster::traceRay(World* world, const Camera* camera, float maxDistance, BlockHit& outHit) {
+    return traceRay(world, *camera, maxDistance, outHit);
+}
+
+
 bool Raycaster::traceRay(World* world, const Camera& camera, float maxDistance, BlockHit& outHit) {
     glm::vec3 camPos(camera.getCameraPositionX(), camera.getCameraPositionY(), camera.getCameraPositionZ());
     glm::vec3 camDir(camera.getCameraLookAtX(), camera.getCameraLookAtY(), camera.getCameraLookAtZ());
