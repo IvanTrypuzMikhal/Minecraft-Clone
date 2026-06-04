@@ -18,6 +18,82 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <Font Include="Assets\TextFont\1_Minecraft-Regular.otf" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Assets\Textures\gui-atlas.png" />
+    <Image Include="Assets\Textures\oak-leaves-normal-original-default.png" />
+    <Image Include="Assets\Textures\oak-wood.png" />
+    <Image Include="Assets\Textures\textures.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Core\AppContext.h" />
+    <ClInclude Include="Core\Globals.h" />
+    <ClInclude Include="Core\pch.h" />
+    <ClInclude Include="Core\Time.h" />
+    <ClInclude Include="Core\Window.h" />
+    <ClInclude Include="Gameplay\Camera.h" />
+    <ClInclude Include="Gameplay\CubeSelection.h" />
+    <ClInclude Include="Gameplay\DebugUI.h" />
+    <ClInclude Include="Gameplay\HUD.h" />
+    <ClInclude Include="Gameplay\HUDSprites.h" />
+    <ClInclude Include="Gameplay\Raycaster.h" />
+    <ClInclude Include="Gameplay\UIRenderer.h" />
+    <ClInclude Include="Rendering\ShaderProgram.h" />
+    <ClInclude Include="Rendering\stb_image.h" />
+    <ClInclude Include="Rendering\Text.h" />
+    <ClInclude Include="Rendering\Texture.h" />
+    <ClInclude Include="Rendering\Vao.h" />
+    <ClInclude Include="Rendering\Vbo.h" />
+    <ClInclude Include="World\Chunk.h" />
+    <ClInclude Include="World\ChunkPackage.h" />
+    <ClInclude Include="World\Cube.h" />
+    <ClInclude Include="World\CubeData.h" />
+    <ClInclude Include="World\FastNoiseLite.h" />
+    <ClInclude Include="World\MeshThread.h" />
+    <ClInclude Include="World\TerrainGeneration.h" />
+    <ClInclude Include="World\TerrainThread.h" />
+    <ClInclude Include="World\TSQueue.h" />
+    <ClInclude Include="World\World.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Core\Globals.cpp" />
+    <ClCompile Include="Core\main.cpp" />
+    <ClCompile Include="Core\pch.cpp" />
+    <ClCompile Include="Core\Time.cpp" />
+    <ClCompile Include="Core\Window.cpp" />
+    <ClCompile Include="Externals\glad.c" />
+    <ClCompile Include="Gameplay\Camera.cpp" />
+    <ClCompile Include="Gameplay\CubeSelection.cpp" />
+    <ClCompile Include="Gameplay\DebugUI.cpp" />
+    <ClCompile Include="Gameplay\HUD.cpp" />
+    <ClCompile Include="Gameplay\HUDSprites.cpp" />
+    <ClCompile Include="Gameplay\Raycaster.cpp" />
+    <ClCompile Include="Gameplay\UIRenderer.cpp" />
+    <ClCompile Include="Rendering\ShaderProgram.cpp" />
+    <ClCompile Include="Rendering\stb_image.cpp" />
+    <ClCompile Include="Rendering\Text.cpp" />
+    <ClCompile Include="Rendering\Texture.cpp" />
+    <ClCompile Include="Rendering\Vao.cpp" />
+    <ClCompile Include="Rendering\Vbo.cpp" />
+    <ClCompile Include="World\Chunk.cpp" />
+    <ClCompile Include="World\Cube.cpp" />
+    <ClCompile Include="World\MeshThread.cpp" />
+    <ClCompile Include="World\TerrainGeneration.cpp" />
+    <ClCompile Include="World\TerrainThread.cpp" />
+    <ClCompile Include="World\World.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Rendering\Shaders\cubeSelection.frag" />
+    <None Include="Rendering\Shaders\cubeSelection.vert" />
+    <None Include="Rendering\Shaders\fragment.frag" />
+    <None Include="Rendering\Shaders\text.frag" />
+    <None Include="Rendering\Shaders\text.vert" />
+    <None Include="Rendering\Shaders\UIShader.frag" />
+    <None Include="Rendering\Shaders\UIShader.vert" />
+    <None Include="Rendering\Shaders\vertex.vert" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>18.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -113,7 +189,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\Users\ivanc\Desktop\libraries\Include\FreeType</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\ivanc\Desktop\c++\Minecraft Clone\Minecraft Clone;C:\Users\ivanc\Desktop\libraries\Include\FreeType</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -130,7 +206,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\Users\ivanc\Desktop\libraries\Include\FreeType</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\ivanc\Desktop\c++\Minecraft Clone\Minecraft Clone;C:\Users\ivanc\Desktop\libraries\Include\FreeType</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -138,82 +214,6 @@
       <AdditionalDependencies>glfw3.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="Chunk.cpp" />
-    <ClCompile Include="ChunkPackage.h" />
-    <ClCompile Include="Cube.cpp" />
-    <ClCompile Include="CubeSelection.cpp" />
-    <ClCompile Include="DebugUI.cpp" />
-    <ClCompile Include="glad.c" />
-    <ClCompile Include="Globals.cpp" />
-    <ClCompile Include="HUD.cpp" />
-    <ClCompile Include="HUDSprites.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="MeshThread.cpp" />
-    <ClCompile Include="pch.cpp" />
-    <ClCompile Include="Raycaster.cpp" />
-    <ClCompile Include="ShaderProgram.cpp" />
-    <ClCompile Include="stb_image.cpp" />
-    <ClCompile Include="TerrainGeneration.cpp" />
-    <ClCompile Include="TerrainThread.cpp" />
-    <ClCompile Include="Text.cpp" />
-    <ClCompile Include="Texture.cpp" />
-    <ClCompile Include="Time.cpp" />
-    <ClCompile Include="UIRenderer.cpp" />
-    <ClCompile Include="Vao.cpp" />
-    <ClCompile Include="Vbo.cpp" />
-    <ClCompile Include="Window.cpp" />
-    <ClCompile Include="World.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="AppContext.h" />
-    <ClInclude Include="Camera.h" />
-    <ClInclude Include="Chunk.h" />
-    <ClInclude Include="Cube.h" />
-    <ClInclude Include="CubeData.h" />
-    <ClInclude Include="CubeSelection.h" />
-    <ClInclude Include="DebugUI.h" />
-    <ClInclude Include="FastNoiseLite.h" />
-    <ClInclude Include="Globals.h" />
-    <ClInclude Include="HUD.h" />
-    <ClInclude Include="HUDSprites.h" />
-    <ClInclude Include="MeshThread.h" />
-    <ClInclude Include="pch.h" />
-    <ClInclude Include="Raycaster.h" />
-    <ClInclude Include="ShaderProgram.h" />
-    <ClInclude Include="stb_image.h" />
-    <ClInclude Include="TerrainGeneration.h" />
-    <ClInclude Include="TerrainThread.h" />
-    <ClInclude Include="Text.h" />
-    <ClInclude Include="Texture.h" />
-    <ClInclude Include="Time.h" />
-    <ClInclude Include="TSQueue.h" />
-    <ClInclude Include="UIRenderer.h" />
-    <ClInclude Include="Vao.h" />
-    <ClInclude Include="Vbo.h" />
-    <ClInclude Include="Window.h" />
-    <ClInclude Include="World.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="cubeSelection.frag" />
-    <None Include="cubeSelection.vert" />
-    <None Include="fragment.frag" />
-    <None Include="text.frag" />
-    <None Include="text.vert" />
-    <None Include="UIShader.frag" />
-    <None Include="UIShader.vert" />
-    <None Include="vertex.vert" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="gui-atlas.png" />
-    <Image Include="oak-leaves-normal-original-default.png" />
-    <Image Include="oak-wood.png" />
-    <Image Include="textures.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Font Include="1_Minecraft-Regular.otf" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

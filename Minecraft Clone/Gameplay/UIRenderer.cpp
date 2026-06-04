@@ -1,6 +1,6 @@
 #include "UIRenderer.h"
 
-UIRenderer::UIRenderer(): m_texture("gui-atlas.png", GL_RGBA), m_shaderProgram("UIShader.vert", "UIShader.frag") {
+UIRenderer::UIRenderer(): m_texture("Assets/Textures/gui-atlas.png", GL_RGBA), m_shaderProgram("Rendering/Shaders/UIShader.vert", "Rendering/Shaders/UIShader.frag") {
     std::vector<VertexAttribute> block{ {0, 2, 0, GL_FLOAT }, {1, 2, 2, GL_FLOAT} };
     m_vbo = std::make_unique<Vbo>();
     m_vao = std::make_unique<Vao>(m_vbo->get(), 4, block);

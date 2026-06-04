@@ -1,6 +1,6 @@
 #pragma once
 #include "Camera.h"
-#include "World.h"
+#include <World/World.h>
 
 struct BlockHit
 {

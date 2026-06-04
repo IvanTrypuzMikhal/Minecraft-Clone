@@ -26,6 +26,7 @@ ShaderProgram::ShaderProgram(const char* vertexPath, const char* fragmentPath) {
 
 	}
 	catch(std::ifstream::failure e) {
+		std::cerr << "FILES: " << vertexPath << " " << fragmentPath << std::endl;
 		throw std::exception("ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ");
 	}
 

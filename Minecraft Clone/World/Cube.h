@@ -2,8 +2,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <vector>
-#include "ShaderProgram.h"
-#include "Texture.h"
+#include <Rendering/ShaderProgram.h>
+#include <Rendering/Texture.h>
 
 class Cube
 {

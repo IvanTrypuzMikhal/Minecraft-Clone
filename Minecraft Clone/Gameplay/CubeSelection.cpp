@@ -1,7 +1,7 @@
 #include "CubeSelection.h"
 
 CubeSelection::CubeSelection()
-	: m_shaderProgram("cubeSelection.vert", "cubeSelection.frag")
+	: m_shaderProgram("Rendering/Shaders/cubeSelection.vert", "Rendering/Shaders/cubeSelection.frag")
 {
 	m_vbo = std::make_unique<Vbo>(CubeData::wireframeVertices, sizeof(CubeData::wireframeVertices));
 	std::vector<VertexAttribute> attributes = { { 0, 3, 0 } };

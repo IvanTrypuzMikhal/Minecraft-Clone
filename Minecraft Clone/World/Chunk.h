@@ -2,17 +2,15 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <vector>
-#include "Vao.h"
-#include "Vbo.h"
-#include "Texture.h"
-#include "ShaderProgram.h"
-#include "Globals.h"
+#include <Rendering/Vao.h>
+#include <Rendering/Vbo.h>
+#include <Rendering/Texture.h>
+#include <Rendering/ShaderProgram.h>
+#include <Core/Globals.h>
 #include "CubeData.h"
 #include "TerrainGeneration.h"
 #include <memory>
 #include <random>
-
-
 
 class Chunk
 {

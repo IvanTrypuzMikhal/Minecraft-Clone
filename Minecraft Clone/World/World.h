@@ -1,9 +1,9 @@
 #pragma once
 #include "Chunk.h"
-#include "ShaderProgram.h"
+#include <Rendering/ShaderProgram.h>
 #include "TSQueue.h"
 #include "TerrainGeneration.h"
-#include "Camera.h"
+#include <Gameplay/Camera.h>
 #include "MeshThread.h"
 #include "TerrainThread.h"
 #include "ChunkPackage.h"

@@ -3,9 +3,9 @@
 int main() {
 	Window window(Globals::HEIGHT, Globals::WIDTH, "Minecraft");
 	Camera cam  = Camera();
-	ShaderProgram shaderProgram("vertex.vert", "fragment.frag");
-	ShaderProgram textShaderProgram("text.vert", "text.frag");
-	Texture texture("textures.png", GL_RGBA);
+	ShaderProgram shaderProgram("Rendering/Shaders/vertex.vert", "Rendering/Shaders/fragment.frag");
+	ShaderProgram textShaderProgram("Rendering/Shaders/text.vert", "Rendering/Shaders/text.frag");
+	Texture texture("Assets/Textures/textures.png", GL_RGBA);
 	Time time;
 	CubeSelection cubeSelection;
 	UIRenderer uiRender;

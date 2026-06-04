@@ -24,211 +24,193 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Window.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="glad.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ShaderProgram.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Vao.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Vbo.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="stb_image.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Texture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Globals.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="pch.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Cube.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Chunk.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="World.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TerrainGeneration.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Text.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DebugUI.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Time.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Raycaster.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CubeSelection.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UIRenderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="HUD.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="HUDSprites.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TerrainThread.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MeshThread.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ChunkPackage.h">
-      <Filter>Header Files</Filter>
-    </ClCompile>
+    <Font Include="Assets\TextFont\1_Minecraft-Regular.otf" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Window.h">
+    <Image Include="Assets\Textures\gui-atlas.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Textures\oak-leaves-normal-original-default.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Textures\oak-wood.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\Textures\textures.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Core\AppContext.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Globals.h">
+    <ClInclude Include="Core\Globals.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ShaderProgram.h">
+    <ClInclude Include="Core\pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Vao.h">
+    <ClInclude Include="Core\Time.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Camera.h">
+    <ClInclude Include="Core\Window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Vbo.h">
+    <ClInclude Include="Gameplay\Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="stb_image.h">
+    <ClInclude Include="Gameplay\CubeSelection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Texture.h">
+    <ClInclude Include="Gameplay\DebugUI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="pch.h">
+    <ClInclude Include="Gameplay\HUD.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Cube.h">
+    <ClInclude Include="Gameplay\HUDSprites.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AppContext.h">
+    <ClInclude Include="Gameplay\Raycaster.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Chunk.h">
+    <ClInclude Include="Gameplay\UIRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="World.h">
+    <ClInclude Include="Rendering\ShaderProgram.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TSQueue.h">
+    <ClInclude Include="Rendering\stb_image.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CubeData.h">
+    <ClInclude Include="Rendering\Text.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FastNoiseLite.h">
+    <ClInclude Include="Rendering\Texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TerrainGeneration.h">
+    <ClInclude Include="Rendering\Vao.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Text.h">
+    <ClInclude Include="Rendering\Vbo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DebugUI.h">
+    <ClInclude Include="World\Chunk.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Time.h">
+    <ClInclude Include="World\ChunkPackage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Raycaster.h">
+    <ClInclude Include="World\Cube.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CubeSelection.h">
+    <ClInclude Include="World\CubeData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UIRenderer.h">
+    <ClInclude Include="World\FastNoiseLite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="HUD.h">
+    <ClInclude Include="World\MeshThread.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="HUDSprites.h">
+    <ClInclude Include="World\TerrainGeneration.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TerrainThread.h">
+    <ClInclude Include="World\TerrainThread.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MeshThread.h">
+    <ClInclude Include="World\TSQueue.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="World\World.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="fragment.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="vertex.vert">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="text.vert">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="text.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="cubeSelection.vert">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="cubeSelection.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="UIShader.vert">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="UIShader.frag">
-      <Filter>Shaders</Filter>
-    </None>
+    <ClCompile Include="Core\Globals.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\pch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Time.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Window.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Externals\glad.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Gameplay\Camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Gameplay\CubeSelection.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Gameplay\DebugUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Gameplay\HUD.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Gameplay\HUDSprites.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Gameplay\Raycaster.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Gameplay\UIRenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\ShaderProgram.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\stb_image.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Text.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Vao.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering\Vbo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="World\Chunk.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="World\Cube.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="World\MeshThread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="World\TerrainGeneration.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="World\TerrainThread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="World\World.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="textures.png">
-      <Filter>Textures</Filter>
-    </Image>
-    <Image Include="oak-wood.png">
-      <Filter>Textures</Filter>
-    </Image>
-    <Image Include="oak-leaves-normal-original-default.png">
-      <Filter>Textures</Filter>
-    </Image>
-    <Image Include="gui-atlas.png">
-      <Filter>Textures</Filter>
-    </Image>
-  </ItemGroup>
-  <ItemGroup>
-    <Font Include="1_Minecraft-Regular.otf">
-      <Filter>Fonts</Filter>
-    </Font>
+    <None Include="Rendering\Shaders\cubeSelection.frag" />
+    <None Include="Rendering\Shaders\cubeSelection.vert" />
+    <None Include="Rendering\Shaders\fragment.frag" />
+    <None Include="Rendering\Shaders\text.frag" />
+    <None Include="Rendering\Shaders\text.vert" />
+    <None Include="Rendering\Shaders\UIShader.frag" />
+    <None Include="Rendering\Shaders\UIShader.vert" />
+    <None Include="Rendering\Shaders\vertex.vert" />
   </ItemGroup>
 </Project>

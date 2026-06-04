@@ -1,10 +1,10 @@
 #pragma once
 #include "UIRenderer.h"
-#include "Vao.h"
-#include "Vbo.h"
-#include "Texture.h"
-#include "ShaderProgram.h"
-#include "Window.h"
+#include <Rendering/Vao.h>
+#include <Rendering/Vbo.h>
+#include <Rendering/Texture.h>
+#include <Rendering/ShaderProgram.h>
+#include <Core/Window.h>
 
 class UIRenderer
 {

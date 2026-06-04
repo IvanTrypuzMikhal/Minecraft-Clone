@@ -1,5 +1,5 @@
 #include "Camera.h"
-#include "ShaderProgram.h"
+#include <Rendering/ShaderProgram.h>
 
 void Camera::keyboardProcessInput(GLFWwindow* w, float delta) {
 	float lastY = m_cameraPosition.y;

@@ -1,7 +1,7 @@
 #pragma once
-#include "Camera.h"
+#include <Gameplay/Camera.h>
 #include "Window.h"
-#include "World.h"
+#include <World/World.h>
 
 struct AppContext {
 	Window* window;

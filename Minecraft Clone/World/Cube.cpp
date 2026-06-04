@@ -1,5 +1,5 @@
 #include "Cube.h"
-#include "Globals.h"
+#include <Core/Globals.h>
 
 
 void Cube::renderCube(const glm::mat4& projection, const glm::mat4& model){
