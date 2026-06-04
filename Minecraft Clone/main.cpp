@@ -14,12 +14,8 @@ int main() {
 
 	auto world = std::make_unique<World>(&shaderProgram);
 	
-
-
-
 	AppContext context{ &window, &cam, world.get()};
 	glfwSetWindowUserPointer(window.getWindow(), &context);
-
 
 	while (!window.shouldClose()) {
 		window.processInput();
@@ -39,7 +35,7 @@ int main() {
 		world->updateCameraPosition(cam.getCameraPosition());
 		world->updateWorldState();
 		world->renderWorld(projection);
-
+		
 		BlockHit hit;
 		if (Raycaster::traceRay(world.get(), cam, Globals::INTERACTION_DISTANCE, hit)) {
 			cubeSelection.renderOutline(hit.x, hit.y, hit.z, projection, cam.view());
@@ -48,9 +44,8 @@ int main() {
 		hud.render();
 		// TODO: Horrendous performance reduction when rendering fuking text. 
 		// Gotta change this. Will leave it for now. Just for testing purposes.
-		debugUI.renderText(world , cam, window, time);
+		//debugUI.renderText(world , cam, window, time);
 
-		
 		time.update();
 
  		cam.keyboardProcessInput(window.getWindow(), time.getDelta());

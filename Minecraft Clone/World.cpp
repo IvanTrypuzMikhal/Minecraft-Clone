@@ -1,18 +1,6 @@
 #include "World.h"
 #include "Raycaster.h"
 
-World::~World() {
-	m_terrainRunning = false;
-	m_terrainCond.notify_one();
-	m_terrainThread.join();
-
-	m_meshRunning = false;
-	m_meshCond.notify_one(); 
-	m_meshThread.join();     
-}
-
-
-// TODO: Rewrite this behemoth
 void World::renderWorld(const glm::mat4& projection) {
 	int positiveZ = static_cast<int>(m_cameraPosition.z + Globals::RENDER_RADIOUS);
 	int negativeZ = static_cast<int>(m_cameraPosition.z - Globals::RENDER_RADIOUS);
@@ -32,59 +20,11 @@ void World::renderWorld(const glm::mat4& projection) {
 				// If not ready to render then we enqueue the chunk to generate its terrain
 				if (!m_requestedChunks.contains(coords)) {
 					m_requestedChunks.insert(coords);
-					m_terrainQueue.push(coords);
+					m_terrainThread.terrainQueue().push(coords);
 				}
-				if (!m_requestedChunks.empty()) m_terrainCond.notify_one();
+				if (!m_requestedChunks.empty()) m_terrainThread.notifyThread();
 			}
 		}
-	}
-}
-
-void World::asyncTerrainLoading() {
-	std::cout << "Terrain thread started!" << std::endl;
-
-	while (m_terrainRunning) {
-		std::pair<int, int> coords;
-
-		{
-			std::unique_lock<std::mutex> lock(m_terrainMutex);
-
-			m_terrainCond.wait(lock, [this] {
-				return !m_terrainQueue.empty() || !m_terrainRunning;
-				});
-
-			if (!m_terrainRunning) break;
-
-			coords = m_terrainQueue.pop();
-			std::cout << "Creating terrain for chunk: " << coords.first << " " << coords.second << std::endl;
-
-		}
-
-		auto newChunk = std::make_unique<Chunk>(m_shader, coords.first, coords.second, m_terrain);
-		ChunkState chunkState = { std::move(newChunk), TERRAIN_READY };
-		m_finishedTerrainChunks.push({ std::move(chunkState), coords});
-	}
-}
-
-void World::asyncMeshLoading() {
-	std::cout << "Mesh thread started!" << std::endl;
-	while (m_meshRunning) {
-		ChunkPackage package;
-
-		{
-			std::unique_lock<std::mutex> lock(m_meshMutex);
-
-			m_meshCond.wait(lock, [this] {
-				return !m_meshQueue.empty() || !m_meshRunning;
-				});
-
-			if (!m_meshRunning) break;
-
-			package = m_meshQueue.pop();
-			std::cout << "Creating mesh around chunk: " << package.coords.first << " " << package.coords.second << std::endl;
-		}
-		package.center->buildMesh(package.left, package.right, package.front, package.back, package.topLeft, package.topRight, package.bottomLeft, package.bottomRight);
-		m_finishedMeshChunks.push(package.coords);
 	}
 }
 
@@ -94,11 +34,13 @@ void World::updateWorldState() {
 	// We update each chunk with finished mesh to be ready for rendering
 	checkFinishedChunksWithMesh();
 }
-
+// TODO: Change approach to a buffer/queued based one.
+// When a new chunk arrives check for all chunks stored in some buffer which need to be updated
+// instead of checking in a 5x5 grid
 void World::checkChunksWithTerrain() {
-	while (!m_finishedTerrainChunks.empty()) {
+	while (!m_terrainThread.finishedTerrainChunks().empty()) {
 
-		FinishedChunk fc = m_finishedTerrainChunks.pop();
+		FinishedChunk fc = m_terrainThread.finishedTerrainChunks().pop();
 		std::pair<int, int> current = fc.coords;
 
 		// Add it to the chunk map
@@ -153,18 +95,17 @@ void World::checkChunksWithTerrain() {
 					getNearbyChunks(coord, package);
 
 					// Notify the mesh generation thread
-					m_meshQueue.push(package);
-					m_meshCond.notify_one();
+					m_meshThread.meshQueue().push(package);
+					m_meshThread.notifyThread();
 				}
 			}
 		}
-
 	}
 }
 
 void World::checkFinishedChunksWithMesh() {
-	while (!m_finishedMeshChunks.empty()) {
-		std::pair<int, int> coords = m_finishedMeshChunks.pop();
+	while (!m_meshThread.finishedMeshChunks().empty()) {
+		std::pair<int, int> coords = m_meshThread.finishedMeshChunks().pop();
 
 		auto it = m_chunks.find(coords);
 		if (it != m_chunks.end()) {
@@ -231,15 +172,12 @@ BlockType World::getBlockAt(int x, int y, int z) const {
 	return it->second.chunk->getBlock(localX, localY, localZ);
 }
 
-
 void World::mouseButtonProcessInput(Camera* cam, int button, int action, int mods) {
 	std::cout << "Click" << std::endl;
 	BlockHit hit;
 	if (!Raycaster::traceRay(this, *cam, Globals::INTERACTION_DISTANCE, hit)) return;
 	
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
-		// Remove blocks
-		// Raycaster returns global position
 
 		std::pair<int, int> chunkPos = std::pair(hit.x >> 4, hit.z >> 4);
 
@@ -258,8 +196,8 @@ void World::mouseButtonProcessInput(Camera* cam, int button, int action, int mod
 			package.coords = chunkPos;
 			package.center = it->second.chunk.get();
 			getNearbyChunks(chunkPos, package);
-			m_meshQueue.push(package);
-			m_meshCond.notify_one();
+			m_meshThread.meshQueue().push(package);
+			m_meshThread.notifyThread();
 		}
 
 		// If break cube in chunk edge also update neighbor chunks
@@ -271,19 +209,19 @@ void World::mouseButtonProcessInput(Camera* cam, int button, int action, int mod
 			package.coords = std::pair(chunkPos.first - 1, chunkPos.second);
 			package.center = it->second.chunk.get();
 			getNearbyChunks(std::pair(chunkPos.first - 1, chunkPos.second), package);
-			m_meshQueue.push(package);
-			m_meshCond.notify_one();
+			m_meshThread.meshQueue().push(package);
+			m_meshThread.notifyThread();
 		}
 
-		if (localX == 15) {
+		else if (localX == 15) {
 			auto it = m_chunks.find({ chunkPos.first + 1, chunkPos.second });
 			if (it == m_chunks.end()) return;
 			ChunkPackage package;
 			package.coords = std::pair(chunkPos.first + 1, chunkPos.second);
 			package.center = it->second.chunk.get();
 			getNearbyChunks(std::pair(chunkPos.first + 1, chunkPos.second), package);
-			m_meshQueue.push(package);
-			m_meshCond.notify_one();
+			m_meshThread.meshQueue().push(package);
+			m_meshThread.notifyThread();
 		}
 
 		if (localZ == 0) {
@@ -293,28 +231,57 @@ void World::mouseButtonProcessInput(Camera* cam, int button, int action, int mod
 			package.coords = std::pair(chunkPos.first, chunkPos.second - 1);
 			package.center = it->second.chunk.get();
 			getNearbyChunks(std::pair(chunkPos.first, chunkPos.second - 1), package);
-			m_meshQueue.push(package);
-			m_meshCond.notify_one();
+			m_meshThread.meshQueue().push(package);
+			m_meshThread.notifyThread();
 		}
 
-		if (localZ == 15) {
+		else if (localZ == 15) {
 			auto it = m_chunks.find({ chunkPos.first, chunkPos.second + 1 });
 			if (it == m_chunks.end()) return;
 			ChunkPackage package;
 			package.coords = std::pair(chunkPos.first, chunkPos.second + 1);
 			package.center = it->second.chunk.get();
 			getNearbyChunks(std::pair(chunkPos.first, chunkPos.second + 1), package);
-			m_meshQueue.push(package);
-			m_meshCond.notify_one();
+			m_meshThread.meshQueue().push(package);
+			m_meshThread.notifyThread();
 		}
 
 	}
 	else if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE) {
-		// Add blocks
+
+		int globalX = hit.x;
+		int globalY = - hit.y - 1;
+		int globalZ = hit.z;
+
+		if (hit.face == BlockFace::Top) globalY -= 1;
+		else if (hit.face == BlockFace::Bottom) globalY += 1;
+		else if (hit.face == BlockFace::Right) globalX += 1;
+		else if (hit.face == BlockFace::Left) globalX -= 1;
+		else if (hit.face == BlockFace::Front) globalZ += 1;
+		else if (hit.face == BlockFace::Back) globalZ -= 1;
+
+		std::pair<int, int> chunkPos = std::pair(globalX >> 4, globalZ >> 4);
+
+		auto it = m_chunks.find(chunkPos);
+		if (it == m_chunks.end()) return;
+
+		int localX = globalX & 15;;
+		int localY = globalY + 1;
+		int localZ = globalZ & 15;
+
+		it->second.chunk->addBlock(localX, localY - 1, localZ, BlockType::Dirt);
+
+		if (checkNearbyChunksDecorationReady(chunkPos.first, chunkPos.second)) {
+
+			ChunkPackage package;
+			package.coords = chunkPos;
+			package.center = it->second.chunk.get();
+			getNearbyChunks(chunkPos, package);
+			m_meshThread.meshQueue().push(package);
+			m_meshThread.notifyThread();
+		}
 	}
 }
-
-
 
 void World::getNearbyChunks(std::pair<int, int> chunkPos, ChunkPackage& package) {
 	package.left = m_chunks[{chunkPos.first - 1, chunkPos.second}].chunk.get();

@@ -304,6 +304,10 @@ void Chunk::deleteBlock(int x, int y, int z) {
 	m_blocks[x][y][z] = BlockType::Air;
 }
 
+void Chunk::addBlock(int x, int y, int z, BlockType blockType) {
+	m_blocks[x][y][z] = blockType;
+}
+
 void Chunk::swapMesh() {
 	std::swap(m_mesh, m_buildMesh);
 }

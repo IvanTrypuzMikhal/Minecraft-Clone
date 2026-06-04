@@ -4,6 +4,9 @@
 #include "TSQueue.h"
 #include "TerrainGeneration.h"
 #include "Camera.h"
+#include "MeshThread.h"
+#include "TerrainThread.h"
+#include "ChunkPackage.h"
 #include <unordered_set>
 #include <utility>
 #include <map>
@@ -16,49 +19,12 @@ struct PairHash {
 	}
 };
 
-enum State : unsigned char
-{
-	TERRAIN_READY,
-	DECORATED,
-	MESH_BUILDING,
-	MESH_READY
-};
-
-struct ChunkState
-{
-	std::unique_ptr<Chunk> chunk;
-	State state;
-};
-
-struct FinishedChunk 
-{
-	ChunkState chunkState;
-	std::pair<int, int> coords;
-};
-
-struct ChunkPackage
-{
-	std::pair<int, int> coords;
-	Chunk* center;
-	Chunk* left;
-	Chunk* right;
-	Chunk* front;
-	Chunk* back;
-	Chunk* topLeft;
-	Chunk* topRight;
-	Chunk* bottomLeft;
-	Chunk* bottomRight;
-};
-
 class World
 {
 public:
-	World(ShaderProgram* shader) : m_shader{ shader }, m_terrainRunning{ true }, m_meshRunning{ true } {
-		m_terrainThread = std::thread(&World::asyncTerrainLoading, this);
-		m_meshThread = std::thread(&World::asyncMeshLoading, this);
-		m_terrain = TerrainGenerator();
+	World(ShaderProgram* shader) : m_terrain{ TerrainGenerator() }, m_shader { shader }, m_terrainThread{ TerrainThread(m_shader, m_terrain) } {
 	}
-	~World();
+	~World() = default;
 
 	void renderWorld(const glm::mat4& projection);
 	void updateCameraPosition(const glm::vec3& position);
@@ -74,10 +40,6 @@ public:
 
 	void getNearbyChunks(std::pair<int, int> chunkPos, ChunkPackage& package);
 
-	// Threads
-	void asyncTerrainLoading();
-	void asyncMeshLoading();
-
 	// Inputs
 	void mouseButtonProcessInput(Camera* cam ,int button, int action, int mods);
 
@@ -87,24 +49,9 @@ private:
 	std::map<std::pair<int, int>, ChunkState> m_chunks;
 	ShaderProgram* m_shader;
 	std::unordered_set<std::pair<int, int>, PairHash> m_requestedChunks;
-	TSQueue<std::pair<int, int>> m_terrainQueue;
-	TSQueue<ChunkPackage> m_meshQueue;
 
-	
-	// Terrain Thread
-	std::thread m_terrainThread;
-	bool m_terrainRunning;
-	std::mutex m_terrainMutex;
-	std::condition_variable m_terrainCond;
-	TSQueue<FinishedChunk> m_finishedTerrainChunks;
-
-
-	// Mesh Thread
-	std::thread m_meshThread;
-	bool m_meshRunning;
-	std::mutex m_meshMutex;
-	std::condition_variable m_meshCond;
-	TSQueue<std::pair<int, int>> m_finishedMeshChunks;
+	MeshThread m_meshThread;
+	TerrainThread m_terrainThread;
 
 	// Camera
 	glm::vec3 m_cameraPosition;

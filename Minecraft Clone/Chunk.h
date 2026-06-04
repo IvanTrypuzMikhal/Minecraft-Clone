@@ -51,6 +51,7 @@ public:
 
 	BlockType getBlock(int x, int y, int z) const;
 	void deleteBlock(int x, int y, int z);
+	void addBlock(int x, int y, int z, BlockType blockType);
 	void swapMesh();
 
 private:

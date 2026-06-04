@@ -141,6 +141,7 @@
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Chunk.cpp" />
+    <ClCompile Include="ChunkPackage.h" />
     <ClCompile Include="Cube.cpp" />
     <ClCompile Include="CubeSelection.cpp" />
     <ClCompile Include="DebugUI.cpp" />

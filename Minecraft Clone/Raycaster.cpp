@@ -32,7 +32,7 @@ bool Raycaster::traceRay(World* world, const Camera& camera, float maxDistance, 
                 accumulatedDistance = tMax.z;
                 position.z += step.z;
                 tMax.z += delta.z;
-                hitFace = (step.z > 0) ? BlockFace::Front : BlockFace::Back;
+                hitFace = (step.z > 0) ? BlockFace:: Back : BlockFace::Front;
             }
         }
         else {
@@ -47,7 +47,7 @@ bool Raycaster::traceRay(World* world, const Camera& camera, float maxDistance, 
                 accumulatedDistance = tMax.z;
                 position.z += step.z;
                 tMax.z += delta.z;
-                hitFace = (step.z > 0) ? BlockFace::Front : BlockFace::Back;
+                hitFace = (step.z > 0) ? BlockFace::Back : BlockFace::Front;
             }
         }
 
