@@ -22,9 +22,11 @@ void Camera::keyboardProcessInput(GLFWwindow* w, float delta) {
 		m_cameraPosition += m_cameraRight * m_cameraSpeed * delta;
 		m_cameraPosition.y = lastY;
 	}
+	/*
 	if (glfwGetKey(w, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
 		m_cameraPosition -= m_cameraUp * m_cameraSpeed * delta;
 	}
+	*/
 	if (glfwGetKey(w, GLFW_KEY_SPACE) == GLFW_PRESS) {
 		m_cameraPosition += m_cameraUp * m_cameraSpeed * delta;
 	}
@@ -72,7 +74,7 @@ void Camera::updatePosition(glm::vec3 newPos) {
 void Camera::scrollProcessInput(double xoffset, double yoffset) {
 	m_fov -= (float)yoffset;
 	if (m_fov < 1.0f)	m_fov = 1.0f;
-	if (m_fov > 45.0f)	m_fov = 45.0f;
+	if (m_fov > 90.0f)	m_fov = 90.0f;
 }
 
 glm::mat4 Camera::view() const {

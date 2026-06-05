@@ -34,7 +34,7 @@ public:
 	bool checkNearbyChunksDecorationReady(int x, int z);
 	
 	void deleteBlock(BlockHit hit);
-	void addBlock(BlockHit hit, BlockType type);
+	void addBlock(BlockHit hit, BlockType type, const AABB& playerAABB);
 	
 	void updateWorldState();
 	void checkChunksWithTerrain();

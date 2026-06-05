@@ -34,7 +34,7 @@ int main() {
 
 		cam->setView(shaderProgram);
 		
-		glm::mat4 projection = glm::perspective(glm::radians(cam->getFov()), (float)window.getWidth() / window.getHeight(), 0.1f, 500.0f);
+		glm::mat4 projection = glm::perspective(glm::radians(cam->getFov()), (float)window.getWidth() / window.getHeight(), 0.0009f, 500.0f);
 		
 		texture.setTexture();
 		
@@ -51,7 +51,7 @@ int main() {
 		hud.render();
 		// TODO: Horrendous performance reduction when rendering fuking text. 
 		// Gotta change this. Will leave it for now. Just for testing purposes.
-		debugUI.renderText(world , player.getCamera(), window, time);
+		//debugUI.renderText(world , player.getCamera(), window, time);
 
 		player.update(time.getDelta());
 

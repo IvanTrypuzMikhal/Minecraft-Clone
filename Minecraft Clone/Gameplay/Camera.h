@@ -63,7 +63,7 @@ private:
 	float m_cameraSpeed = 10.0f;
 	double m_lastX = 0, m_lastY = 0;
 	const float m_sensitivity = 0.1f;
-	float m_fov = 45.0f;
+	float m_fov = 90.0f;
 
 	// Booleans
 	bool m_firstInput = true;

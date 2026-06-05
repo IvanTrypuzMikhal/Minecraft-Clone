@@ -9,10 +9,13 @@ void Player::keyboardProcessInput(GLFWwindow* window) {
 	m_moveBack = glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS;
 	m_moveLeft = glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS;
 	m_moveRight = glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS;
+	m_crouch = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS;
+	m_run = glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS;
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && m_onGround) {
-		m_velocity.y += 5.0f;
+		m_velocity.y += 7.0f;
 		m_onGround = false;
 	}
+	
 
 	//m_camera.updatePosition(m_playerPosition);
 }
@@ -49,7 +52,7 @@ void Player::mouseButtonProcessInput(int button, int action, int mods) {
 	if (!Raycaster::traceRay(m_world, m_camera, Globals::INTERACTION_DISTANCE, hit)) return;
 
 	if(button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) m_world->deleteBlock(hit);
-	else if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE) m_world->addBlock(hit, BlockType::Dirt);
+	else if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE) m_world->addBlock(hit, BlockType::Dirt, m_playerAABB);
 
 }
 
@@ -73,8 +76,8 @@ void Player::update(float delta) {
 	m_velocity.z = dir.z * m_speed;
 
 	if (!m_onGround) {
-		m_velocity.y -= 9.81f * delta;
-
+		if(m_velocity.y > 0.0f) m_velocity.y -= 2*9.81f * delta;
+		else m_velocity.y -= 3 * 9.81f * delta;
 	}
 	else {
 		m_velocity.y = 0.0f;
@@ -83,11 +86,10 @@ void Player::update(float delta) {
 			m_onGround = false;
 		}
 		else if (m_crouch) {
-			m_velocity.y = -5.0f;
+			//m_velocity.y = -5.0f;
 		}
 	}
 
-	//std::cout << "Velocity: (" << m_velocity.x << ", " << m_velocity.y << ", " << m_velocity.z << ")" << std::endl;
 	
 	// X axis collision
 	m_playerPosition.x += m_velocity.x * delta;
@@ -98,7 +100,7 @@ void Player::update(float delta) {
 		m_playerPosition.x -= m_velocity.x * delta; 
 		m_worldPosition.x = m_playerPosition.x;     
 		updateAABB();                               
-		m_velocity.x = 0.0f;                        
+		m_velocity.x = 0.0f;
 	}
 	
 	// Z axis collision
@@ -122,18 +124,48 @@ void Player::update(float delta) {
 		m_playerPosition.y -= m_velocity.y * delta;
 		m_worldPosition.y = -m_playerPosition.y;
 		updateAABB();
-
+		
+		if (m_velocity.y < 0.0f) {
+			m_onGround = true;
+		}
 		m_velocity.y = 0.0f;
-		m_onGround = true;
 	}
 
 
-	m_camera.updatePosition(m_playerPosition + glm::vec3(0.0f, 1.6f, 0.0f));
-
+	
+	float cameraHeight = m_crouch ? 0.85f : 1.0;
+	m_camera.updatePosition(m_playerPosition + glm::vec3(0.0f, cameraHeight, 0.0f));
+	if (m_crouch) {
+		m_speed = 2.5f;
+		m_lastFrameRunning = false;
+		m_lastFrameCrouching = true;
+	}
+	if (!m_crouch && m_lastFrameCrouching) {
+		m_speed = 5.0f;
+		m_lastFrameCrouching = false;
+	}
+	else if (m_run && m_moveForward) {
+		m_speed = 8.0f;
+		m_lastFrameRunning = true;
+	}
+	else if (m_lastFrameRunning && !m_moveForward) {
+		m_speed = 5.0f;
+		m_lastFrameRunning = false;
+	}
 }
 
 
 void Player::updateAABB() {
-	m_playerAABB.min = m_worldPosition;
-	m_playerAABB.max = m_worldPosition + glm::vec3(0.6f, 1.8f, 0.6f);
+	if (m_crouch) {
+
+		m_playerAABB.min = m_worldPosition - glm::vec3(0.3f, 0.9 + 0.15, 0.3f);
+		m_playerAABB.max = m_worldPosition + glm::vec3(0.3f, 0.9 - 0.15, 0.3f);
+	}
+	else {
+		// Hack, but needs fixing. The AABB is centered around the player's position, but the player's position is at their feet, so we need to offset the AABB downwards by 0.25f to make it fit better.
+		m_worldPosition.y -= 0.15f;
+		m_playerAABB.min = m_worldPosition - glm::vec3(0.3f, 0.9f, 0.3f);
+		m_playerAABB.max = m_worldPosition + glm::vec3(0.3f, 0.9f, 0.3f);
+		m_worldPosition.y += 0.15f;
+	}
 }

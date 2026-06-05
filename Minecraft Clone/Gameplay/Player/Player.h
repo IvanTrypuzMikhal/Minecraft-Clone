@@ -48,18 +48,19 @@ private:
 	glm::vec3 m_playerRight;
 	glm::vec3 m_velocity;
 	
-	float m_speed = 10.0f;
+	float m_speed = 5.0f;
 	float m_yaw = -90.0f;
 	double m_lastX = 0;
 	const float m_sensitivity = 0.1f;
 
-	AABB m_playerAABB{ m_playerPosition, m_playerPosition + glm::vec3(0.6f, 1.8f, 0.6f) };
+	AABB m_playerAABB{ m_worldPosition, m_worldPosition + glm::vec3(0.6f, 1.8f, 0.6f) };
 
 	// Camera
 	Camera m_camera;
 
 	// World poitner
 	World* m_world;
+
 
 	// Flags
 	bool m_controlsActive = true;
@@ -71,5 +72,8 @@ private:
 	bool m_moveLeft		= false;
 	bool m_jump			= false;
 	bool m_crouch		= false;
+	bool m_run			= false;
+	bool m_lastFrameCrouching = false;
+	bool m_lastFrameRunning = false;
 	bool m_onGround		= true;
 };

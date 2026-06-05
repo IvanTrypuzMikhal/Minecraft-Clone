@@ -241,7 +241,8 @@ void World::deleteBlock(BlockHit hit) {
 	}
 }
 
-void World::addBlock(BlockHit hit, BlockType type) {
+void World::addBlock(BlockHit hit, BlockType type, const AABB& playerAABB) {
+
 	int globalX = hit.x;
 	int globalY = -hit.y - 1;
 	int globalZ = hit.z;
@@ -253,16 +254,22 @@ void World::addBlock(BlockHit hit, BlockType type) {
 	else if (hit.face == BlockFace::Front) globalZ += 1;
 	else if (hit.face == BlockFace::Back) globalZ -= 1;
 
+	if (playerAABB.intersects(AABB(glm::vec3((float)globalX, (float)globalY, (float)globalZ), glm::vec3((float)globalX + 1.01, (float)globalY, (float)globalZ + 1.01))) ||
+		playerAABB.intersects(AABB(glm::vec3((float)globalX, (float)globalY + 1, (float)globalZ), glm::vec3((float)globalX + 1.01, (float)globalY + 1, (float)globalZ + 1.01)))) {
+		std::cout << "Cannot place block, player is intersecting the block's AABB." << std::endl;
+		return;
+	}
+
 	std::pair<int, int> chunkPos = std::pair(globalX >> 4, globalZ >> 4);
 
 	auto it = m_chunks.find(chunkPos);
 	if (it == m_chunks.end()) return;
 
 	int localX = globalX & 15;;
-	int localY = globalY + 1;
+	int localY = globalY;
 	int localZ = globalZ & 15;
 
-	it->second.chunk->addBlock(localX, localY - 1, localZ, BlockType::Dirt);
+	it->second.chunk->addBlock(localX, localY, localZ, BlockType::Dirt);
 
 	if (checkNearbyChunksDecorationReady(chunkPos.first, chunkPos.second)) {
 
@@ -294,7 +301,7 @@ bool World::checkCollisionRadious(glm::vec3 position, AABB playerAABB) const{
 	position.z = std::floor(position.z);
 	
 	for (int x = -1; x <= 1; x++) {
-		for(int y = -1; y <= 1; y++) {
+		for(int y = -1; y <= 3; y++) {
 			for(int z = -1; z <= 1; z++) {
 				glm::vec3 blockPos = position + glm::vec3(x, y, z);
 
