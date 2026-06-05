@@ -43,7 +43,7 @@ public:
 
 	void setView(ShaderProgram& shader) const;
 	void setFirstInput();
-	void setMovement(bool trueFalse);
+	void setControls(bool trueFalse);
 private:
 	// Setup axes
 	glm::vec3 m_cameraPosition;
@@ -67,5 +67,5 @@ private:
 
 	// Booleans
 	bool m_firstInput = true;
-	bool m_movementActive = true;
+	bool m_controlsActive = true;
 };

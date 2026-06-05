@@ -11,7 +11,9 @@
 #include <utility>
 #include <map>
 #include <memory>
+#include <Gameplay/AABB.h>
 
+struct BlockHit;
 
 struct PairHash {
 	size_t operator()(const std::pair<int, int>& p) const {
@@ -31,20 +33,19 @@ public:
 	bool checkNearbyChunksTerrainReady(int x, int z);
 	bool checkNearbyChunksDecorationReady(int x, int z);
 	
+	void deleteBlock(BlockHit hit);
+	void addBlock(BlockHit hit, BlockType type);
 	
 	void updateWorldState();
 	void checkChunksWithTerrain();
 	void checkFinishedChunksWithMesh();
+	bool checkCollisionRadious(glm::vec3 position, AABB playerAABB) const;
 
 	BlockType getBlockAt(int x, int y, int z) const;
 
 	void getNearbyChunks(std::pair<int, int> chunkPos, ChunkPackage& package);
 
-	// Inputs
-	void mouseButtonProcessInput(Camera* cam ,int button, int action, int mods);
-
 private:
-
 
 	std::map<std::pair<int, int>, ChunkState> m_chunks;
 	ShaderProgram* m_shader;

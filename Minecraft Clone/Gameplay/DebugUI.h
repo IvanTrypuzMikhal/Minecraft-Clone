@@ -13,7 +13,7 @@ public:
 	DebugUI() : m_shader{ ShaderProgram("Rendering/Shaders/text.vert", "Rendering/Shaders/text.frag") }, m_textRenderer{ Text("Assets/TextFont/1_Minecraft-Regular.otf", 30, m_shader) } {}
 	~DebugUI() = default;
 
-	void renderText(const std::unique_ptr<World>& world, const Camera& cam, const Window& window, const Time& time);
+	void renderText(const std::unique_ptr<World>& world, const Camera* cam, const Window& window, const Time& time);
 
 private:
 	Text m_textRenderer;

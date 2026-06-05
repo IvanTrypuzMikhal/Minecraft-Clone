@@ -1,13 +1,13 @@
 #include "DebugUI.h"
 
-void DebugUI::renderText(const std::unique_ptr<World>& world, const Camera& cam, const Window& window, const Time& time) {
-	glm::vec3 camPosition = cam.getCameraPosition();
-	float pitch = cam.getPitch();
-	float yaw = cam.getYaw();
-	float fov = cam.getFov();
-	float lookAtX = cam.getCameraLookAtX();
-	float lookAtY = cam.getCameraLookAtY();
-	float lookAtZ = cam.getCameraLookAtZ();
+void DebugUI::renderText(const std::unique_ptr<World>& world, const Camera* cam, const Window& window, const Time& time) {
+	glm::vec3 camPosition = cam->getCameraPosition();
+	float pitch = cam->getPitch();
+	float yaw = cam->getYaw();
+	float fov = cam->getFov();
+	float lookAtX = cam->getCameraLookAtX();
+	float lookAtY = cam->getCameraLookAtY();
+	float lookAtZ = cam->getCameraLookAtZ();
 
 	int height = window.getHeight();
 	int width = window.getWidth();
@@ -18,7 +18,7 @@ void DebugUI::renderText(const std::unique_ptr<World>& world, const Camera& cam,
 	int fps = time.getFps();
 	std::string hitBlockString = std::format("Block look at: x: {} y: {} z: {}", 0, 0, 0);
 	BlockHit hit;
-	if (Raycaster::traceRay(world, cam, Globals::INTERACTION_DISTANCE, hit)) {
+	if (Raycaster::traceRay(world.get(), cam, Globals::INTERACTION_DISTANCE, hit)) {
 		hitBlockString = std::format("Block look at: x: {} y: {} z: {}", hit.x, hit.y, hit.z);
 	}
 

@@ -60,12 +60,12 @@ void Window::processInput(){
 		if (glfwGetInputMode(m_window, GLFW_CURSOR) == GLFW_CURSOR_DISABLED) {
 			glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 			glfwSetCursorPosCallback(m_window, nullptr);
-			appContext->camera->setMovement(false);
+			appContext->player->setControlsActive(false);
 		}
 		else {
 			glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-			appContext->camera->setFirstInput();
-			appContext->camera->setMovement(true);
+			appContext->player->setFirstInput();
+			appContext->player->setControlsActive(true);
 			glfwSetCursorPosCallback(m_window, mouseCursorCallback);
 		}
 	}
@@ -79,7 +79,6 @@ void Window::processInput(){
 	m_lastTabState = currentTabState;
 	m_lastShiftState = currentShiftState;
 }
-
 
 void Window::frameBufferResizeCallback(GLFWwindow* win, int width, int height) {
 	AppContext* appContext = static_cast<AppContext*>(glfwGetWindowUserPointer(win));
@@ -100,9 +99,8 @@ void Window::mouseScrollCallback(GLFWwindow* win, double xoffset, double yoffset
 
 void Window::mouseInputCallback(GLFWwindow* win, int button, int action, int mods) {
 	AppContext* appContext = static_cast<AppContext*>(glfwGetWindowUserPointer(win));
-	appContext->world->mouseButtonProcessInput(appContext->camera ,button, action, mods);
+	appContext->player->mouseButtonProcessInput(button, action, mods);
 }
-
 
 GLFWwindow* Window::getWindow() const{ 
 	return m_window; 

@@ -163,123 +163,115 @@ BlockType World::getBlockAt(int x, int y, int z) const {
 
 	int localX = x & 15;
 	int localZ = z & 15;
-	int localY = y - 1;
+	int localY = y;
 
 	if (localY < 0 || localY >= 256) {
 		return BlockType::Air;
 	}
-
+	//std::cout << "Block at: " << localX << ", " << localY << ", " << localZ << std::endl;
 	return it->second.chunk->getBlock(localX, localY, localZ);
 }
 
-void World::mouseButtonProcessInput(Camera* cam, int button, int action, int mods) {
-	std::cout << "Click" << std::endl;
-	BlockHit hit;
-	if (!Raycaster::traceRay(this, *cam, Globals::INTERACTION_DISTANCE, hit)) return;
-	
-	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
+void World::deleteBlock(BlockHit hit) {
+	std::pair<int, int> chunkPos = std::pair(hit.x >> 4, hit.z >> 4);
 
-		std::pair<int, int> chunkPos = std::pair(hit.x >> 4, hit.z >> 4);
+	auto it = m_chunks.find(chunkPos);
+	if (it == m_chunks.end()) return;
 
-		auto it = m_chunks.find(chunkPos);
-		if (it == m_chunks.end()) return;
-	
-		int localX = hit.x & 15;
-		int localZ = hit.z & 15;
-		int localY = -hit.y - 1;
+	int localX = hit.x & 15;
+	int localZ = hit.z & 15;
+	int localY = -hit.y - 1;
 
-		it->second.chunk->deleteBlock(localX, localY, localZ);
+	it->second.chunk->deleteBlock(localX, localY, localZ);
 
-		if (checkNearbyChunksDecorationReady(chunkPos.first, chunkPos.second)) {
+	if (checkNearbyChunksDecorationReady(chunkPos.first, chunkPos.second)) {
 
-			ChunkPackage package;
-			package.coords = chunkPos;
-			package.center = it->second.chunk.get();
-			getNearbyChunks(chunkPos, package);
-			m_meshThread.meshQueue().push(package);
-			m_meshThread.notifyThread();
-		}
-
-		// If break cube in chunk edge also update neighbor chunks
-
-		if (localX == 0) {
-			auto it = m_chunks.find({chunkPos.first - 1, chunkPos.second});
-			if (it == m_chunks.end()) return;
-			ChunkPackage package;
-			package.coords = std::pair(chunkPos.first - 1, chunkPos.second);
-			package.center = it->second.chunk.get();
-			getNearbyChunks(std::pair(chunkPos.first - 1, chunkPos.second), package);
-			m_meshThread.meshQueue().push(package);
-			m_meshThread.notifyThread();
-		}
-
-		else if (localX == 15) {
-			auto it = m_chunks.find({ chunkPos.first + 1, chunkPos.second });
-			if (it == m_chunks.end()) return;
-			ChunkPackage package;
-			package.coords = std::pair(chunkPos.first + 1, chunkPos.second);
-			package.center = it->second.chunk.get();
-			getNearbyChunks(std::pair(chunkPos.first + 1, chunkPos.second), package);
-			m_meshThread.meshQueue().push(package);
-			m_meshThread.notifyThread();
-		}
-
-		if (localZ == 0) {
-			auto it = m_chunks.find({ chunkPos.first, chunkPos.second - 1});
-			if (it == m_chunks.end()) return;
-			ChunkPackage package;
-			package.coords = std::pair(chunkPos.first, chunkPos.second - 1);
-			package.center = it->second.chunk.get();
-			getNearbyChunks(std::pair(chunkPos.first, chunkPos.second - 1), package);
-			m_meshThread.meshQueue().push(package);
-			m_meshThread.notifyThread();
-		}
-
-		else if (localZ == 15) {
-			auto it = m_chunks.find({ chunkPos.first, chunkPos.second + 1 });
-			if (it == m_chunks.end()) return;
-			ChunkPackage package;
-			package.coords = std::pair(chunkPos.first, chunkPos.second + 1);
-			package.center = it->second.chunk.get();
-			getNearbyChunks(std::pair(chunkPos.first, chunkPos.second + 1), package);
-			m_meshThread.meshQueue().push(package);
-			m_meshThread.notifyThread();
-		}
-
+		ChunkPackage package;
+		package.coords = chunkPos;
+		package.center = it->second.chunk.get();
+		getNearbyChunks(chunkPos, package);
+		m_meshThread.meshQueue().push(package);
+		m_meshThread.notifyThread();
 	}
-	else if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE) {
 
-		int globalX = hit.x;
-		int globalY = - hit.y - 1;
-		int globalZ = hit.z;
+	// If break cube in chunk edge also update neighbor chunks
 
-		if (hit.face == BlockFace::Top) globalY -= 1;
-		else if (hit.face == BlockFace::Bottom) globalY += 1;
-		else if (hit.face == BlockFace::Right) globalX += 1;
-		else if (hit.face == BlockFace::Left) globalX -= 1;
-		else if (hit.face == BlockFace::Front) globalZ += 1;
-		else if (hit.face == BlockFace::Back) globalZ -= 1;
-
-		std::pair<int, int> chunkPos = std::pair(globalX >> 4, globalZ >> 4);
-
-		auto it = m_chunks.find(chunkPos);
+	if (localX == 0) {
+		auto it = m_chunks.find({ chunkPos.first - 1, chunkPos.second });
 		if (it == m_chunks.end()) return;
+		ChunkPackage package;
+		package.coords = std::pair(chunkPos.first - 1, chunkPos.second);
+		package.center = it->second.chunk.get();
+		getNearbyChunks(std::pair(chunkPos.first - 1, chunkPos.second), package);
+		m_meshThread.meshQueue().push(package);
+		m_meshThread.notifyThread();
+	}
 
-		int localX = globalX & 15;;
-		int localY = globalY + 1;
-		int localZ = globalZ & 15;
+	else if (localX == 15) {
+		auto it = m_chunks.find({ chunkPos.first + 1, chunkPos.second });
+		if (it == m_chunks.end()) return;
+		ChunkPackage package;
+		package.coords = std::pair(chunkPos.first + 1, chunkPos.second);
+		package.center = it->second.chunk.get();
+		getNearbyChunks(std::pair(chunkPos.first + 1, chunkPos.second), package);
+		m_meshThread.meshQueue().push(package);
+		m_meshThread.notifyThread();
+	}
 
-		it->second.chunk->addBlock(localX, localY - 1, localZ, BlockType::Dirt);
+	if (localZ == 0) {
+		auto it = m_chunks.find({ chunkPos.first, chunkPos.second - 1 });
+		if (it == m_chunks.end()) return;
+		ChunkPackage package;
+		package.coords = std::pair(chunkPos.first, chunkPos.second - 1);
+		package.center = it->second.chunk.get();
+		getNearbyChunks(std::pair(chunkPos.first, chunkPos.second - 1), package);
+		m_meshThread.meshQueue().push(package);
+		m_meshThread.notifyThread();
+	}
 
-		if (checkNearbyChunksDecorationReady(chunkPos.first, chunkPos.second)) {
+	else if (localZ == 15) {
+		auto it = m_chunks.find({ chunkPos.first, chunkPos.second + 1 });
+		if (it == m_chunks.end()) return;
+		ChunkPackage package;
+		package.coords = std::pair(chunkPos.first, chunkPos.second + 1);
+		package.center = it->second.chunk.get();
+		getNearbyChunks(std::pair(chunkPos.first, chunkPos.second + 1), package);
+		m_meshThread.meshQueue().push(package);
+		m_meshThread.notifyThread();
+	}
+}
 
-			ChunkPackage package;
-			package.coords = chunkPos;
-			package.center = it->second.chunk.get();
-			getNearbyChunks(chunkPos, package);
-			m_meshThread.meshQueue().push(package);
-			m_meshThread.notifyThread();
-		}
+void World::addBlock(BlockHit hit, BlockType type) {
+	int globalX = hit.x;
+	int globalY = -hit.y - 1;
+	int globalZ = hit.z;
+
+	if (hit.face == BlockFace::Top) globalY -= 1;
+	else if (hit.face == BlockFace::Bottom) globalY += 1;
+	else if (hit.face == BlockFace::Right) globalX += 1;
+	else if (hit.face == BlockFace::Left) globalX -= 1;
+	else if (hit.face == BlockFace::Front) globalZ += 1;
+	else if (hit.face == BlockFace::Back) globalZ -= 1;
+
+	std::pair<int, int> chunkPos = std::pair(globalX >> 4, globalZ >> 4);
+
+	auto it = m_chunks.find(chunkPos);
+	if (it == m_chunks.end()) return;
+
+	int localX = globalX & 15;;
+	int localY = globalY + 1;
+	int localZ = globalZ & 15;
+
+	it->second.chunk->addBlock(localX, localY - 1, localZ, BlockType::Dirt);
+
+	if (checkNearbyChunksDecorationReady(chunkPos.first, chunkPos.second)) {
+
+		ChunkPackage package;
+		package.coords = chunkPos;
+		package.center = it->second.chunk.get();
+		getNearbyChunks(chunkPos, package);
+		m_meshThread.meshQueue().push(package);
+		m_meshThread.notifyThread();
 	}
 }
 
@@ -293,4 +285,38 @@ void World::getNearbyChunks(std::pair<int, int> chunkPos, ChunkPackage& package)
 	package.topRight = m_chunks[{chunkPos.first + 1, chunkPos.second - 1}].chunk.get();
 	package.bottomLeft = m_chunks[{chunkPos.first - 1, chunkPos.second + 1}].chunk.get();
 	package.bottomRight = m_chunks[{chunkPos.first + 1, chunkPos.second + 1}].chunk.get();
+}
+
+bool World::checkCollisionRadious(glm::vec3 position, AABB playerAABB) const{
+
+	position.x = std::floor(position.x);
+	position.y = std::floor(position.y);
+	position.z = std::floor(position.z);
+	
+	for (int x = -1; x <= 1; x++) {
+		for(int y = -1; y <= 1; y++) {
+			for(int z = -1; z <= 1; z++) {
+				glm::vec3 blockPos = position + glm::vec3(x, y, z);
+
+				//std::cout << "Player position: (" << position.x << ", " << position.y << ", " << position.z << ")" << std::endl;
+				//std::cout << "Checking block at: (" << blockPos.x << ", " << blockPos.y << ", " << blockPos.z << ")" << std::endl;
+				
+				if (getBlockAt(blockPos.x, blockPos.y, blockPos.z) == BlockType::Air) continue;
+				
+				AABB blockAABB(blockPos, blockPos + glm::vec3(1.0f));
+				
+				//std::cout << "Block AABB: Min(" << blockAABB.min.x << ", " << blockAABB.min.y << ", " << blockAABB.min.z << ") "
+				//	<< "Max(" << blockAABB.max.x << ", " << blockAABB.max.y << ", " << blockAABB.max.z << ")" << std::endl;
+
+				//std::cout << "Player AABB: Min(" << playerAABB.min.x << ", " << playerAABB.min.y << ", " << playerAABB.min.z << ") "
+				//	<< "Max(" << playerAABB.max.x << ", " << playerAABB.max.y << ", " << playerAABB.max.z << ")" << std::endl;
+				
+				if (playerAABB.intersects(blockAABB)) {
+					//std::cout << "Collision detected at block: (" << blockPos.x << ", " << blockPos.y << ", " << blockPos.z << ")" << std::endl;
+					return true;
+				}
+			}
+		}
+	}
+	return false;
 }

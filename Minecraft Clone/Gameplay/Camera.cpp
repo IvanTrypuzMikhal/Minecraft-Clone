@@ -2,37 +2,39 @@
 #include <Rendering/ShaderProgram.h>
 
 void Camera::keyboardProcessInput(GLFWwindow* w, float delta) {
+	if (m_controlsActive == false) return;
 	float lastY = m_cameraPosition.y;
 
-	if (m_movementActive) {
-		if (glfwGetKey(w, GLFW_KEY_W) == GLFW_PRESS) {
-			m_cameraPosition += m_cameraFront * m_cameraSpeed * delta;
-			m_cameraPosition.y = lastY;
-		}
-		if (glfwGetKey(w, GLFW_KEY_S) == GLFW_PRESS) {
-			m_cameraPosition -= m_cameraFront * m_cameraSpeed * delta;
-			m_cameraPosition.y = lastY;
-		}
-		if (glfwGetKey(w, GLFW_KEY_A) == GLFW_PRESS) {
-			m_cameraPosition -= m_cameraRight * m_cameraSpeed * delta;
-			m_cameraPosition.y = lastY;
-		}
-		if (glfwGetKey(w, GLFW_KEY_D) == GLFW_PRESS) {
-			m_cameraPosition += m_cameraRight * m_cameraSpeed * delta;
-			m_cameraPosition.y = lastY;
-		}
-		if (glfwGetKey(w, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
-			m_cameraPosition -= m_cameraUp * m_cameraSpeed * delta;
-		}
-		if (glfwGetKey(w, GLFW_KEY_SPACE) == GLFW_PRESS) {
-			m_cameraPosition += m_cameraUp * m_cameraSpeed * delta;
-		}
+	
+	if (glfwGetKey(w, GLFW_KEY_W) == GLFW_PRESS) {
+		m_cameraPosition += m_cameraFront * m_cameraSpeed * delta;
+		m_cameraPosition.y = lastY;
 	}
+	if (glfwGetKey(w, GLFW_KEY_S) == GLFW_PRESS) {
+		m_cameraPosition -= m_cameraFront * m_cameraSpeed * delta;
+		m_cameraPosition.y = lastY;
+	}
+	if (glfwGetKey(w, GLFW_KEY_A) == GLFW_PRESS) {
+		m_cameraPosition -= m_cameraRight * m_cameraSpeed * delta;
+		m_cameraPosition.y = lastY;
+	}
+	if (glfwGetKey(w, GLFW_KEY_D) == GLFW_PRESS) {
+		m_cameraPosition += m_cameraRight * m_cameraSpeed * delta;
+		m_cameraPosition.y = lastY;
+	}
+	if (glfwGetKey(w, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
+		m_cameraPosition -= m_cameraUp * m_cameraSpeed * delta;
+	}
+	if (glfwGetKey(w, GLFW_KEY_SPACE) == GLFW_PRESS) {
+		m_cameraPosition += m_cameraUp * m_cameraSpeed * delta;
+	}
+	
 }
 
 
 void Camera::mouseProcessInput(double xpos, double ypos) {
-	
+	if (m_controlsActive == false) return;
+
 	if (m_firstInput) {
 		m_lastX = xpos;
 		m_lastY = ypos;
@@ -85,8 +87,8 @@ void Camera::setFirstInput() {
 	m_firstInput = true;
 }
 
-void Camera::setMovement(bool trueFalse) {
-	m_movementActive = trueFalse;
+void Camera::setControls(bool trueFalse) {
+	m_controlsActive = trueFalse;
 }
 
 glm::vec3& Camera::getCameraPosition() {

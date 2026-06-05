@@ -33,6 +33,7 @@
     <ClInclude Include="Core\pch.h" />
     <ClInclude Include="Core\Time.h" />
     <ClInclude Include="Core\Window.h" />
+    <ClInclude Include="Gameplay\AABB.h" />
     <ClInclude Include="Gameplay\Camera.h" />
     <ClInclude Include="Gameplay\CubeSelection.h" />
     <ClInclude Include="Gameplay\DebugUI.h" />

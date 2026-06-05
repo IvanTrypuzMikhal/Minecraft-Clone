@@ -61,7 +61,7 @@ bool Raycaster::traceRay(World* world, const Camera& camera, float maxDistance, 
         if (arrayY >= 0 && arrayY < Globals::CHUNK_HEIGHT) {
             BlockType block = world->getBlockAt(
                 static_cast<int>(position.x),
-                arrayY,
+                arrayY - 1,
                 static_cast<int>(position.z)
             );
 
