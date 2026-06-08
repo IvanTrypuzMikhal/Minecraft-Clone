@@ -1,225 +1,257 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    <Filter Include="Core">
+      <UniqueIdentifier>{a1b2c3d4-0001-0001-0001-000000000001}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    <Filter Include="Externals">
+      <UniqueIdentifier>{a1b2c3d4-0002-0002-0002-000000000002}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    <Filter Include="Gameplay">
+      <UniqueIdentifier>{a1b2c3d4-0003-0003-0003-000000000003}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shaders">
-      <UniqueIdentifier>{037d1561-1d84-45fb-a731-c7ff7736b592}</UniqueIdentifier>
+    <Filter Include="Gameplay\Player">
+      <UniqueIdentifier>{a1b2c3d4-0004-0004-0004-000000000004}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Textures">
-      <UniqueIdentifier>{40dc06ce-ead6-4735-8620-ef3c5bc42164}</UniqueIdentifier>
+    <Filter Include="Rendering">
+      <UniqueIdentifier>{a1b2c3d4-0005-0005-0005-000000000005}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Fonts">
-      <UniqueIdentifier>{4becf73f-954f-47ab-8b8c-428e80080c7b}</UniqueIdentifier>
+    <Filter Include="Rendering\Shaders">
+      <UniqueIdentifier>{a1b2c3d4-0006-0006-0006-000000000006}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="World">
+      <UniqueIdentifier>{a1b2c3d4-0007-0007-0007-000000000007}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets">
+      <UniqueIdentifier>{2f5d0e50-e3df-4515-b400-25ef63b4795c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\TextFont">
+      <UniqueIdentifier>{c761b7c1-9981-4eb2-ad4a-13639dfff473}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\Textures">
+      <UniqueIdentifier>{884c4a4a-9f8e-4ba1-ac3e-6d91e9456e8f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
+  <!-- CPP / C -->
   <ItemGroup>
-    <Font Include="Assets\TextFont\1_Minecraft-Regular.otf" />
+    <ClCompile Include="src\Core\Globals.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\main.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\pch.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\Time.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\Window.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Externals\glad.c">
+      <Filter>Externals</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gameplay\Camera.cpp">
+      <Filter>Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gameplay\CubeSelection.cpp">
+      <Filter>Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gameplay\DebugUI.cpp">
+      <Filter>Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gameplay\HUD.cpp">
+      <Filter>Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gameplay\HUDSprites.cpp">
+      <Filter>Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gameplay\Raycaster.cpp">
+      <Filter>Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gameplay\UIRenderer.cpp">
+      <Filter>Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gameplay\Player\Player.cpp">
+      <Filter>Gameplay\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\ShaderProgram.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\stb_image.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Text.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Texture.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Vao.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Vbo.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\World\Chunk.cpp">
+      <Filter>World</Filter>
+    </ClCompile>
+    <ClCompile Include="src\World\Cube.cpp">
+      <Filter>World</Filter>
+    </ClCompile>
+    <ClCompile Include="src\World\MeshThread.cpp">
+      <Filter>World</Filter>
+    </ClCompile>
+    <ClCompile Include="src\World\TerrainGeneration.cpp">
+      <Filter>World</Filter>
+    </ClCompile>
+    <ClCompile Include="src\World\TerrainThread.cpp">
+      <Filter>World</Filter>
+    </ClCompile>
+    <ClCompile Include="src\World\World.cpp">
+      <Filter>World</Filter>
+    </ClCompile>
   </ItemGroup>
+  <!-- Headers -->
   <ItemGroup>
-    <Image Include="Assets\Textures\gui-atlas.png">
-      <Filter>Resource Files</Filter>
+    <ClInclude Include="src\Core\AppContext.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\Globals.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\pch.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\Time.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\Window.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Externals\FastNoiseLite.h">
+      <Filter>Externals</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gameplay\AABB.h">
+      <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gameplay\Camera.h">
+      <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gameplay\CubeSelection.h">
+      <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gameplay\DebugUI.h">
+      <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gameplay\HUD.h">
+      <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gameplay\HUDSprites.h">
+      <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gameplay\Raycaster.h">
+      <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gameplay\UIRenderer.h">
+      <Filter>Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gameplay\Player\Player.h">
+      <Filter>Gameplay\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Rendering\ShaderProgram.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Rendering\stb_image.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Rendering\Text.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Rendering\Texture.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Rendering\Vao.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Rendering\Vbo.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="src\World\Chunk.h">
+      <Filter>World</Filter>
+    </ClInclude>
+    <ClInclude Include="src\World\ChunkPackage.h">
+      <Filter>World</Filter>
+    </ClInclude>
+    <ClInclude Include="src\World\Cube.h">
+      <Filter>World</Filter>
+    </ClInclude>
+    <ClInclude Include="src\World\CubeData.h">
+      <Filter>World</Filter>
+    </ClInclude>
+    <ClInclude Include="src\World\MeshThread.h">
+      <Filter>World</Filter>
+    </ClInclude>
+    <ClInclude Include="src\World\TerrainGeneration.h">
+      <Filter>World</Filter>
+    </ClInclude>
+    <ClInclude Include="src\World\TerrainThread.h">
+      <Filter>World</Filter>
+    </ClInclude>
+    <ClInclude Include="src\World\TSQueue.h">
+      <Filter>World</Filter>
+    </ClInclude>
+    <ClInclude Include="src\World\World.h">
+      <Filter>World</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <!-- Shaders -->
+  <ItemGroup>
+    <None Include=".clang-tidy" />
+    <None Include="src\Rendering\Shaders\cubeSelection.frag">
+      <Filter>Rendering\Shaders</Filter>
+    </None>
+    <None Include="src\Rendering\Shaders\cubeSelection.vert">
+      <Filter>Rendering\Shaders</Filter>
+    </None>
+    <None Include="src\Rendering\Shaders\fragment.frag">
+      <Filter>Rendering\Shaders</Filter>
+    </None>
+    <None Include="src\Rendering\Shaders\text.frag">
+      <Filter>Rendering\Shaders</Filter>
+    </None>
+    <None Include="src\Rendering\Shaders\text.vert">
+      <Filter>Rendering\Shaders</Filter>
+    </None>
+    <None Include="src\Rendering\Shaders\UIShader.frag">
+      <Filter>Rendering\Shaders</Filter>
+    </None>
+    <None Include="src\Rendering\Shaders\UIShader.vert">
+      <Filter>Rendering\Shaders</Filter>
+    </None>
+    <None Include="src\Rendering\Shaders\vertex.vert">
+      <Filter>Rendering\Shaders</Filter>
+    </None>
+  </ItemGroup>
+  <!-- Assets -->
+  <ItemGroup>
+    <Image Include="src\Assets\Textures\textures.png">
+      <Filter>Assets\Textures</Filter>
     </Image>
-    <Image Include="Assets\Textures\oak-leaves-normal-original-default.png">
-      <Filter>Resource Files</Filter>
+    <Image Include="src\Assets\Textures\gui-atlas.png">
+      <Filter>Assets\Textures</Filter>
     </Image>
-    <Image Include="Assets\Textures\oak-wood.png">
-      <Filter>Resource Files</Filter>
+    <Image Include="src\Assets\Textures\oak-leaves-normal-original-default.png">
+      <Filter>Assets\Textures</Filter>
     </Image>
-    <Image Include="Assets\Textures\textures.png">
-      <Filter>Resource Files</Filter>
+    <Image Include="src\Assets\Textures\oak-wood.png">
+      <Filter>Assets\Textures</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Core\AppContext.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\Globals.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\pch.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\Time.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\Window.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Gameplay\Camera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Gameplay\CubeSelection.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Gameplay\DebugUI.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Gameplay\HUD.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Gameplay\HUDSprites.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Gameplay\Raycaster.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Gameplay\UIRenderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\ShaderProgram.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\stb_image.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Text.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Texture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Vao.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Rendering\Vbo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="World\Chunk.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="World\ChunkPackage.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="World\Cube.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="World\CubeData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="World\FastNoiseLite.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="World\MeshThread.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="World\TerrainGeneration.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="World\TerrainThread.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="World\TSQueue.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="World\World.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Gameplay\Player\Player.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Gameplay\AABB.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="Core\Globals.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\pch.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\Time.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Core\Window.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Externals\glad.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Gameplay\Camera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Gameplay\CubeSelection.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Gameplay\DebugUI.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Gameplay\HUD.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Gameplay\HUDSprites.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Gameplay\Raycaster.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Gameplay\UIRenderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\ShaderProgram.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\stb_image.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Text.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Texture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Vao.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Rendering\Vbo.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="World\Chunk.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="World\Cube.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="World\MeshThread.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="World\TerrainGeneration.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="World\TerrainThread.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="World\World.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Gameplay\Player\Player.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Rendering\Shaders\cubeSelection.frag" />
-    <None Include="Rendering\Shaders\cubeSelection.vert" />
-    <None Include="Rendering\Shaders\fragment.frag" />
-    <None Include="Rendering\Shaders\text.frag" />
-    <None Include="Rendering\Shaders\text.vert" />
-    <None Include="Rendering\Shaders\UIShader.frag" />
-    <None Include="Rendering\Shaders\UIShader.vert" />
-    <None Include="Rendering\Shaders\vertex.vert" />
+    <Font Include="src\Assets\TextFont\1_Minecraft-Regular.otf">
+      <Filter>Assets\TextFont</Filter>
+    </Font>
   </ItemGroup>
 </Project>
