@@ -44,20 +44,20 @@ void Chunk::buildMesh(const ChunkPackage& chunkPackage)
 
 					if (isAir(cubeData.dx + x, cubeData.dy + y, cubeData.dz + z, chunkPackage)) {
 						for (int i = 0; i < 6; i++) {
-							const float vx = x + cubeData.vertices[i].x;
-							const float vy = y + cubeData.vertices[i].y; // Change to possitive to avoid packing wrong values
-							const float vz = z + cubeData.vertices[i].z; // Change to possitive to avoid packing wrong values
+							const float vx = x + cubeData.vertices.at(i).x;
+							const float vy = y + cubeData.vertices.at(i).y; // Change to possitive to avoid packing wrong values
+							const float vz = z + cubeData.vertices.at(i).z; // Change to possitive to avoid packing wrong values
 							
-							const float u = cubeData.vertices[i].u;
-							const float v = cubeData.vertices[i].v;
+							const float u = cubeData.vertices.at(i).u;
+							const float v = cubeData.vertices.at(i).v;
 							
 							auto [textureX, textureY] = getAtlasCoordinates(type, cubeData.faceDirection);
 							const int textureId = (textureY * 4) + textureX;
 
 
-							const int ao1 = !isAir(x + cubeData.vertices[i].side1.x, y - cubeData.vertices[i].side1.y, z - cubeData.vertices[i].side1.z, chunkPackage);
-							const int ao2 = !isAir(x + cubeData.vertices[i].side2.x, y - cubeData.vertices[i].side2.y, z - cubeData.vertices[i].side2.z, chunkPackage);
-							const int ao3 = !isAir(x + cubeData.vertices[i].diagonal.x, y - cubeData.vertices[i].diagonal.y, z - cubeData.vertices[i].diagonal.z, chunkPackage);
+							const int ao1 = !isAir(x + cubeData.vertices.at(i).side1.x, y - cubeData.vertices.at(i).side1.y, z - cubeData.vertices.at(i).side1.z, chunkPackage);
+							const int ao2 = !isAir(x + cubeData.vertices.at(i).side2.x, y - cubeData.vertices.at(i).side2.y, z - cubeData.vertices.at(i).side2.z, chunkPackage);
+							const int ao3 = !isAir(x + cubeData.vertices.at(i).diagonal.x, y - cubeData.vertices.at(i).diagonal.y, z - cubeData.vertices.at(i).diagonal.z, chunkPackage);
 							
 							const int ao = (ao1 && ao2) ? 0 : 3 - (ao1 + ao2 + ao3);
 							
@@ -149,7 +149,7 @@ void Chunk::generateTrees(const ChunkPackage& chunkPackage) {
 	}
 
 	for (int y = 0; y < treeHeight; y++) {
-		m_blocks[treeX][treeY - y][treeZ] = BlockType::OakLog;
+		m_blocks.at(treeX).at(treeY - y).at(treeZ) = BlockType::OakLog;
 	}
 
 	const int leafStartHeight = treeY - 7;
@@ -194,8 +194,8 @@ void Chunk::generateTrees(const ChunkPackage& chunkPackage) {
 				}
 
 				if (targetChunk != nullptr) {
-					if (targetChunk->m_blocks[leafX][leafY][leafZ] == BlockType::Air) {
-						targetChunk->m_blocks[leafX][leafY][leafZ] = BlockType::OakLeaf;
+					if (targetChunk->m_blocks.at(leafX).at(leafY).at(leafZ) == BlockType::Air) {
+						targetChunk->m_blocks.at(leafX).at(leafY).at(leafZ) = BlockType::OakLeaf;
 					}
 				}
 			}
@@ -212,7 +212,7 @@ void Chunk::fillBlocks(const TerrainGenerator& terrain) {
 
 			for (int y = 0; y < Globals::CHUNK_HEIGHT; y++) {
 				
-				m_blocks[x][y][z] = getBlockType(y, surfaceY);
+				m_blocks.at(x).at(y).at(z) = getBlockType(y, surfaceY);
 			}
 		}
 	}
@@ -281,15 +281,15 @@ static std::pair<int, int> getAtlasCoordinates(BlockType type, BlockFace face) {
 }
 
 BlockType Chunk::getBlock(int x, int y, int z) const {
-	return m_blocks[x][y][z];
+	return m_blocks.at(x).at(y).at(z);
 }
 
 void Chunk::deleteBlock(int x, int y, int z) {
-	m_blocks[x][y][z] = BlockType::Air;
+	m_blocks.at(x).at(y).at(z) = BlockType::Air;
 }
 
 void Chunk::addBlock(int x, int y, int z, BlockType blockType) {
-	m_blocks[x][y][z] = blockType;
+	m_blocks.at(x).at(y).at(z) = blockType;
 }
 
 void Chunk::swapMesh() {

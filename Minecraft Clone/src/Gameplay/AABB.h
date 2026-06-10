@@ -5,13 +5,18 @@
 
 struct AABB
 {
-	// 
 	AABB(const glm::vec3& min, const glm::vec3& max) : min(min), max(max) {};
 	
 	[[nodiscard]] bool intersects(const AABB& other) const {
-		return (min.x <= other.max.x && max.x >= other.min.x) &&
-			   (min.y <= other.max.y && max.y >= other.min.y) &&
-			   (min.z <= other.max.z && max.z >= other.min.z);
+		return (min.x < other.max.x && max.x > other.min.x) &&
+			   (min.y < other.max.y && max.y > other.min.y) &&
+			   (min.z < other.max.z && max.z > other.min.z);
+	}
+
+	[[nodiscard]] bool overAABB(const AABB& other) const {
+		return	(min.x < other.max.x && max.x > other.min.x) &&
+				(min.z < other.max.z && max.z > other.min.z) &&
+				(max.y <= other.max.y + 0.1f);
 	}
 	
 	glm::vec3 min;
@@ -19,6 +24,6 @@ struct AABB
 };
 
 struct CollisionRes {
-	bool collision;
-	AABB blockAABB;
+	bool collision = false;
+	AABB blockAABB = AABB(glm::vec3(0), glm::vec3(0));
 };

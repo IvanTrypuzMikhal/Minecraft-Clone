@@ -24,8 +24,12 @@ public:
 	void mouseProcessInput(double xpos, double ypos);
 	void mouseButtonProcessInput(int button, int action, int mods);
 	void update(float delta);
-	void calculateSpeed();
-
+	void setSpeed();
+	void calculateVelocity(float delta);
+	CollisionRes moveAndCollide(float dx, float dy, float dz);
+	void checkCollisionOnAxis(float delta, int axis);
+	void checkCollisionOnYAxis(float delta);
+	void checkShiftingCollisionAxis(float delta, int axis);
 	void setControlsActive(bool active) { 
 		m_controlsActive = active; 
 		m_camera.setControls(active);
@@ -34,6 +38,7 @@ public:
 		m_firstMouseInput = true;
 		m_camera.setFirstInput(); 
 	}
+
 	Camera* getCamera();
 
 private:

@@ -224,8 +224,8 @@ void World::addBlock(BlockHit hit, BlockType type, const AABB& playerAABB) {
 	else if (hit.face == BlockFace::Front) globalZ += 1;
 	else if (hit.face == BlockFace::Back) globalZ -= 1;
 
-	if (playerAABB.intersects(AABB(glm::vec3((float)globalX, (float)globalY, (float)globalZ), glm::vec3((float)globalX + 1.01, (float)globalY, (float)globalZ + 1.01))) ||
-		playerAABB.intersects(AABB(glm::vec3((float)globalX, (float)globalY + 1, (float)globalZ), glm::vec3((float)globalX + 1.01, (float)globalY + 1, (float)globalZ + 1.01)))) {
+	if (playerAABB.intersects(AABB(glm::vec3((float)globalX, (float)globalY, (float)globalZ), glm::vec3((float)globalX + 1.05, (float)globalY, (float)globalZ + 1.05))) ||
+		playerAABB.intersects(AABB(glm::vec3((float)globalX, (float)globalY + 1, (float)globalZ), glm::vec3((float)globalX + 1.05, (float)globalY + 1, (float)globalZ + 1.05)))) {
 		std::cout << "Cannot place block, player is intersecting the block's AABB." << std::endl;
 		return;
 	}
@@ -288,7 +288,10 @@ void World::getNearbyChunks(std::pair<int, int> chunkPos, ChunkPackage& package)
 	package.bottomRight = it->second.chunk.get();
 }
 
-bool World::checkCollisionRadious(glm::vec3 position, AABB playerAABB) const{
+// We dont pass the player position by reference because we want to floor it to get the block coordinates
+// So we avoid modifing the player position outside of this function
+
+void World::checkCollisionRadious(glm::vec3 position, const AABB& playerAABB, CollisionRes& res) const{
 
 	position.x = std::floor(position.x);
 	position.y = std::floor(position.y);
@@ -304,10 +307,43 @@ bool World::checkCollisionRadious(glm::vec3 position, AABB playerAABB) const{
 				AABB blockAABB(blockPos, blockPos + glm::vec3(1.0f));
 				
 				if (playerAABB.intersects(blockAABB)) {
-					return true;
+					res.collision = true;
+					res.blockAABB = blockAABB;
+					return;
 				}
 			}
 		}
 	}
+	res.collision = false;
+	res.blockAABB = AABB(glm::vec3(0), glm::vec3(0));
+}
+
+// We dont pass the player position by reference because we want to floor it to get the block coordinates
+// So we avoid modifing the player position outside of this function
+
+void World::getBlocksBellow(glm::vec3 position, std::vector<AABB>& blocksBellow) const{
+	position.x = std::floor(position.x);
+	position.y = std::floor(position.y);
+	position.z = std::floor(position.z);
+
+	//std::cout << "Player position: " << position.x << ", " << position.y << ", " << position.z << std::endl;
+	for (int x = -1; x <= 1; x++) {
+		for (int z = -1; z <= 1; z++) {
+			glm::vec3 blockPos = position + glm::vec3(x, 1, z);
+			if (getBlockAt(blockPos.x, blockPos.y, blockPos.z) == BlockType::Air) continue;
+			AABB blockAABB(blockPos + glm::vec3(0.01f), blockPos + glm::vec3(0.99f));
+			blocksBellow.push_back(blockAABB);
+		}
+	}
+}
+
+bool World::hasBlockBellow(AABB playerAABB, int yPos) const {
+	std::cout << "Checking if player has block bellow. Player AABB: min(" << playerAABB.min.x << ", " << playerAABB.min.y << ", " << playerAABB.min.z << ") max(" << playerAABB.max.x << ", " << playerAABB.max.y << ", " << playerAABB.max.z << ")" << std::endl;
+	glm::vec3 position = glm::floor(playerAABB.max);
+	position.y = yPos + 2;
+	glm::vec3 blockPos = position;
+	std::cout << "Block position: " << blockPos.x << ", " << blockPos.y << ", " << blockPos.z << std::endl;
+	if (getBlockAt(blockPos.x, blockPos.y, blockPos.z) != BlockType::Air) return true;
+
 	return false;
 }

@@ -40,8 +40,9 @@ public:
 	void checkChunksWithTerrain();
 	void checkFinishedChunksWithMesh();
 	void enqueMeshByCoords(std::pair<int, int> chunkPos);
-	bool checkCollisionRadious(glm::vec3 position, AABB playerAABB) const;
-
+	void checkCollisionRadious(glm::vec3 position, const AABB& playerAABB, CollisionRes& res) const;
+	void getBlocksBellow(glm::vec3 position, std::vector<AABB>& blocksBellow) const;
+	bool hasBlockBellow(AABB playerAABB, int yPos) const;
 	BlockType getBlockAt(int x, int y, int z) const;
 
 	void getNearbyChunks(std::pair<int, int> chunkPos, ChunkPackage& package);
