@@ -1,5 +1,6 @@
 #include "World.h"
 #include <Gameplay/Raycaster.h>
+#include <chrono>
 
 void World::renderWorld(const glm::mat4& projection) {
 	const int positiveZ = static_cast<int>(m_cameraPosition.z + Globals::RENDER_RADIOUS);
@@ -12,7 +13,7 @@ void World::renderWorld(const glm::mat4& projection) {
 		for (int x = negativeX; x < positiveX; x++) {
 			std::pair<int, int> coords = std::pair<int, int>(x, z);
 			if (m_chunks.contains(coords)) {
-				if (m_chunks[coords].state == MESH_READY) {
+				if (m_chunks[coords].state == MESH_READY || m_chunks[coords].state == DIRTY) {
 					m_chunks[coords].chunk->render(projection);
 				}
 			}
@@ -33,6 +34,8 @@ void World::updateWorldState() {
 	checkChunksWithTerrain();
 	// We update each chunk with finished mesh to be ready for rendering
 	checkFinishedChunksWithMesh();
+	// Check chunks that are out of range to be freed from memory
+	checkChunksToBeFreed();
 }
 // TODO: Change approach to a buffer/queued based one.
 // When a new chunk arrives check for all chunks stored in some buffer which need to be updated
@@ -65,16 +68,16 @@ void World::checkChunksWithTerrain() {
 			// We check that its ready for mesh generation and its neighbors
 			if (it != m_chunks.end() && it->second.state == TERRAIN_READY) {
 				if (checkNearbyChunksTerrainReady(coord.first, coord.second)) {
-
+					auto start = std::chrono::high_resolution_clock::now();
+					
 					ChunkPackage package;
 					getNearbyChunks(coord, package);
-					Chunk* left = m_chunks[{coord.first - 1, coord.second}].chunk.get();
-					Chunk* right = m_chunks[{coord.first + 1, coord.second}].chunk.get();
-					Chunk* front = m_chunks[{coord.first, coord.second + 1}].chunk.get();
-					Chunk* back = m_chunks[{coord.first, coord.second - 1}].chunk.get();
-
 					it->second.chunk->generateTrees(package);
 					it->second.state = DECORATED;
+					
+					it->second.totalMs += std::chrono::duration<float, std::milli>(
+						std::chrono::high_resolution_clock::now() - start).count();
+
 				}
 			}
 		}
@@ -102,10 +105,82 @@ void World::checkFinishedChunksWithMesh() {
 
 		auto it = m_chunks.find(coords);
 		if (it != m_chunks.end()) {
+			auto start = std::chrono::high_resolution_clock::now();
+
 			it->second.chunk->swapMesh();
 			it->second.chunk->setBuffers();
-			it->second.state = MESH_READY;
+			if (it->second.state != DIRTY) {
+				std::cout << "Chunk " << coords.first << "," << coords.second << " mesh ready for rendering.\n";
+				it->second.state = MESH_READY;
+			}
+			else if(it->second.state == DIRTY){
+				std::cout << "Chunk " << coords.first << "," << coords.second << " mesh ready for rendering but its dirty, it will be saved to memory and freed from RAM when its out of range.\n";
+			}
+			it->second.totalMs += std::chrono::duration<float, std::milli>(
+				std::chrono::high_resolution_clock::now() - start).count();
+			std::cout << "Chunk " << coords.first << "," << coords.second
+				<< " total: " << it->second.totalMs << "ms\n";
+
 		}
+	}
+}
+
+void World::checkChunksToBeFreed() {
+	int minX = static_cast<int>(m_cameraPosition.x - Globals::RENDER_RADIOUS) - 5;
+	int maxX = static_cast<int>(m_cameraPosition.x + Globals::RENDER_RADIOUS) + 5;
+	int minZ = static_cast<int>(m_cameraPosition.z - Globals::RENDER_RADIOUS) - 5;
+	int maxZ = static_cast<int>(m_cameraPosition.z + Globals::RENDER_RADIOUS) + 5;
+
+
+	for (const auto& [coords, chunkState] : m_chunks) {
+		//std::cout << "Checking chunk " << x << "," << z << " for freeing.\n";
+		
+		if ( !(coords.first < minX || coords.first > maxX && coords.second < minZ || coords.second > maxZ)) continue;
+		
+		// Just delete the chunk and free its memory. Not modifyed so it can be rebuilded again if needed.
+		if (chunkState.state == MESH_READY) {
+			m_chunks.erase(coords);
+			std::cout << "Chunk " << coords.first << "," << coords.second << " erased from chunk map.\n";
+		}
+		// If its in an other state fron dirty then we dont touch it. It has to be dirty to be saved to memory if we want to free it from RAM.
+		else if (chunkState.state == DIRTY) {
+			std::cout << "Chunk " << coords.first << "," << coords.second << " is dirty, saving to memory and erasing from chunk map.\n";
+			// Just for learning purposes I want to use C style memory management instead of using modern C++ ones.
+			// So I can learn how to manage memory by myself and understand better how it works.
+
+			// We create a "copy" of the chunks blocks to be able to save it to memory and then free the chunk itself.
+			// This way we dont need to wait for the IO thread to finish saving the chunk to free its memory and we can do it in parallel.
+			// Also if the player comes back to the chunk before the chunk is saved we can just load the chunks data from memory.
+			// When the chunk is saved to disk we can free the memory used for the snapshot.
+			// I think this is a good approach for parllel computing and memory management.
+			ChunkSnapshot snapshot;
+
+			auto deltas = chunkState.chunk->getDeltasChanges();
+
+			snapshot.coords = { coords.first, coords.second };
+			snapshot.deltas_counts.deltas = (Delta*)malloc(deltas.size() * sizeof(Delta));
+			if (!snapshot.deltas_counts.deltas) throw std::exception("BAD::MEMORY::ALLOCATION::TERMINATING");
+			snapshot.deltas_counts.count = deltas.size();
+			int i = 0;
+			for (const auto& [index, blockType] : deltas) {
+				Delta delta;
+				delta.index = index;
+				delta.blockType = static_cast<uint8_t>(blockType);
+				snapshot.deltas_counts.deltas[i] = delta;
+				i++;
+			}
+
+			m_fileIOThread.saveInMemoryQueue().push(snapshot);
+			m_chunks.erase(coords);
+			m_savingChunks.insert({ snapshot.coords, snapshot.deltas_counts.deltas });
+			m_fileIOThread.notifyThread();
+		}
+
+	}
+
+	while (!m_fileIOThread.finishedFileIOChunks().empty()) {
+		ChunkSnapshot snapshot = m_fileIOThread.finishedFileIOChunks().pop();
+		free(snapshot.deltas_counts.deltas);
 	}
 }
 
@@ -198,6 +273,7 @@ void World::deleteBlock(BlockHit hit) {
 	else if (localZ == 15) {
 		enqueMeshByCoords({ chunkPos.first, chunkPos.second + 1 });
 	}
+	it->second.state = DIRTY;
 }
 
 void World::enqueMeshByCoords(std::pair<int, int> chunkPos) {
@@ -205,7 +281,7 @@ void World::enqueMeshByCoords(std::pair<int, int> chunkPos) {
 	if (it == m_chunks.end()) return;
 	ChunkPackage package;
 	package.coords = std::pair(chunkPos.first, chunkPos.second);
-	package.center = it->second.chunk.get();
+	package.center = it->second.chunk;
 	getNearbyChunks(std::pair(chunkPos.first, chunkPos.second), package);
 	m_meshThread.meshQueue().push(package);
 	m_meshThread.notifyThread();
@@ -245,47 +321,48 @@ void World::addBlock(BlockHit hit, BlockType type, const AABB& playerAABB) {
 
 		ChunkPackage package;
 		package.coords = chunkPos;
-		package.center = it->second.chunk.get();
+		package.center = it->second.chunk;
 		getNearbyChunks(chunkPos, package);
 		m_meshThread.meshQueue().push(package);
 		m_meshThread.notifyThread();
 	}
+	it->second.state = DIRTY;
 }
 
 void World::getNearbyChunks(std::pair<int, int> chunkPos, ChunkPackage& package) {
 	 
 	auto it = m_chunks.find({chunkPos.first - 1, chunkPos.second});
 	if (it == m_chunks.end()) return;
-	package.left = it->second.chunk.get();
+	package.left = it->second.chunk;
 
 	it = m_chunks.find({ chunkPos.first + 1, chunkPos.second });
 	if (it == m_chunks.end()) return;
-	package.right = it->second.chunk.get();
+	package.right = it->second.chunk;
 
 	it = m_chunks.find({ chunkPos.first, chunkPos.second + 1 });
 	if (it == m_chunks.end()) return;
-	package.front = it->second.chunk.get();
+	package.front = it->second.chunk;
 
 	it = m_chunks.find({ chunkPos.first, chunkPos.second - 1 });
 	if (it == m_chunks.end()) return;
-	package.back = it->second.chunk.get();
+	package.back = it->second.chunk;
 
 	// Diagonals
 	it = m_chunks.find({ chunkPos.first - 1, chunkPos.second - 1 });
 	if (it == m_chunks.end()) return;
-	package.topLeft = it->second.chunk.get();
+	package.topLeft = it->second.chunk;
 
 	it = m_chunks.find({ chunkPos.first + 1, chunkPos.second - 1 });
 	if (it == m_chunks.end()) return;
-	package.topRight = it->second.chunk.get();
+	package.topRight = it->second.chunk;
 
 	it = m_chunks.find({ chunkPos.first - 1, chunkPos.second + 1 });
 	if (it == m_chunks.end()) return;
-	package.bottomLeft = it->second.chunk.get();
+	package.bottomLeft = it->second.chunk;
 
 	it = m_chunks.find({ chunkPos.first + 1, chunkPos.second + 1 });
 	if (it == m_chunks.end()) return;
-	package.bottomRight = it->second.chunk.get();
+	package.bottomRight = it->second.chunk;
 }
 
 // We dont pass the player position by reference because we want to floor it to get the block coordinates

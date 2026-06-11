@@ -17,4 +17,6 @@ namespace Globals {
 	extern const int STONE_DEPTH;
 
 	extern const float INTERACTION_DISTANCE;
+
+	extern const int REGION_BLOCK_SIZE;
 }

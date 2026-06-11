@@ -1,230 +1,232 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-	<ItemGroup Label="ProjectConfigurations">
-		<ProjectConfiguration Include="Debug|Win32">
-			<Configuration>Debug</Configuration>
-			<Platform>Win32</Platform>
-		</ProjectConfiguration>
-		<ProjectConfiguration Include="Release|Win32">
-			<Configuration>Release</Configuration>
-			<Platform>Win32</Platform>
-		</ProjectConfiguration>
-		<ProjectConfiguration Include="Debug|x64">
-			<Configuration>Debug</Configuration>
-			<Platform>x64</Platform>
-		</ProjectConfiguration>
-		<ProjectConfiguration Include="Release|x64">
-			<Configuration>Release</Configuration>
-			<Platform>x64</Platform>
-		</ProjectConfiguration>
-	</ItemGroup>
-	<ItemGroup>
-		<Font Include="src\Assets\TextFont\1_Minecraft-Regular.otf" />
-	</ItemGroup>
-	<ItemGroup>
-		<Image Include="src\Assets\Textures\gui-atlas.png" />
-		<Image Include="src\Assets\Textures\oak-leaves-normal-original-default.png" />
-		<Image Include="src\Assets\Textures\oak-wood.png" />
-		<Image Include="src\Assets\Textures\textures.png" />
-	</ItemGroup>
-	<ItemGroup>
-		<ClInclude Include="src\Core\AppContext.h" />
-		<ClInclude Include="src\Core\Globals.h" />
-		<ClInclude Include="src\Core\pch.h" />
-		<ClInclude Include="src\Core\Time.h" />
-		<ClInclude Include="src\Core\Window.h" />
-		<ClInclude Include="src\Externals\FastNoiseLite.h" />
-		<ClInclude Include="src\Gameplay\AABB.h" />
-		<ClInclude Include="src\Gameplay\Camera.h" />
-		<ClInclude Include="src\Gameplay\CubeSelection.h" />
-		<ClInclude Include="src\Gameplay\DebugUI.h" />
-		<ClInclude Include="src\Gameplay\HUD.h" />
-		<ClInclude Include="src\Gameplay\HUDSprites.h" />
-		<ClInclude Include="src\Gameplay\Player\Player.h" />
-		<ClInclude Include="src\Gameplay\Raycaster.h" />
-		<ClInclude Include="src\Gameplay\UIRenderer.h" />
-		<ClInclude Include="src\Rendering\ShaderProgram.h" />
-		<ClInclude Include="src\Rendering\stb_image.h" />
-		<ClInclude Include="src\Rendering\Text.h" />
-		<ClInclude Include="src\Rendering\Texture.h" />
-		<ClInclude Include="src\Rendering\Vao.h" />
-		<ClInclude Include="src\Rendering\Vbo.h" />
-		<ClInclude Include="src\World\Chunk.h" />
-		<ClInclude Include="src\World\ChunkPackage.h" />
-		<ClInclude Include="src\World\Cube.h" />
-		<ClInclude Include="src\World\CubeData.h" />
-		<ClInclude Include="src\World\MeshThread.h" />
-		<ClInclude Include="src\World\TerrainGeneration.h" />
-		<ClInclude Include="src\World\TerrainThread.h" />
-		<ClInclude Include="src\World\TSQueue.h" />
-		<ClInclude Include="src\World\World.h" />
-	</ItemGroup>
-	<ItemGroup>
-		<ClCompile Include="src\Core\Globals.cpp" />
-		<ClCompile Include="src\Core\main.cpp" />
-		<ClCompile Include="src\Core\pch.cpp" />
-		<ClCompile Include="src\Core\Time.cpp" />
-		<ClCompile Include="src\Core\Window.cpp" />
-		<ClCompile Include="src\Externals\glad.c" />
-		<ClCompile Include="src\Gameplay\Camera.cpp" />
-		<ClCompile Include="src\Gameplay\CubeSelection.cpp" />
-		<ClCompile Include="src\Gameplay\DebugUI.cpp" />
-		<ClCompile Include="src\Gameplay\HUD.cpp" />
-		<ClCompile Include="src\Gameplay\HUDSprites.cpp" />
-		<ClCompile Include="src\Gameplay\Player\Player.cpp" />
-		<ClCompile Include="src\Gameplay\Raycaster.cpp" />
-		<ClCompile Include="src\Gameplay\UIRenderer.cpp" />
-		<ClCompile Include="src\Rendering\ShaderProgram.cpp" />
-		<ClCompile Include="src\Rendering\stb_image.cpp" />
-		<ClCompile Include="src\Rendering\Text.cpp" />
-		<ClCompile Include="src\Rendering\Texture.cpp" />
-		<ClCompile Include="src\Rendering\Vao.cpp" />
-		<ClCompile Include="src\Rendering\Vbo.cpp" />
-		<ClCompile Include="src\World\Chunk.cpp" />
-		<ClCompile Include="src\World\Cube.cpp" />
-		<ClCompile Include="src\World\MeshThread.cpp" />
-		<ClCompile Include="src\World\TerrainGeneration.cpp" />
-		<ClCompile Include="src\World\TerrainThread.cpp" />
-		<ClCompile Include="src\World\World.cpp" />
-	</ItemGroup>
-	<ItemGroup>
-		<None Include=".clang-tidy" />
-		<None Include="src\Rendering\Shaders\cubeSelection.frag" />
-		<None Include="src\Rendering\Shaders\cubeSelection.vert" />
-		<None Include="src\Rendering\Shaders\fragment.frag" />
-		<None Include="src\Rendering\Shaders\text.frag" />
-		<None Include="src\Rendering\Shaders\text.vert" />
-		<None Include="src\Rendering\Shaders\UIShader.frag" />
-		<None Include="src\Rendering\Shaders\UIShader.vert" />
-		<None Include="src\Rendering\Shaders\vertex.vert" />
-	</ItemGroup>
-	<PropertyGroup Label="Globals">
-		<VCProjectVersion>18.0</VCProjectVersion>
-		<Keyword>Win32Proj</Keyword>
-		<ProjectGuid>{04343987-0bfb-444b-bae4-d4d92203af08}</ProjectGuid>
-		<RootNamespace>MinecraftClone</RootNamespace>
-		<WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-	</PropertyGroup>
-	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-		<ConfigurationType>Application</ConfigurationType>
-		<UseDebugLibraries>true</UseDebugLibraries>
-		<PlatformToolset>v145</PlatformToolset>
-		<CharacterSet>Unicode</CharacterSet>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-		<ConfigurationType>Application</ConfigurationType>
-		<UseDebugLibraries>false</UseDebugLibraries>
-		<PlatformToolset>v145</PlatformToolset>
-		<WholeProgramOptimization>true</WholeProgramOptimization>
-		<CharacterSet>Unicode</CharacterSet>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-		<ConfigurationType>Application</ConfigurationType>
-		<UseDebugLibraries>true</UseDebugLibraries>
-		<PlatformToolset>v145</PlatformToolset>
-		<CharacterSet>Unicode</CharacterSet>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-		<ConfigurationType>Application</ConfigurationType>
-		<UseDebugLibraries>false</UseDebugLibraries>
-		<PlatformToolset>v145</PlatformToolset>
-		<WholeProgramOptimization>true</WholeProgramOptimization>
-		<CharacterSet>Unicode</CharacterSet>
-	</PropertyGroup>
-	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-	<ImportGroup Label="ExtensionSettings">
-	</ImportGroup>
-	<ImportGroup Label="Shared">
-	</ImportGroup>
-	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-	</ImportGroup>
-	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-	</ImportGroup>
-	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-	</ImportGroup>
-	<ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-	</ImportGroup>
-	<PropertyGroup Label="UserMacros" />
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-		<IncludePath>C:\Users\ivanc\Desktop\libraries\Include;$(IncludePath)</IncludePath>
-		<LibraryPath>C:\Users\ivanc\Desktop\libraries\Libs;$(LibraryPath)</LibraryPath>
-		<RunCodeAnalysis>true</RunCodeAnalysis>
-		<CodeAnalysisRuleSet>CppCoreCheckRules.ruleset</CodeAnalysisRuleSet>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-		<IncludePath>C:\Users\ivanc\Desktop\libraries\Include;$(IncludePath)</IncludePath>
-		<LibraryPath>C:\Users\ivanc\Desktop\libraries\Libs;$(LibraryPath)</LibraryPath>
-		<RunCodeAnalysis>true</RunCodeAnalysis>
-		<CodeAnalysisRuleSet>CppCoreCheckRules.ruleset</CodeAnalysisRuleSet>
-	</PropertyGroup>
-	<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-		<ClCompile>
-			<WarningLevel>Level3</WarningLevel>
-			<SDLCheck>true</SDLCheck>
-			<PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-			<ConformanceMode>true</ConformanceMode>
-			<LanguageStandard>stdcpp20</LanguageStandard>
-		</ClCompile>
-		<Link>
-			<SubSystem>Console</SubSystem>
-			<GenerateDebugInformation>true</GenerateDebugInformation>
-		</Link>
-	</ItemDefinitionGroup>
-	<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-		<ClCompile>
-			<WarningLevel>Level3</WarningLevel>
-			<FunctionLevelLinking>true</FunctionLevelLinking>
-			<IntrinsicFunctions>true</IntrinsicFunctions>
-			<SDLCheck>true</SDLCheck>
-			<PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-			<ConformanceMode>true</ConformanceMode>
-			<LanguageStandard>stdcpp20</LanguageStandard>
-		</ClCompile>
-		<Link>
-			<SubSystem>Console</SubSystem>
-			<GenerateDebugInformation>true</GenerateDebugInformation>
-		</Link>
-	</ItemDefinitionGroup>
-	<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-		<ClCompile>
-			<WarningLevel>Level3</WarningLevel>
-			<SDLCheck>true</SDLCheck>
-			<PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-			<ConformanceMode>true</ConformanceMode>
-			<LanguageStandard>stdcpp20</LanguageStandard>
-			<AdditionalIncludeDirectories>C:\Users\ivanc\Desktop\c++\Minecraft Clone\Minecraft Clone\src;C:\Users\ivanc\Desktop\libraries\Include\FreeType;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-			<EnablePREfast>true</EnablePREfast>
-		</ClCompile>
-		<Link>
-			<SubSystem>Console</SubSystem>
-			<GenerateDebugInformation>true</GenerateDebugInformation>
-			<AdditionalDependencies>glfw3.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
-		</Link>
-	</ItemDefinitionGroup>
-	<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-		<ClCompile>
-			<WarningLevel>Level3</WarningLevel>
-			<FunctionLevelLinking>true</FunctionLevelLinking>
-			<IntrinsicFunctions>true</IntrinsicFunctions>
-			<SDLCheck>true</SDLCheck>
-			<PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-			<ConformanceMode>true</ConformanceMode>
-			<LanguageStandard>stdcpp20</LanguageStandard>
-			<AdditionalIncludeDirectories>C:\Users\ivanc\Desktop\c++\Minecraft Clone\Minecraft Clone\src;C:\Users\ivanc\Desktop\libraries\Include\FreeType;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-			<EnablePREfast>true</EnablePREfast>
-		</ClCompile>
-		<Link>
-			<SubSystem>Console</SubSystem>
-			<GenerateDebugInformation>true</GenerateDebugInformation>
-			<AdditionalDependencies>glfw3.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
-		</Link>
-	</ItemDefinitionGroup>
-	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-	<ImportGroup Label="ExtensionTargets">
-	</ImportGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="src\Assets\TextFont\1_Minecraft-Regular.otf" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="src\Assets\Textures\gui-atlas.png" />
+    <Image Include="src\Assets\Textures\oak-leaves-normal-original-default.png" />
+    <Image Include="src\Assets\Textures\oak-wood.png" />
+    <Image Include="src\Assets\Textures\textures.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Core\AppContext.h" />
+    <ClInclude Include="src\Core\Globals.h" />
+    <ClInclude Include="src\Core\pch.h" />
+    <ClInclude Include="src\Core\Time.h" />
+    <ClInclude Include="src\Core\Window.h" />
+    <ClInclude Include="src\Externals\FastNoiseLite.h" />
+    <ClInclude Include="src\Gameplay\AABB.h" />
+    <ClInclude Include="src\Gameplay\Camera.h" />
+    <ClInclude Include="src\Gameplay\CubeSelection.h" />
+    <ClInclude Include="src\Gameplay\DebugUI.h" />
+    <ClInclude Include="src\Gameplay\HUD.h" />
+    <ClInclude Include="src\Gameplay\HUDSprites.h" />
+    <ClInclude Include="src\Gameplay\Player\Player.h" />
+    <ClInclude Include="src\Gameplay\Raycaster.h" />
+    <ClInclude Include="src\Gameplay\UIRenderer.h" />
+    <ClInclude Include="src\Rendering\ShaderProgram.h" />
+    <ClInclude Include="src\Rendering\stb_image.h" />
+    <ClInclude Include="src\Rendering\Text.h" />
+    <ClInclude Include="src\Rendering\Texture.h" />
+    <ClInclude Include="src\Rendering\Vao.h" />
+    <ClInclude Include="src\Rendering\Vbo.h" />
+    <ClInclude Include="src\World\Chunk.h" />
+    <ClInclude Include="src\World\ChunkPackage.h" />
+    <ClInclude Include="src\World\Cube.h" />
+    <ClInclude Include="src\World\CubeData.h" />
+    <ClInclude Include="src\World\FileIOThread.h" />
+    <ClInclude Include="src\World\MeshThread.h" />
+    <ClInclude Include="src\World\TerrainGeneration.h" />
+    <ClInclude Include="src\World\TerrainThread.h" />
+    <ClInclude Include="src\World\TSQueue.h" />
+    <ClInclude Include="src\World\World.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Core\Globals.cpp" />
+    <ClCompile Include="src\Core\main.cpp" />
+    <ClCompile Include="src\Core\pch.cpp" />
+    <ClCompile Include="src\Core\Time.cpp" />
+    <ClCompile Include="src\Core\Window.cpp" />
+    <ClCompile Include="src\Externals\glad.c" />
+    <ClCompile Include="src\Gameplay\Camera.cpp" />
+    <ClCompile Include="src\Gameplay\CubeSelection.cpp" />
+    <ClCompile Include="src\Gameplay\DebugUI.cpp" />
+    <ClCompile Include="src\Gameplay\HUD.cpp" />
+    <ClCompile Include="src\Gameplay\HUDSprites.cpp" />
+    <ClCompile Include="src\Gameplay\Player\Player.cpp" />
+    <ClCompile Include="src\Gameplay\Raycaster.cpp" />
+    <ClCompile Include="src\Gameplay\UIRenderer.cpp" />
+    <ClCompile Include="src\Rendering\ShaderProgram.cpp" />
+    <ClCompile Include="src\Rendering\stb_image.cpp" />
+    <ClCompile Include="src\Rendering\Text.cpp" />
+    <ClCompile Include="src\Rendering\Texture.cpp" />
+    <ClCompile Include="src\Rendering\Vao.cpp" />
+    <ClCompile Include="src\Rendering\Vbo.cpp" />
+    <ClCompile Include="src\World\Chunk.cpp" />
+    <ClCompile Include="src\World\Cube.cpp" />
+    <ClCompile Include="src\World\FileIOThread.cpp" />
+    <ClCompile Include="src\World\MeshThread.cpp" />
+    <ClCompile Include="src\World\TerrainGeneration.cpp" />
+    <ClCompile Include="src\World\TerrainThread.cpp" />
+    <ClCompile Include="src\World\World.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".clang-tidy" />
+    <None Include="src\Rendering\Shaders\cubeSelection.frag" />
+    <None Include="src\Rendering\Shaders\cubeSelection.vert" />
+    <None Include="src\Rendering\Shaders\fragment.frag" />
+    <None Include="src\Rendering\Shaders\text.frag" />
+    <None Include="src\Rendering\Shaders\text.vert" />
+    <None Include="src\Rendering\Shaders\UIShader.frag" />
+    <None Include="src\Rendering\Shaders\UIShader.vert" />
+    <None Include="src\Rendering\Shaders\vertex.vert" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>18.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{04343987-0bfb-444b-bae4-d4d92203af08}</ProjectGuid>
+    <RootNamespace>MinecraftClone</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v145</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v145</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v145</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v145</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>C:\Users\ivanc\Desktop\libraries\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\ivanc\Desktop\libraries\Libs;$(LibraryPath)</LibraryPath>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>CppCoreCheckRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>C:\Users\ivanc\Desktop\libraries\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\ivanc\Desktop\libraries\Libs;$(LibraryPath)</LibraryPath>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>CppCoreCheckRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>C:\Users\ivanc\Desktop\c++\Minecraft Clone\Minecraft Clone\src;C:\Users\ivanc\Desktop\libraries\Include\FreeType;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <EnablePREfast>true</EnablePREfast>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>glfw3.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>C:\Users\ivanc\Desktop\c++\Minecraft Clone\Minecraft Clone\src;C:\Users\ivanc\Desktop\libraries\Include\FreeType;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <EnablePREfast>true</EnablePREfast>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>glfw3.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
 </Project>

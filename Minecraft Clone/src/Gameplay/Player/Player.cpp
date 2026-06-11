@@ -58,9 +58,7 @@ Camera* Player::getCamera() {
 
 void Player::update(float delta) {
 	calculateVelocity(delta);
-	// X axis collision
 
-	// Somehow braking the block bellow the player while crouching, does not make the player fall, but it does make the player able to jump.
 	if (m_crouch && m_onGround) {
 		checkShiftingCollisionAxis(delta, 0);
 		checkShiftingCollisionAxis(delta, 2);

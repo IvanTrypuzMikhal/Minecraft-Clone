@@ -16,7 +16,7 @@ void MeshThread::asyncMeshLoading() {
 			if (!m_meshRunning) break;
 
 			package = m_meshQueue.pop();
-			std::cout << "Creating mesh around chunk: " << package.coords.first << " " << package.coords.second << std::endl;
+			//std::cout << "Creating mesh around chunk: " << package.coords.first << " " << package.coords.second << std::endl;
 		}
 		package.center->buildMesh(package);
 		m_finishedMeshChunks.push(package.coords);

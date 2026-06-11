@@ -15,7 +15,7 @@
 
 struct ChunkPackage;
 
-class Chunk
+class Chunk : public std::enable_shared_from_this<Chunk>
 {
 public:
 	Chunk(const ShaderProgram* shader, int worldX, int worldZ, const TerrainGenerator& terrain);
@@ -40,12 +40,14 @@ public:
 	std::vector<uint32_t> getMesh();
 
 	[[nodiscard]] BlockType getBlock(int x, int y, int z) const;
+	[[nodiscard]] const std::unordered_map<uint16_t, BlockType>& getDeltasChanges() const;
 	void deleteBlock(int x, int y, int z);
 	void addBlock(int x, int y, int z, BlockType blockType);
 	void swapMesh();
 
 private:
 	std::array<std::array<std::array<BlockType, 16>, 256>,16> m_blocks = {BlockType::Air};
+	std::unordered_map<uint16_t, BlockType> m_deltasChanges;
 	std::vector<uint32_t> m_mesh;
 	std::vector<uint32_t> m_buildMesh;
 	const ShaderProgram* m_shader;

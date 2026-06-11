@@ -9,7 +9,7 @@ int main() {
 	CubeSelection cubeSelection;
 	UIRenderer uiRender;
 	HUD hud(uiRender, window);
-	DebugUI debugUI;
+	//DebugUI debugUI;
 
 	auto world = std::make_unique<World>(&shaderProgram);
 	Player player(world.get());
@@ -51,7 +51,7 @@ int main() {
 		hud.render();
 		// TODO: Horrendous performance reduction when rendering fuking text. 
 		// Gotta change this. Will leave it for now. Just for testing purposes.
-		debugUI.renderText(world , player.getCamera(), window, time);
+		//debugUI.renderText(world , player.getCamera(), window, time);
 
 		player.update(time.getDelta());
 

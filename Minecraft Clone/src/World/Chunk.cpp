@@ -107,9 +107,9 @@ bool Chunk::isAir(int x, int y, int z, const ChunkPackage& chunkPackage) {
 		z -= Globals::CHUNK_WIDTH;
 	}
 	
-	Chunk* targetChunk = nullptr;
+	std::shared_ptr<Chunk> targetChunk = nullptr;
 
-	if (chunkX == 0 && chunkZ == 0)   targetChunk = this;
+	if (chunkX == 0 && chunkZ == 0)   targetChunk = shared_from_this();
 	else if (chunkX == -1 && chunkZ == 0)  targetChunk = chunkPackage.left;
 	else if (chunkX == 1 && chunkZ == 0)   targetChunk = chunkPackage.right;
 	else if (chunkX == 0 && chunkZ == -1)  targetChunk = chunkPackage.back;
@@ -166,7 +166,7 @@ void Chunk::generateTrees(const ChunkPackage& chunkPackage) {
 				int leafY = leafStartHeight + y;
 				int leafZ = treeZ + z;
 
-				Chunk* targetChunk = this;
+				std::shared_ptr<Chunk> targetChunk = shared_from_this();
 
 
 				//TODO: Need to check spawned near the vertice of a chunk
@@ -183,13 +183,13 @@ void Chunk::generateTrees(const ChunkPackage& chunkPackage) {
 
 				if (leafZ >= 16) {
 					leafZ = leafZ - 16;
-					if (targetChunk == this) targetChunk = chunkPackage.front;
+					if (targetChunk == shared_from_this()) targetChunk = chunkPackage.front;
 					else targetChunk = nullptr;
 				}
 
 				else if (leafZ < 0) {
 					leafZ = leafZ + 16;
-					if (targetChunk == this) targetChunk = chunkPackage.back;
+					if (targetChunk == shared_from_this()) targetChunk = chunkPackage.back;
 					else targetChunk = nullptr;
 				}
 
@@ -284,12 +284,20 @@ BlockType Chunk::getBlock(int x, int y, int z) const {
 	return m_blocks.at(x).at(y).at(z);
 }
 
+const std::unordered_map<uint16_t, BlockType>& Chunk::getDeltasChanges() const {
+	return m_deltasChanges;
+}
+
 void Chunk::deleteBlock(int x, int y, int z) {
 	m_blocks.at(x).at(y).at(z) = BlockType::Air;
+	uint16_t deltaKey = (x << 12) | (y << 4) | z;
+	m_deltasChanges[deltaKey] = BlockType::Air;
 }
 
 void Chunk::addBlock(int x, int y, int z, BlockType blockType) {
 	m_blocks.at(x).at(y).at(z) = blockType;
+	uint16_t deltaKey = (x << 12) | (y << 4) | z;
+	m_deltasChanges[deltaKey] = blockType;
 }
 
 void Chunk::swapMesh() {

@@ -1,5 +1,5 @@
 #include "TerrainThread.h"
-
+#include <chrono>
 
 void TerrainThread::asyncTerrainLoading() {
 	std::cout << "Terrain thread started!" << std::endl;
@@ -17,12 +17,18 @@ void TerrainThread::asyncTerrainLoading() {
 			if (!m_terrainRunning) break;
 
 			coords = m_terrainQueue.pop();
-			std::cout << "Creating terrain for chunk: " << coords.first << " " << coords.second << std::endl;
+			//std::cout << "Creating terrain for chunk: " << coords.first << " " << coords.second << std::endl;
 
 		}
+		auto start = std::chrono::high_resolution_clock::now();
 
-		auto newChunk = std::make_unique<Chunk>(m_shader, coords.first, coords.second, m_terrain);
-		ChunkState chunkState = { std::move(newChunk), TERRAIN_READY };
+		auto newChunk = std::make_shared<Chunk>(m_shader, coords.first, coords.second, m_terrain);
+
+		auto end = std::chrono::high_resolution_clock::now();
+		float ms = std::chrono::duration<float, std::milli>(
+			std::chrono::high_resolution_clock::now() - start).count();
+
+		ChunkState chunkState = { std::move(newChunk), TERRAIN_READY, ms };
 		m_finishedTerrainChunks.push({ std::move(chunkState), coords });
 	}
 }

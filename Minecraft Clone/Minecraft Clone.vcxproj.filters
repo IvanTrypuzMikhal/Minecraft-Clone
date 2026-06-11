@@ -112,6 +112,7 @@
     <ClCompile Include="src\World\World.cpp">
       <Filter>World</Filter>
     </ClCompile>
+    <ClCompile Include="src\World\FileIOThread.cpp" />
   </ItemGroup>
   <!-- Headers -->
   <ItemGroup>
@@ -205,6 +206,7 @@
     <ClInclude Include="src\World\World.h">
       <Filter>World</Filter>
     </ClInclude>
+    <ClInclude Include="src\World\FileIOThread.h" />
   </ItemGroup>
   <!-- Shaders -->
   <ItemGroup>

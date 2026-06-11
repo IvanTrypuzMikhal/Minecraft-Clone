@@ -1,5 +1,12 @@
 #pragma once
 #include "Chunk.h"
+#include <cstring>
+
+struct PairHash {
+	size_t operator()(const std::pair<int, int>& p) const {
+		return (static_cast<size_t>(p.first) << 32) | static_cast<uint32_t>(p.second);
+	}
+};
 
 
 enum State : unsigned char
@@ -7,33 +14,54 @@ enum State : unsigned char
 	TERRAIN_READY,
 	DECORATED,
 	MESH_BUILDING,
-	MESH_READY
+	MESH_READY,
+	DIRTY,
+	SAVING,
+	LOADING,
 };
-
 
 struct ChunkState
 {
-	std::unique_ptr<Chunk> chunk;
+	std::shared_ptr<Chunk> chunk;
 	State state;
+	float totalMs{ 0.0f };
 };
 
 
 struct ChunkPackage
 {
 	std::pair<int, int> coords;
-	Chunk* center;
-	Chunk* left;
-	Chunk* right;
-	Chunk* front;
-	Chunk* back;
-	Chunk* topLeft;
-	Chunk* topRight;
-	Chunk* bottomLeft;
-	Chunk* bottomRight;
+	std::shared_ptr<Chunk> center;
+	std::shared_ptr<Chunk> left;
+	std::shared_ptr<Chunk> right;
+	std::shared_ptr<Chunk> front;
+	std::shared_ptr<Chunk> back;
+	std::shared_ptr<Chunk> topLeft;
+	std::shared_ptr<Chunk> topRight;
+	std::shared_ptr<Chunk> bottomLeft;
+	std::shared_ptr<Chunk> bottomRight;
 };
 
 struct FinishedChunk
 {
 	ChunkState chunkState;
 	std::pair<int, int> coords;
+};
+
+struct Delta
+{
+	uint16_t index;
+	unsigned char blockType;
+};
+
+struct Deltas
+{
+	Delta* deltas;
+	size_t count;
+};
+
+struct ChunkSnapshot
+{
+	std::pair<int, int> coords;
+	Deltas deltas_counts;
 };

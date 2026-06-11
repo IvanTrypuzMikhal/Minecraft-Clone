@@ -18,4 +18,5 @@ namespace Globals {
 
     constexpr float INTERACTION_DISTANCE{ 5.0 };
 
+    constexpr int REGION_BLOCK_SIZE{ 4 * 1024 }; 
 }
