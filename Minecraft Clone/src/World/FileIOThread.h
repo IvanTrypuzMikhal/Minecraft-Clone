@@ -17,7 +17,6 @@ public:
 
 	void asyncFileIO();
 	TSQueue<ChunkSnapshot>& saveInMemoryQueue();
-	std::unordered_set<std::pair<int, int>, PairHash>& mainMemSavedChunks();
 	TSQueue<ChunkSnapshot>& finishedFileIOChunks();
 	void notifyThread();
 private:
@@ -25,7 +24,12 @@ private:
 	bool m_fileIORunning{ true };
 	std::mutex m_fileIOMutex;
 	std::condition_variable m_fileIOCond;
+
+	// Save queues
 	TSQueue<ChunkSnapshot> m_finishedfileIOChunks;
 	TSQueue<ChunkSnapshot> m_saveInMemoryQueue;
-	std::unordered_set<std::pair<int, int>, PairHash> m_mainMemSavedChunks;
+
+	// Load queues
+	TSQueue<std::pair<int, int>> m_loadFromMemoryQueue;
+	TSQueue<ChunkSnapshot> m_loadedFromMemoryQueue;
 };

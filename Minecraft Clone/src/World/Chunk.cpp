@@ -129,10 +129,20 @@ std::vector<uint32_t> Chunk::getMesh(){
 	return m_mesh;
 }
 
-void Chunk::generateTrees(const ChunkPackage& chunkPackage) {
+void Chunk::generateTrees(const ChunkPackage& chunkPackage, int seed) {
 	
 	std::random_device rd;
-	std::mt19937 gen(rd());
+	
+	int32_t chunkX = chunkPackage.coords.first;
+	int32_t chunkZ = chunkPackage.coords.second;
+	std::cout << "Generating trees for chunk: " << chunkPackage.coords.first << ", " << chunkPackage.coords.second << std::endl;
+	uint64_t chunkSeed = seed;
+	chunkSeed ^= static_cast<uint64_t>(chunkX) * 0x451A4C37928A1499ULL;
+	chunkSeed ^= static_cast<uint64_t>(chunkZ) * 0xB84B9A7A64C26815ULL;
+
+	std::mt19937 gen(chunkSeed);
+
+
 	std::uniform_int_distribution<> location(0, Globals::CHUNK_WIDTH-1);
 	std::uniform_int_distribution<> randomHeight(5, 7);
 
@@ -297,7 +307,9 @@ void Chunk::deleteBlock(int x, int y, int z) {
 void Chunk::addBlock(int x, int y, int z, BlockType blockType) {
 	m_blocks.at(x).at(y).at(z) = blockType;
 	uint16_t deltaKey = (x << 12) | (y << 4) | z;
-	m_deltasChanges[deltaKey] = blockType;
+	m_deltasChanges.insert({ deltaKey, blockType });
+	//std::cout << "Block added at: " << x << ", " << y << ", " << z << " with type: " << static_cast<int>(blockType) << std::endl;
+	//std::cout << "New block with delta: " << deltaKey << std::endl;
 }
 
 void Chunk::swapMesh() {

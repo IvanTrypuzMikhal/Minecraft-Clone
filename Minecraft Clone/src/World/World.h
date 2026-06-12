@@ -49,6 +49,7 @@ private:
 	ShaderProgram* m_shader;
 	std::unordered_set<std::pair<int, int>, PairHash> m_requestedChunks;
 	std::unordered_map<std::pair<int, int>, Delta*, PairHash> m_savingChunks;
+	std::unordered_set<std::pair<int, int>, PairHash> m_mainMemSavedChunks;
 		
 	MeshThread m_meshThread;
 	TerrainThread m_terrainThread;

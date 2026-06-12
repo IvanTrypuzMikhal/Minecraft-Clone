@@ -18,7 +18,10 @@ void World::renderWorld(const glm::mat4& projection) {
 				}
 			}
 			else {
-				// If not ready to render then we enqueue the chunk to generate its terrain
+				// If not ready to render then we need to do several checks before enqueing it for terrain generation.
+				// We first need to check if its in saving chunks, if it is then we need to rebuild the chunk from the deltas stored.
+				// If its already saved in memory then we need to enqueue it for terrain gen and then apply the deltas when the base terrain is ready.
+				// If not in saving chunks, not in memory and not requested then we just generate it as usual.
 				if (!m_requestedChunks.contains(coords)) {
 					m_requestedChunks.insert(coords);
 					m_terrainThread.terrainQueue().push(coords);
@@ -71,8 +74,9 @@ void World::checkChunksWithTerrain() {
 					auto start = std::chrono::high_resolution_clock::now();
 					
 					ChunkPackage package;
+					package.coords = coord;
 					getNearbyChunks(coord, package);
-					it->second.chunk->generateTrees(package);
+					it->second.chunk->generateTrees(package, m_terrain.getSeed());
 					it->second.state = DECORATED;
 					
 					it->second.totalMs += std::chrono::duration<float, std::milli>(
@@ -110,16 +114,16 @@ void World::checkFinishedChunksWithMesh() {
 			it->second.chunk->swapMesh();
 			it->second.chunk->setBuffers();
 			if (it->second.state != DIRTY) {
-				std::cout << "Chunk " << coords.first << "," << coords.second << " mesh ready for rendering.\n";
+				//std::cout << "Chunk " << coords.first << "," << coords.second << " mesh ready for rendering.\n";
 				it->second.state = MESH_READY;
 			}
 			else if(it->second.state == DIRTY){
-				std::cout << "Chunk " << coords.first << "," << coords.second << " mesh ready for rendering but its dirty, it will be saved to memory and freed from RAM when its out of range.\n";
+				//std::cout << "Chunk " << coords.first << "," << coords.second << " mesh ready for rendering but its dirty, it will be saved to memory and freed from RAM when its out of range.\n";
 			}
 			it->second.totalMs += std::chrono::duration<float, std::milli>(
 				std::chrono::high_resolution_clock::now() - start).count();
-			std::cout << "Chunk " << coords.first << "," << coords.second
-				<< " total: " << it->second.totalMs << "ms\n";
+			//std::cout << "Chunk " << coords.first << "," << coords.second
+			//	<< " total: " << it->second.totalMs << "ms\n";
 
 		}
 	}
@@ -131,24 +135,28 @@ void World::checkChunksToBeFreed() {
 	int minZ = static_cast<int>(m_cameraPosition.z - Globals::RENDER_RADIOUS) - 5;
 	int maxZ = static_cast<int>(m_cameraPosition.z + Globals::RENDER_RADIOUS) + 5;
 
+	std::vector<std::pair<int, int>> chunksToErase;
 
 	for (const auto& [coords, chunkState] : m_chunks) {
 		//std::cout << "Checking chunk " << x << "," << z << " for freeing.\n";
 		
-		if ( !(coords.first < minX || coords.first > maxX && coords.second < minZ || coords.second > maxZ)) continue;
+		if (coords.first >= minX && coords.first <= maxX && coords.second >= minZ && coords.second <= maxZ)	continue;
 		
 		// Just delete the chunk and free its memory. Not modifyed so it can be rebuilded again if needed.
-		if (chunkState.state == MESH_READY) {
-			m_chunks.erase(coords);
-			std::cout << "Chunk " << coords.first << "," << coords.second << " erased from chunk map.\n";
+		if (chunkState.state == MESH_READY ||
+			chunkState.state == TERRAIN_READY ||
+			chunkState.state == DECORATED ||
+			chunkState.state == MESH_BUILDING) {
+			chunksToErase.push_back(coords);
 		}
 		// If its in an other state fron dirty then we dont touch it. It has to be dirty to be saved to memory if we want to free it from RAM.
 		else if (chunkState.state == DIRTY) {
-			std::cout << "Chunk " << coords.first << "," << coords.second << " is dirty, saving to memory and erasing from chunk map.\n";
+			chunksToErase.push_back(coords);
+			//std::cout << "Chunk " << coords.first << "," << coords.second << " is dirty, saving to memory and erasing from chunk map.\n";
 			// Just for learning purposes I want to use C style memory management instead of using modern C++ ones.
 			// So I can learn how to manage memory by myself and understand better how it works.
 
-			// We create a "copy" of the chunks blocks to be able to save it to memory and then free the chunk itself.
+			// We create a "copy" of the chunks blocks (deltas) to be able to save it to memory and then free the chunk itself.
 			// This way we dont need to wait for the IO thread to finish saving the chunk to free its memory and we can do it in parallel.
 			// Also if the player comes back to the chunk before the chunk is saved we can just load the chunks data from memory.
 			// When the chunk is saved to disk we can free the memory used for the snapshot.
@@ -165,22 +173,27 @@ void World::checkChunksToBeFreed() {
 			for (const auto& [index, blockType] : deltas) {
 				Delta delta;
 				delta.index = index;
+				//std::cout << "Saving delta with index: " << index << " and block type: " << static_cast<int>(blockType) << std::endl;
 				delta.blockType = static_cast<uint8_t>(blockType);
 				snapshot.deltas_counts.deltas[i] = delta;
 				i++;
 			}
 
 			m_fileIOThread.saveInMemoryQueue().push(snapshot);
-			m_chunks.erase(coords);
 			m_savingChunks.insert({ snapshot.coords, snapshot.deltas_counts.deltas });
 			m_fileIOThread.notifyThread();
 		}
+	}
 
+	for (const auto& coords : chunksToErase) {
+		m_chunks.erase(coords);
 	}
 
 	while (!m_fileIOThread.finishedFileIOChunks().empty()) {
 		ChunkSnapshot snapshot = m_fileIOThread.finishedFileIOChunks().pop();
+		m_savingChunks.erase(snapshot.coords);
 		free(snapshot.deltas_counts.deltas);
+		m_mainMemSavedChunks.insert(snapshot.coords);
 	}
 }
 

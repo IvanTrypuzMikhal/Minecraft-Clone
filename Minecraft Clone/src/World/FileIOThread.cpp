@@ -19,10 +19,17 @@ void FileIOThread::asyncFileIO() {
 			snapshot = m_saveInMemoryQueue.pop();
 			std::cout << "Saving chunk to memory: " << snapshot.coords.first << " " << snapshot.coords.second << std::endl;
 		}
+		// Region coords
+		int regionX = snapshot.coords.first >> 5;
+		int regionZ = snapshot.coords.second >> 5;
+
+		// Local chunk coords in the region
+		int localX = snapshot.coords.first & 31;
+		int localZ = snapshot.coords.second & 31;
 
 		// Saving chunk to memory logic here.
 		// We get chunks region
-		std::string path = "src/regions/regions." + std::to_string(snapshot.coords.first % 32) + "." + std::to_string(snapshot.coords.second % 32) + ".bin";
+		std::string path = "src/regions/regions." + std::to_string(regionX) + "." + std::to_string(regionZ) + ".bin";
 		file.open(path, std::ios::in | std::ios::out | std::ios::binary);
 
 		if (!file.is_open()) {
@@ -41,7 +48,13 @@ void FileIOThread::asyncFileIO() {
 			return;
 		}
 
-		int index = (snapshot.coords.second % 32) * 32 + (snapshot.coords.first % 32);
+		int index = localZ * 32 + localX;
+
+		std::cout << "Chunk coords: " << snapshot.coords.first << ", " << snapshot.coords.second << std::endl;
+		std::cout << "File path: " << path << std::endl;
+		std::cout << "Chunk index in region: " << localX << ", " << localZ << std::endl;
+		std::cout << "Chunk entry index: " << index << std::endl;
+
 		// First 1024 entries are for chunk coordinates and the number of regions that it occupies
 		// Thus the size of the entrie will be 4 bytes or uint32_t
 
@@ -70,10 +83,6 @@ void FileIOThread::asyncFileIO() {
 
 TSQueue<ChunkSnapshot>& FileIOThread::saveInMemoryQueue() {
 	return m_saveInMemoryQueue;
-}
-
-std::unordered_set<std::pair<int, int>, PairHash>& FileIOThread::mainMemSavedChunks() {
-	return m_mainMemSavedChunks;
 }
 
 TSQueue<ChunkSnapshot>& FileIOThread::finishedFileIOChunks() {

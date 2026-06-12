@@ -1,9 +1,9 @@
 #include "TerrainGeneration.h"
 
-TerrainGenerator::TerrainGenerator(int seed) {
+TerrainGenerator::TerrainGenerator() {
 
     m_noise.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
-    m_noise.SetSeed(seed);
+    m_noise.SetSeed(m_seed);
 
     m_noise.SetFractalType(FastNoiseLite::FractalType_FBm);
     m_noise.SetFractalOctaves(5);

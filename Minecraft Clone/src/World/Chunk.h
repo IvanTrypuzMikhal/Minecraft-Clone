@@ -27,7 +27,7 @@ public:
 
 	void fillBlocks(const TerrainGenerator& terrain);
 
-	void generateTrees(const ChunkPackage& chunkPackage);
+	void generateTrees(const ChunkPackage& chunkPackage, int seed);
 
 	void pushVertex(uint32_t packedVertex);
 
