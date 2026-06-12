@@ -300,18 +300,49 @@ const std::unordered_map<uint16_t, BlockType>& Chunk::getDeltasChanges() const {
 
 void Chunk::deleteBlock(int x, int y, int z) {
 	m_blocks.at(x).at(y).at(z) = BlockType::Air;
-	uint16_t deltaKey = (x << 12) | (y << 4) | z;
-	m_deltasChanges[deltaKey] = BlockType::Air;
+	addDelta(x, y, z, BlockType::Air);
 }
 
 void Chunk::addBlock(int x, int y, int z, BlockType blockType) {
 	m_blocks.at(x).at(y).at(z) = blockType;
-	uint16_t deltaKey = (x << 12) | (y << 4) | z;
-	m_deltasChanges.insert({ deltaKey, blockType });
+	addDelta(x, y, z, blockType);
+
 	//std::cout << "Block added at: " << x << ", " << y << ", " << z << " with type: " << static_cast<int>(blockType) << std::endl;
 	//std::cout << "New block with delta: " << deltaKey << std::endl;
 }
 
 void Chunk::swapMesh() {
 	std::swap(m_mesh, m_buildMesh);
+}
+
+void Chunk::applyDeltas(const ChunkSnapshot& snapshot){
+	for (int i = 0; i < snapshot.deltas_counts.count; i++) {
+		const Delta& delta = snapshot.deltas_counts.deltas[i];
+		int x = (delta.index >> 12) & 0xF;
+		int y = (delta.index >> 4) & 0xFF;
+		int z = delta.index & 0xF;
+		BlockType blockType = blockTypeCast(delta.blockType);
+		m_blocks.at(x).at(y).at(z) = blockType;
+		// We want to restore the chunks deltas. If not done when first time reloaded the chunk from memory it'll will apply the deltas but not store them in the chunk.
+		// Second time the chunk is created without deltas becouse when destroyed second time it had no deltas stored.
+		addDelta(x, y, z, blockType);
+	}
+}
+
+BlockType Chunk::blockTypeCast(unsigned char id) const{
+	switch (id) {
+	case 0: return BlockType::Air;
+	case 1: return BlockType::Grass;
+	case 2: return BlockType::Dirt;
+	case 3: return BlockType::Stone;
+	case 4: return BlockType::Bedrock;
+	case 5: return BlockType::OakLeaf;
+	case 6: return BlockType::OakLog;
+	default: return BlockType::Air;
+	}
+}
+
+void Chunk::addDelta(int x, int y, int z, BlockType blockType) {
+	uint16_t deltaKey = (x << 12) | (y << 4) | z;
+	m_deltasChanges[deltaKey] = blockType;
 }

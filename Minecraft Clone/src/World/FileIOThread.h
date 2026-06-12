@@ -18,6 +18,8 @@ public:
 	void asyncFileIO();
 	TSQueue<ChunkSnapshot>& saveInMemoryQueue();
 	TSQueue<ChunkSnapshot>& finishedFileIOChunks();
+	TSQueue<std::pair<int, int>>& loadFromMemoryQueue();
+	TSQueue<ChunkSnapshot>& finishedLoadQueue();
 	void notifyThread();
 private:
 	std::thread m_fileIOThread;
@@ -31,5 +33,5 @@ private:
 
 	// Load queues
 	TSQueue<std::pair<int, int>> m_loadFromMemoryQueue;
-	TSQueue<ChunkSnapshot> m_loadedFromMemoryQueue;
+	TSQueue<ChunkSnapshot> m_finishedLoadFromMemoryQueue;
 };

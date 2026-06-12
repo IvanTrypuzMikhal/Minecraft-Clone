@@ -35,6 +35,7 @@ public:
 	void checkChunksWithTerrain();
 	void checkFinishedChunksWithMesh();
 	void checkChunksToBeFreed();
+	void checkFinishedChunksLoadedFromMemory();
 	void enqueMeshByCoords(std::pair<int, int> chunkPos);
 	void checkCollisionRadious(glm::vec3 position, const AABB& playerAABB, CollisionRes& res) const;
 	void getBlocksBellow(glm::vec3 position, std::vector<AABB>& blocksBellow) const;
@@ -48,8 +49,9 @@ private:
 	std::unordered_map<std::pair<int, int>, ChunkState, PairHash> m_chunks;
 	ShaderProgram* m_shader;
 	std::unordered_set<std::pair<int, int>, PairHash> m_requestedChunks;
-	std::unordered_map<std::pair<int, int>, Delta*, PairHash> m_savingChunks;
+	std::unordered_map<std::pair<int, int>, Deltas, PairHash> m_savingChunks;
 	std::unordered_set<std::pair<int, int>, PairHash> m_mainMemSavedChunks;
+	std::unordered_map<std::pair<int, int>, ChunkSnapshot, PairHash> m_pendingDeltas;
 		
 	MeshThread m_meshThread;
 	TerrainThread m_terrainThread;

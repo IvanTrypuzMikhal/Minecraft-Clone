@@ -20,11 +20,30 @@ void World::renderWorld(const glm::mat4& projection) {
 			else {
 				// If not ready to render then we need to do several checks before enqueing it for terrain generation.
 				// We first need to check if its in saving chunks, if it is then we need to rebuild the chunk from the deltas stored.
-				// If its already saved in memory then we need to enqueue it for terrain gen and then apply the deltas when the base terrain is ready.
+				// If its already saved in memory then we need to notify file thread to retreive a chunks deltas. Then we enqueue for terrain generation.
 				// If not in saving chunks, not in memory and not requested then we just generate it as usual.
 				if (!m_requestedChunks.contains(coords)) {
-					m_requestedChunks.insert(coords);
-					m_terrainThread.terrainQueue().push(coords);
+					if (m_savingChunks.contains(coords)) {
+						
+						// We rebuild the snapshot from the deltas stored in memory and enqueue it for terrain generation.
+						auto it = m_savingChunks.find(coords);
+						ChunkSnapshot snapshot;
+						snapshot.coords = it->first;
+						snapshot.deltas_counts.count = it->second.count;
+						snapshot.deltas_counts.deltas = it->second.deltas;
+
+						m_terrainThread.terrainQueue().push(coords);
+						m_pendingDeltas.insert({ coords, snapshot });
+					}
+					else if (m_mainMemSavedChunks.contains(coords)) {
+						m_fileIOThread.loadFromMemoryQueue().push(coords);
+						m_terrainThread.terrainQueue().push(coords);
+						m_fileIOThread.notifyThread();
+					}
+					else {
+						m_requestedChunks.insert(coords);
+						m_terrainThread.terrainQueue().push(coords);
+					}
 				}
 				if (!m_requestedChunks.empty()) m_terrainThread.notifyThread();
 			}
@@ -39,6 +58,8 @@ void World::updateWorldState() {
 	checkFinishedChunksWithMesh();
 	// Check chunks that are out of range to be freed from memory
 	checkChunksToBeFreed();
+	// Check chunks with finished loading from memory
+	checkFinishedChunksLoadedFromMemory();
 }
 // TODO: Change approach to a buffer/queued based one.
 // When a new chunk arrives check for all chunks stored in some buffer which need to be updated
@@ -79,6 +100,13 @@ void World::checkChunksWithTerrain() {
 					it->second.chunk->generateTrees(package, m_terrain.getSeed());
 					it->second.state = DECORATED;
 					
+					// If the chunk has deltas stored we apply them
+					if (m_pendingDeltas.contains(coord)) {
+						it->second.chunk->applyDeltas(m_pendingDeltas[coord]);
+						free(m_pendingDeltas[coord].deltas_counts.deltas);
+						m_pendingDeltas.erase(coord);
+					}
+
 					it->second.totalMs += std::chrono::duration<float, std::milli>(
 						std::chrono::high_resolution_clock::now() - start).count();
 
@@ -135,6 +163,7 @@ void World::checkChunksToBeFreed() {
 	int minZ = static_cast<int>(m_cameraPosition.z - Globals::RENDER_RADIOUS) - 5;
 	int maxZ = static_cast<int>(m_cameraPosition.z + Globals::RENDER_RADIOUS) + 5;
 
+	// We cant delete chunks while iterating the map because it will cause undefined behavior, so we just store the chunks to be deleted and after iterating we delete them.
 	std::vector<std::pair<int, int>> chunksToErase;
 
 	for (const auto& [coords, chunkState] : m_chunks) {
@@ -180,7 +209,7 @@ void World::checkChunksToBeFreed() {
 			}
 
 			m_fileIOThread.saveInMemoryQueue().push(snapshot);
-			m_savingChunks.insert({ snapshot.coords, snapshot.deltas_counts.deltas });
+			m_savingChunks.insert({ snapshot.coords, { snapshot.deltas_counts.deltas, deltas.size() } });
 			m_fileIOThread.notifyThread();
 		}
 	}
@@ -196,6 +225,14 @@ void World::checkChunksToBeFreed() {
 		m_mainMemSavedChunks.insert(snapshot.coords);
 	}
 }
+
+void World::checkFinishedChunksLoadedFromMemory() {
+	while (!m_fileIOThread.finishedLoadQueue().empty()) {
+		ChunkSnapshot snapshot = m_fileIOThread.finishedLoadQueue().pop();
+		m_pendingDeltas[snapshot.coords] = snapshot;
+	}
+}
+
 
 void World::updateCameraPosition(const glm::vec3& position) {
 	m_cameraPosition.x = std::floor(position.x / Globals::CHUNK_WIDTH);

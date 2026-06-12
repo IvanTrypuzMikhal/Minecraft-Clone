@@ -14,6 +14,7 @@
 #include <array>
 
 struct ChunkPackage;
+struct ChunkSnapshot;
 
 class Chunk : public std::enable_shared_from_this<Chunk>
 {
@@ -22,20 +23,16 @@ public:
 	~Chunk() = default;
 
 	void buildMesh(const ChunkPackage& chunkPackage);
-
 	void render(const glm::mat4& projection);
-
 	void fillBlocks(const TerrainGenerator& terrain);
-
 	void generateTrees(const ChunkPackage& chunkPackage, int seed);
-
 	void pushVertex(uint32_t packedVertex);
-
 	void setBuffers();
-
+	void applyDeltas(const ChunkSnapshot& snapshot);
 	bool isAir(int x, int y, int z, const ChunkPackage& chunkPackage) ;
-
 	bool castsAO(BlockType type);
+	void addDelta(int x, int y, int z, BlockType blockType);
+
 
 	std::vector<uint32_t> getMesh();
 
@@ -44,6 +41,7 @@ public:
 	void deleteBlock(int x, int y, int z);
 	void addBlock(int x, int y, int z, BlockType blockType);
 	void swapMesh();
+	BlockType blockTypeCast(unsigned char id) const;
 
 private:
 	std::array<std::array<std::array<BlockType, 16>, 256>,16> m_blocks = {BlockType::Air};
