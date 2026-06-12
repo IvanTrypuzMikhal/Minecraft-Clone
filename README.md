@@ -3,7 +3,7 @@
 A Minecraft clone built from scratch in C++ and OpenGL.  
 Started as a learning project.
 
-![gameplay](https://imgur.com/a/2SThF3X)
+<img width="426" height="240" alt="MinecraftCloneGIFDemo" src="https://github.com/user-attachments/assets/7cd812fc-5626-48bc-9e3e-c29bc5b1aa64" />
 
 ## Features
 
@@ -37,16 +37,13 @@ mkdir build && cd build
 cmake ..
 make -j$(nproc)
 ./MinecraftClone
-```<img width="426" height="240" alt="MinecraftCloneGIFDemo" src="https://github.com/user-attachments/assets/8932cc09-9091-426a-8d32-0d1d09015f30" />
-
+```
 **Dependencies:** GLFW3, FreeType, GLM, OpenGL
 
 On Fedora:
 ```bash
-sudo dnf install glfw-devel freetype-devel glm-devel mesa-libGL-devel<img width="426" height="240" alt="MinecraftCloneGIFDemo" src="https://github.com/user-attachments/assets/b6a5487b-d6c4-4d11-ba67-6f6ca3230081" />
-<img width="426" height="240" alt="MinecraftCloneGIFDemo" src="https://github.com/user-attachments/assets/9f949d39-0372-4c32-8dfd-800fee28bbf2" />
-
-
+sudo dnf install glfw-devel freetype-devel glm-devel mesa-libGL-devel
+```
 On Ubuntu/Debian:
 ```bash
 sudo apt install libglfw3-dev libfreetype-dev libglm-dev
