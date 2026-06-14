@@ -113,6 +113,8 @@
       <Filter>World</Filter>
     </ClCompile>
     <ClCompile Include="src\World\FileIOThread.cpp" />
+    <ClCompile Include="src\Core\Engine.cpp" />
+    <ClCompile Include="src\Rendering\ResourceManager.cpp" />
   </ItemGroup>
   <!-- Headers -->
   <ItemGroup>
@@ -207,6 +209,8 @@
       <Filter>World</Filter>
     </ClInclude>
     <ClInclude Include="src\World\FileIOThread.h" />
+    <ClInclude Include="src\Core\Engine.h" />
+    <ClInclude Include="src\Rendering\ResourceManager.h" />
   </ItemGroup>
   <!-- Shaders -->
   <ItemGroup>

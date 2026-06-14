@@ -5,7 +5,7 @@
 class TerrainThread
 {
 public:
-	TerrainThread(ShaderProgram* shader, TerrainGenerator& terrain) :  m_shader{ shader }, m_terrain{ terrain } {
+	TerrainThread(std::shared_ptr<ShaderProgram> shader, TerrainGenerator& terrain) :  m_shader{ shader }, m_terrain{ terrain } {
 		m_terrainThread = std::thread(&TerrainThread::asyncTerrainLoading, this);
 	}
 	~TerrainThread() {
@@ -28,6 +28,6 @@ private:
 	TSQueue<FinishedChunk> m_finishedTerrainChunks;
 	TSQueue<std::pair<int, int>> m_terrainQueue;
 
-	ShaderProgram* m_shader;
+	std::shared_ptr<ShaderProgram> m_shader;
 	TerrainGenerator& m_terrain;
 };

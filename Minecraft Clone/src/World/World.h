@@ -19,7 +19,7 @@ struct BlockHit;
 class World
 {
 public:
-	World(ShaderProgram* shader) : m_terrain{ TerrainGenerator() }, m_shader { shader }, m_terrainThread{ TerrainThread(m_shader, m_terrain) } {
+	World(std::shared_ptr<ShaderProgram> shader) : m_terrain{ TerrainGenerator() }, m_shader { shader }, m_terrainThread{TerrainThread(m_shader, m_terrain)} {
 	}
 	~World() = default;
 
@@ -47,7 +47,7 @@ public:
 private:
 
 	std::unordered_map<std::pair<int, int>, ChunkState, PairHash> m_chunks;
-	ShaderProgram* m_shader;
+	std::shared_ptr<ShaderProgram> m_shader;
 	std::unordered_set<std::pair<int, int>, PairHash> m_requestedChunks;
 	std::unordered_map<std::pair<int, int>, Deltas, PairHash> m_savingChunks;
 	std::unordered_set<std::pair<int, int>, PairHash> m_mainMemSavedChunks;

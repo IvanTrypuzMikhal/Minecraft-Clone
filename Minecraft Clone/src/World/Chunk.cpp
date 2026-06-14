@@ -5,7 +5,7 @@ static BlockType getBlockType(int y, int surfaceY);
 static std::pair<int, int> getAtlasCoordinates(BlockType type, BlockFace face);
 uint32_t packVertex(float x, float y, float z, float u, float v, int textureId, int ao);
 
-Chunk::Chunk(const ShaderProgram* shader, int x, int z, const TerrainGenerator& terrain) : m_shader{ shader }, m_worldPosition{x, z} {
+Chunk::Chunk(const std::shared_ptr<ShaderProgram> shader, int x, int z, const TerrainGenerator& terrain) : m_shader{ shader }, m_worldPosition{x, z} {
 	fillBlocks(terrain);
 }
 

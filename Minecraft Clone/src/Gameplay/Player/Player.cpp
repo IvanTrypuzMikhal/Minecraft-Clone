@@ -73,7 +73,6 @@ void Player::update(float delta) {
 	setSpeed();
 }
 
-
 void Player::updateAABB() {
 	float halfWidth = 0.3f;
 	float height = m_crouch ? 1.5 : 1.8f;

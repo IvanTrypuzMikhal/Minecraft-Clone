@@ -29,6 +29,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Core\AppContext.h" />
+    <ClInclude Include="src\Core\Engine.h" />
     <ClInclude Include="src\Core\Globals.h" />
     <ClInclude Include="src\Core\pch.h" />
     <ClInclude Include="src\Core\Time.h" />
@@ -43,6 +44,7 @@
     <ClInclude Include="src\Gameplay\Player\Player.h" />
     <ClInclude Include="src\Gameplay\Raycaster.h" />
     <ClInclude Include="src\Gameplay\UIRenderer.h" />
+    <ClInclude Include="src\Rendering\ResourceManager.h" />
     <ClInclude Include="src\Rendering\ShaderProgram.h" />
     <ClInclude Include="src\Rendering\stb_image.h" />
     <ClInclude Include="src\Rendering\Text.h" />
@@ -61,6 +63,7 @@
     <ClInclude Include="src\World\World.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Core\Engine.cpp" />
     <ClCompile Include="src\Core\Globals.cpp" />
     <ClCompile Include="src\Core\main.cpp" />
     <ClCompile Include="src\Core\pch.cpp" />
@@ -75,6 +78,7 @@
     <ClCompile Include="src\Gameplay\Player\Player.cpp" />
     <ClCompile Include="src\Gameplay\Raycaster.cpp" />
     <ClCompile Include="src\Gameplay\UIRenderer.cpp" />
+    <ClCompile Include="src\Rendering\ResourceManager.cpp" />
     <ClCompile Include="src\Rendering\ShaderProgram.cpp" />
     <ClCompile Include="src\Rendering\stb_image.cpp" />
     <ClCompile Include="src\Rendering\Text.cpp" />

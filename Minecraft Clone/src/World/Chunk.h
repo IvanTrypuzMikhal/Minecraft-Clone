@@ -19,7 +19,7 @@ struct ChunkSnapshot;
 class Chunk : public std::enable_shared_from_this<Chunk>
 {
 public:
-	Chunk(const ShaderProgram* shader, int worldX, int worldZ, const TerrainGenerator& terrain);
+	Chunk(const std::shared_ptr<ShaderProgram> shader, int worldX, int worldZ, const TerrainGenerator& terrain);
 	~Chunk() = default;
 
 	void buildMesh(const ChunkPackage& chunkPackage);
@@ -48,7 +48,7 @@ private:
 	std::unordered_map<uint16_t, BlockType> m_deltasChanges;
 	std::vector<uint32_t> m_mesh;
 	std::vector<uint32_t> m_buildMesh;
-	const ShaderProgram* m_shader;
+	const std::shared_ptr<ShaderProgram> m_shader;
 	std::unique_ptr<Vao> m_vao;
 	std::unique_ptr<Vbo> m_vbo;
 	std::pair<int, int> m_worldPosition;
