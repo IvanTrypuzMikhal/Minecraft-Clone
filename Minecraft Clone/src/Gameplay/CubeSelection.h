@@ -11,7 +11,7 @@ public:
 	void renderOutline(int x, int y, int z, const glm::mat4& projection, const glm::mat4& view) const;
 
 private:
-	ShaderProgram m_shaderProgram;
+	std::shared_ptr<ShaderProgram> m_shaderProgram;
 	std::unique_ptr<Vao> m_vao;
 	std::unique_ptr<Vbo> m_vbo;
 };

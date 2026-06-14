@@ -1,6 +1,7 @@
 #include "UIRenderer.h"
+#include <Rendering/ResourceManager.h>
 
-UIRenderer::UIRenderer(): m_texture("src/Assets/Textures/gui-atlas.png", GL_RGBA), m_shaderProgram("src/Rendering/Shaders/UIShader.vert", "src/Rendering/Shaders/UIShader.frag") {
+UIRenderer::UIRenderer() : m_texture{ ResourceManager::getTexture("uiTexture") }, m_shaderProgram { ResourceManager::getShaderProgram("uiShader")} {
     std::vector<VertexAttribute> block{ {0, 2, 0, GL_FLOAT }, {1, 2, 2, GL_FLOAT} };
     m_vbo = std::make_unique<Vbo>();
     m_vao = std::make_unique<Vao>(m_vbo->get(), 4, block);
@@ -14,9 +15,9 @@ void UIRenderer::flush(const Window* window) {
     glDisable(GL_DEPTH_TEST);
     if (m_batch.empty()) return;
     m_vbo->upload(m_batch);
-    m_shaderProgram.use();
-    m_texture.setTexture();
-    m_shaderProgram.setMat4("projection",glm::ortho(0.0f, static_cast<float>(window->getWidth()), static_cast<float>(window->getHeight()), 0.0f));
+    m_shaderProgram->use();
+    m_texture->setTexture();
+    m_shaderProgram->setMat4("projection",glm::ortho(0.0f, static_cast<float>(window->getWidth()), static_cast<float>(window->getHeight()), 0.0f));
     m_vao->use();
     glDrawArrays(GL_TRIANGLES, 0, m_batch.size() / 4);
     glEnable(GL_DEPTH_TEST);

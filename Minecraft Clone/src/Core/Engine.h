@@ -15,16 +15,9 @@ public:
 private:
 
 	// Window
-	Window m_window;
+	std::unique_ptr<Window> m_window;
 	AppContext m_context;
 	Time m_time;
-
-	// Shader Programs
-	std::shared_ptr<ShaderProgram> m_worldShaderProgram;
-	std::shared_ptr<ShaderProgram> m_textShaderProgram;
-
-	// Textures
-	std::shared_ptr<Texture> m_texture;
 
 	// World
 	std::unique_ptr<World> m_world;
@@ -33,7 +26,7 @@ private:
 	std::unique_ptr<Player> m_player;
 
 	// UI's / Visuals
-	CubeSelection m_cubeSelection;
-	UIRenderer m_uiRenderer;
-	HUD m_hud;
+	std::unique_ptr<CubeSelection> m_cubeSelection;
+	std::unique_ptr<UIRenderer> m_uiRenderer;
+	std::unique_ptr<HUD> m_hud;
 };

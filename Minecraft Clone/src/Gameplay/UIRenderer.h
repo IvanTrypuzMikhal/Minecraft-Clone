@@ -20,8 +20,8 @@ public:
 private:
 	std::vector<float> m_batch;
 	
-	ShaderProgram m_shaderProgram;
-	Texture m_texture;
+	std::shared_ptr<ShaderProgram> m_shaderProgram;
+	std::shared_ptr<Texture> m_texture;
 	std::unique_ptr<Vao> m_vao;
 	std::unique_ptr<Vbo> m_vbo;
 };
