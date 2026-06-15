@@ -11,6 +11,7 @@ public:
 	void update();
 	void render();
 	void processInput();
+	void stateUpdate();
 
 private:
 
@@ -29,4 +30,9 @@ private:
 	std::unique_ptr<CubeSelection> m_cubeSelection;
 	std::unique_ptr<UIRenderer> m_uiRenderer;
 	std::unique_ptr<HUD> m_hud;
+
+	bool m_escapePressed = false;
+
+	bool m_tabPressed = false;
+	bool m_lastTabState = false;
 };

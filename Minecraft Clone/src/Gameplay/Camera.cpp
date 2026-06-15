@@ -1,53 +1,20 @@
 #include "Camera.h"
 #include <Rendering/ShaderProgram.h>
 
-void Camera::keyboardProcessInput(GLFWwindow* w, float delta) {
-	if (m_controlsActive == false) return;
-	float lastY = m_cameraPosition.y;
-
-	
-	if (glfwGetKey(w, GLFW_KEY_W) == GLFW_PRESS) {
-		m_cameraPosition += m_cameraFront * m_cameraSpeed * delta;
-		m_cameraPosition.y = lastY;
-	}
-	if (glfwGetKey(w, GLFW_KEY_S) == GLFW_PRESS) {
-		m_cameraPosition -= m_cameraFront * m_cameraSpeed * delta;
-		m_cameraPosition.y = lastY;
-	}
-	if (glfwGetKey(w, GLFW_KEY_A) == GLFW_PRESS) {
-		m_cameraPosition -= m_cameraRight * m_cameraSpeed * delta;
-		m_cameraPosition.y = lastY;
-	}
-	if (glfwGetKey(w, GLFW_KEY_D) == GLFW_PRESS) {
-		m_cameraPosition += m_cameraRight * m_cameraSpeed * delta;
-		m_cameraPosition.y = lastY;
-	}
-	/*
-	if (glfwGetKey(w, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
-		m_cameraPosition -= m_cameraUp * m_cameraSpeed * delta;
-	}
-	*/
-	if (glfwGetKey(w, GLFW_KEY_SPACE) == GLFW_PRESS) {
-		m_cameraPosition += m_cameraUp * m_cameraSpeed * delta;
-	}
-	
-}
-
-
-void Camera::mouseProcessInput(double xpos, double ypos) {
+void Camera::mouseProcessInput() {
 	if (m_controlsActive == false) return;
 
 	if (m_firstInput) {
-		m_lastX = xpos;
-		m_lastY = ypos;
+		m_lastX = InputManager::GetCursorScreenX();
+		m_lastY = InputManager::GetCursorScreenY();
 		m_firstInput = false;
 	}
 
-	double xoffset = xpos - m_lastX;
-	double yoffset = m_lastY - ypos;
+	double xoffset = InputManager::GetMouseOffsetX();
+	double yoffset = -InputManager::GetMouseOffsetY();
 
-	m_lastX = xpos;
-	m_lastY = ypos;
+	m_lastX = InputManager::GetCursorScreenX();
+	m_lastY = InputManager::GetCursorScreenY();
 
 	xoffset *= m_sensitivity;
 	yoffset *= m_sensitivity;
@@ -71,8 +38,8 @@ void Camera::updatePosition(glm::vec3 newPos) {
 	m_cameraPosition = newPos;
 }
 
-void Camera::scrollProcessInput(double xoffset, double yoffset) {
-	m_fov -= static_cast<float>(yoffset);
+void Camera::scrollProcessInput() {
+	m_fov -= static_cast<float>(InputManager::GetMouseWheelValue());
 	if (m_fov < 1.0f)	m_fov = 1.0f;
 	if (m_fov > 90.0f)	m_fov = 90.0f;
 }

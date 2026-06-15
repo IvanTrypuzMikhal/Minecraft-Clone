@@ -20,9 +20,9 @@ public:
 	
 	~Player() = default;
 
-	void keyboardProcessInput(GLFWwindow* window);
-	void mouseProcessInput(double xpos, double ypos);
-	void mouseButtonProcessInput(int button, int action, int mods);
+	void keyboardProcessInput();
+	void mouseProcessInput();
+	void mouseButtonProcessInput();
 	void update(float delta);
 	void setSpeed();
 	void calculateVelocity(float delta);
@@ -79,7 +79,6 @@ private:
 	bool m_moveBack		= false;
 	bool m_moveRight	= false;
 	bool m_moveLeft		= false;
-	bool m_jump			= false;
 	bool m_crouch		= false;
 	bool m_run			= false;
 	bool m_lastFrameWalking = false;

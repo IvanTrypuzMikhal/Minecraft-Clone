@@ -135,7 +135,7 @@ void Chunk::generateTrees(const ChunkPackage& chunkPackage, int seed) {
 	
 	int32_t chunkX = chunkPackage.coords.first;
 	int32_t chunkZ = chunkPackage.coords.second;
-	std::cout << "Generating trees for chunk: " << chunkPackage.coords.first << ", " << chunkPackage.coords.second << std::endl;
+	//std::cout << "Generating trees for chunk: " << chunkPackage.coords.first << ", " << chunkPackage.coords.second << std::endl;
 	uint64_t chunkSeed = seed;
 	chunkSeed ^= static_cast<uint64_t>(chunkX) * 0x451A4C37928A1499ULL;
 	chunkSeed ^= static_cast<uint64_t>(chunkZ) * 0xB84B9A7A64C26815ULL;

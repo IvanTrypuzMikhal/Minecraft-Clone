@@ -5,6 +5,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
+#include <Gameplay/Input/InputManager.h>
 
 class ShaderProgram;
 
@@ -21,9 +22,8 @@ public:
 	~Camera() = default;
 
 	void processInput(GLFWwindow* camera, float delta);
-	void keyboardProcessInput(GLFWwindow* camera, float delta);
-	void mouseProcessInput(double xpos, double ypos);
-	void scrollProcessInput(double xoffset, double yoffset);
+	void mouseProcessInput();
+	void scrollProcessInput();
 
 	void updatePosition(glm::vec3 newPos);
 

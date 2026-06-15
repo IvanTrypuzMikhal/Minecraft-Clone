@@ -352,7 +352,7 @@ void World::addBlock(BlockHit hit, BlockType type, const AABB& playerAABB) {
 
 	if (playerAABB.intersects(AABB(glm::vec3((float)globalX, (float)globalY, (float)globalZ), glm::vec3((float)globalX + 1.05, (float)globalY, (float)globalZ + 1.05))) ||
 		playerAABB.intersects(AABB(glm::vec3((float)globalX, (float)globalY + 1, (float)globalZ), glm::vec3((float)globalX + 1.05, (float)globalY + 1, (float)globalZ + 1.05)))) {
-		std::cout << "Cannot place block, player is intersecting the block's AABB." << std::endl;
+		//std::cout << "Cannot place block, player is intersecting the block's AABB." << std::endl;
 		return;
 	}
 
@@ -465,11 +465,11 @@ void World::getBlocksBellow(glm::vec3 position, std::vector<AABB>& blocksBellow)
 }
 
 bool World::hasBlockBellow(AABB playerAABB, int yPos) const {
-	std::cout << "Checking if player has block bellow. Player AABB: min(" << playerAABB.min.x << ", " << playerAABB.min.y << ", " << playerAABB.min.z << ") max(" << playerAABB.max.x << ", " << playerAABB.max.y << ", " << playerAABB.max.z << ")" << std::endl;
+	//std::cout << "Checking if player has block bellow. Player AABB: min(" << playerAABB.min.x << ", " << playerAABB.min.y << ", " << playerAABB.min.z << ") max(" << playerAABB.max.x << ", " << playerAABB.max.y << ", " << playerAABB.max.z << ")" << std::endl;
 	glm::vec3 position = glm::floor(playerAABB.max);
 	position.y = yPos + 2;
 	glm::vec3 blockPos = position;
-	std::cout << "Block position: " << blockPos.x << ", " << blockPos.y << ", " << blockPos.z << std::endl;
+	//std::cout << "Block position: " << blockPos.x << ", " << blockPos.y << ", " << blockPos.z << std::endl;
 	if (getBlockAt(blockPos.x, blockPos.y, blockPos.z) != BlockType::Air) return true;
 
 	return false;

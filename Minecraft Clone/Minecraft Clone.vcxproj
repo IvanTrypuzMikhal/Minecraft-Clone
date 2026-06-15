@@ -41,6 +41,8 @@
     <ClInclude Include="src\Gameplay\DebugUI.h" />
     <ClInclude Include="src\Gameplay\HUD.h" />
     <ClInclude Include="src\Gameplay\HUDSprites.h" />
+    <ClInclude Include="src\Gameplay\Input\InputManager.h" />
+    <ClInclude Include="src\Gameplay\Input\keycodes.h" />
     <ClInclude Include="src\Gameplay\Player\Player.h" />
     <ClInclude Include="src\Gameplay\Raycaster.h" />
     <ClInclude Include="src\Gameplay\UIRenderer.h" />
@@ -75,6 +77,7 @@
     <ClCompile Include="src\Gameplay\DebugUI.cpp" />
     <ClCompile Include="src\Gameplay\HUD.cpp" />
     <ClCompile Include="src\Gameplay\HUDSprites.cpp" />
+    <ClCompile Include="src\Gameplay\Input\InputManager.cpp" />
     <ClCompile Include="src\Gameplay\Player\Player.cpp" />
     <ClCompile Include="src\Gameplay\Raycaster.cpp" />
     <ClCompile Include="src\Gameplay\UIRenderer.cpp" />

@@ -1,5 +1,6 @@
 #include "Window.h"
 #include "AppContext.h"
+#include <Gameplay/Input/InputManager.h>
 
 Window::Window(int width, int height, const char* title) {
 
@@ -28,9 +29,6 @@ Window::Window(int width, int height, const char* title) {
 
 	glViewport(0, 0, width, height);
 	glfwSetFramebufferSizeCallback(m_window, Window::frameBufferResizeCallback);
-	glfwSetCursorPosCallback(m_window, Window::mouseCursorCallback);
-	glfwSetScrollCallback(m_window, Window::mouseScrollCallback);
-	glfwSetMouseButtonCallback(m_window, Window::mouseInputCallback);
 
 	glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSwapInterval(0);
@@ -44,62 +42,12 @@ Window::~Window() {
 	glfwDestroyWindow(m_window);
 	glfwTerminate();
 }
-
-
-void Window::processInput(){
-	bool currentTabState = false;
-	bool currentShiftState = false;
-
-	if (glfwGetKey(m_window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-		glfwSetWindowShouldClose(m_window, true);
-		std::cout << "Window closed!\n";
-	}
-	currentTabState = glfwGetKey(m_window, GLFW_KEY_TAB) == GLFW_PRESS;
-	if (currentTabState && !m_lastTabState) { // rising edge only
-		AppContext* appContext = static_cast<AppContext*>(glfwGetWindowUserPointer(m_window));
-		if (glfwGetInputMode(m_window, GLFW_CURSOR) == GLFW_CURSOR_DISABLED) {
-			glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-			glfwSetCursorPosCallback(m_window, nullptr);
-			appContext->player->setControlsActive(false);
-		}
-		else {
-			glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-			appContext->player->setFirstInput();
-			appContext->player->setControlsActive(true);
-			glfwSetCursorPosCallback(m_window, mouseCursorCallback);
-		}
-	}
-	currentShiftState = glfwGetKey(m_window, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS;
-	if (currentShiftState && !m_lastShiftState) {
-		m_toggleVSync = !m_toggleVSync;
-		glfwSwapInterval(m_toggleVSync ? 1 : 0);
-		std::cout << m_toggleVSync << std::endl;
-	}
-
-	m_lastTabState = currentTabState;
-	m_lastShiftState = currentShiftState;
-}
-
+	
 void Window::frameBufferResizeCallback(GLFWwindow* win, int width, int height) {
 	AppContext* appContext = static_cast<AppContext*>(glfwGetWindowUserPointer(win));
 	glViewport(0, 0, width, height);
 	appContext->window->setWidth(width);
 	appContext->window->setHeight(height);
-}
-
-void Window::mouseCursorCallback(GLFWwindow* win, double xpos, double ypos) {
-	AppContext* appContext = static_cast<AppContext*>(glfwGetWindowUserPointer(win));
-	appContext->player->mouseProcessInput(xpos, ypos);
-}
-
-void Window::mouseScrollCallback(GLFWwindow* win, double xoffset, double yoffset) {
-	AppContext* appContext = static_cast<AppContext*>(glfwGetWindowUserPointer(win));
-	appContext->camera->scrollProcessInput(xoffset, yoffset);
-}
-
-void Window::mouseInputCallback(GLFWwindow* win, int button, int action, int mods) {
-	AppContext* appContext = static_cast<AppContext*>(glfwGetWindowUserPointer(win));
-	appContext->player->mouseButtonProcessInput(button, action, mods);
 }
 
 GLFWwindow* Window::getWindow() const{ 

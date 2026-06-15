@@ -4,7 +4,6 @@ Engine::Engine() {
 	
 	m_window = std::make_unique<Window>(Globals::HEIGHT, Globals::WIDTH, "Minecraft");
 
-
 	ResourceManager::loadShaderProgram("worldShader", "src/Rendering/Shaders/vertex.vert", "src/Rendering/Shaders/fragment.frag");
 	ResourceManager::loadShaderProgram("textShader", "src/Rendering/Shaders/text.vert", "src/Rendering/Shaders/text.frag");
 	ResourceManager::loadShaderProgram("cubeSelectionShader", "src/Rendering/Shaders/cubeSelection.vert", "src/Rendering/Shaders/cubeSelection.frag");
@@ -12,6 +11,7 @@ Engine::Engine() {
 	ResourceManager::loadTexture("worldTexture", "src/Assets/Textures/textures.png", GL_RGBA);
 	ResourceManager::loadTexture("uiTexture", "src/Assets/Textures/gui-atlas.png", GL_RGBA);
 
+	InputManager::Init(m_window->getWindow());
 
 	m_time = Time();
 	m_cubeSelection = std::make_unique<CubeSelection>();
@@ -42,6 +42,24 @@ void Engine::run() {
 	}
 }
 
+void Engine::stateUpdate() {
+	if (m_lastTabState == false && InputManager::KeyPressed(InputManager::GameState::PAUSE_MENU)) {
+		m_tabPressed = true;
+		m_lastTabState = true;
+		glfwSetInputMode(m_window->getWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+
+	}
+	else if (m_lastTabState == true && InputManager::KeyPressed(InputManager::GameState::PAUSE_MENU)) {
+		m_tabPressed = false;
+		m_lastTabState = false;
+		glfwSetInputMode(m_window->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	}
+	if (InputManager::KeyPressed(InputManager::GameState::CLOSE_CURRENT_MENU)) {
+		m_tabPressed = false;
+		m_lastTabState = false;
+		glfwSetWindowShouldClose(m_window->getWindow(), true);
+	}
+}
 
 void Engine::update() {
 	Camera* camera = m_player->getCamera();
@@ -50,6 +68,8 @@ void Engine::update() {
 	m_world->updateWorldState();
 	
 	m_player->update(m_time.getDelta());
+
+	stateUpdate();
 }
 
 void Engine::render() {
@@ -82,8 +102,13 @@ void Engine::render() {
 }
 
 void Engine::processInput() {
+	InputManager::Update();
 
-	m_window->processInput();
-	m_player->keyboardProcessInput(m_window->getWindow());
-
+	if (!m_tabPressed) {
+		m_player->keyboardProcessInput();
+		m_player->mouseButtonProcessInput();
+		m_player->mouseProcessInput();
+		m_player->getCamera()->scrollProcessInput();
+	}
+	
 }

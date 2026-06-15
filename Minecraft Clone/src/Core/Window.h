@@ -16,10 +16,6 @@ public:
 	[[nodiscard]] bool shouldClose() const;
 	
 	static void frameBufferResizeCallback(GLFWwindow* win, int width, int height);
-	static void mouseCursorCallback(GLFWwindow* win, double xpos, double ypos);
-	static void mouseScrollCallback(GLFWwindow*, double xoffset, double yoffset);
-	static void mouseInputCallback(GLFWwindow* window, int button, int action, int mods);
-	void processInput();
 
 	void setWidth(int width);
 	void setHeight(int height);
