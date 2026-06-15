@@ -37,27 +37,28 @@ void Chunk::buildMesh(const ChunkPackage& chunkPackage)
 	for (int x = 0; x < Globals::CHUNK_WIDTH; x++) {
 		for (int y = 0; y < Globals::CHUNK_HEIGHT; y++) {
 			for (int z = 0; z < Globals::CHUNK_WIDTH; z++) {
-				const BlockType type = m_blocks.at(x).at(y).at(z);
+				const BlockType type = m_blocks[x][y][z];
 				if (type == BlockType::Air) continue;
 
 				for (const auto& cubeData : CubeData::CUBE_FACES) {
 
 					if (isAir(cubeData.dx + x, cubeData.dy + y, cubeData.dz + z, chunkPackage)) {
 						for (int i = 0; i < 6; i++) {
-							const float vx = x + cubeData.vertices.at(i).x;
-							const float vy = y + cubeData.vertices.at(i).y; // Change to possitive to avoid packing wrong values
-							const float vz = z + cubeData.vertices.at(i).z; // Change to possitive to avoid packing wrong values
+							// Also here we can use [] instead of .at() because we have already checked the bounds in isAir function
+							const float vx = x + cubeData.vertices[i].x;
+							const float vy = y + cubeData.vertices[i].y; // Change to possitive to avoid packing wrong values
+							const float vz = z + cubeData.vertices[i].z; // Change to possitive to avoid packing wrong values
 							
-							const float u = cubeData.vertices.at(i).u;
-							const float v = cubeData.vertices.at(i).v;
+							const float u = cubeData.vertices[i].u;
+							const float v = cubeData.vertices[i].v;
 							
 							auto [textureX, textureY] = getAtlasCoordinates(type, cubeData.faceDirection);
 							const int textureId = (textureY * 4) + textureX;
 
 
-							const int ao1 = !isAir(x + cubeData.vertices.at(i).side1.x, y - cubeData.vertices.at(i).side1.y, z - cubeData.vertices.at(i).side1.z, chunkPackage);
-							const int ao2 = !isAir(x + cubeData.vertices.at(i).side2.x, y - cubeData.vertices.at(i).side2.y, z - cubeData.vertices.at(i).side2.z, chunkPackage);
-							const int ao3 = !isAir(x + cubeData.vertices.at(i).diagonal.x, y - cubeData.vertices.at(i).diagonal.y, z - cubeData.vertices.at(i).diagonal.z, chunkPackage);
+							const int ao1 = !isAir(x + cubeData.vertices[i].side1.x, y - cubeData.vertices[i].side1.y, z - cubeData.vertices[i].side1.z, chunkPackage);
+							const int ao2 = !isAir(x + cubeData.vertices[i].side2.x, y - cubeData.vertices[i].side2.y, z - cubeData.vertices[i].side2.z, chunkPackage);
+							const int ao3 = !isAir(x + cubeData.vertices[i].diagonal.x, y - cubeData.vertices[i].diagonal.y, z - cubeData.vertices[i].diagonal.z, chunkPackage);
 							
 							const int ao = (ao1 && ao2) ? 0 : 3 - (ao1 + ao2 + ao3);
 							
@@ -122,7 +123,8 @@ bool Chunk::isAir(int x, int y, int z, const ChunkPackage& chunkPackage) {
 
 	if (!targetChunk) return true; 
 
-	return targetChunk->m_blocks.at(x).at(y).at(z) == BlockType::Air;
+	// [] is faster than .at() and we have already checked the bounds so it is safe to use
+	return targetChunk->m_blocks[x][y][z] == BlockType::Air;
 }
 
 std::vector<uint32_t> Chunk::getMesh(){
@@ -221,8 +223,9 @@ void Chunk::fillBlocks(const TerrainGenerator& terrain) {
 			const int surfaceY = terrain.getHeight(worldX, worldZ);
 
 			for (int y = 0; y < Globals::CHUNK_HEIGHT; y++) {
-				
-				m_blocks.at(x).at(y).at(z) = getBlockType(y, surfaceY);
+
+				// Here we are iterating under the bounds so we can use [] instead of .at() to avoid the overhead of bounds checking
+				m_blocks[x][y][z] = getBlockType(y, surfaceY);
 			}
 		}
 	}

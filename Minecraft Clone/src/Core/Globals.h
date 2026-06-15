@@ -19,4 +19,6 @@ namespace Globals {
 	extern const float INTERACTION_DISTANCE;
 
 	extern const int REGION_BLOCK_SIZE;
+
+	extern const float TICK_RATE;
 }

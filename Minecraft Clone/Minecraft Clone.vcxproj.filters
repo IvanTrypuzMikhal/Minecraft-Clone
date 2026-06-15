@@ -116,6 +116,7 @@
     <ClCompile Include="src\Core\Engine.cpp" />
     <ClCompile Include="src\Rendering\ResourceManager.cpp" />
     <ClCompile Include="src\Gameplay\Input\InputManager.cpp" />
+    <ClCompile Include="src\World\SkyBox.cpp" />
   </ItemGroup>
   <!-- Headers -->
   <ItemGroup>
@@ -214,6 +215,7 @@
     <ClInclude Include="src\Rendering\ResourceManager.h" />
     <ClInclude Include="src\Gameplay\Input\InputManager.h" />
     <ClInclude Include="src\Gameplay\Input\keycodes.h" />
+    <ClInclude Include="src\World\SkyBox.h" />
   </ItemGroup>
   <!-- Shaders -->
   <ItemGroup>
@@ -242,6 +244,8 @@
     <None Include="src\Rendering\Shaders\vertex.vert">
       <Filter>Rendering\Shaders</Filter>
     </None>
+    <None Include="src\Rendering\Shaders\skybox.vert" />
+    <None Include="src\Rendering\Shaders\skybox.frag" />
   </ItemGroup>
   <!-- Assets -->
   <ItemGroup>

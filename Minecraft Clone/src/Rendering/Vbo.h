@@ -14,6 +14,7 @@ public:
 		glBufferData(GL_ARRAY_BUFFER, sizeof(T) * SIZE, arr.data(), GL_STATIC_DRAW);
 	}
 
+	Vbo(float* mesh, int size);
 	Vbo(std::vector<float>& mesh);
 	Vbo(std::vector<uint32_t>& mesh);
 	Vbo(int size);

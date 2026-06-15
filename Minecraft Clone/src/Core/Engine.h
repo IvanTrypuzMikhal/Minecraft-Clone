@@ -9,6 +9,7 @@ public:
 
 	void run();
 	void update();
+	void tick();
 	void render();
 	void processInput();
 	void stateUpdate();
@@ -22,6 +23,7 @@ private:
 
 	// World
 	std::unique_ptr<World> m_world;
+	std::unique_ptr<SkyBox> m_skybox;
 
 	// Player
 	std::unique_ptr<Player> m_player;

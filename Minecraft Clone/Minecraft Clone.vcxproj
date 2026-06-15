@@ -59,6 +59,7 @@
     <ClInclude Include="src\World\CubeData.h" />
     <ClInclude Include="src\World\FileIOThread.h" />
     <ClInclude Include="src\World\MeshThread.h" />
+    <ClInclude Include="src\World\SkyBox.h" />
     <ClInclude Include="src\World\TerrainGeneration.h" />
     <ClInclude Include="src\World\TerrainThread.h" />
     <ClInclude Include="src\World\TSQueue.h" />
@@ -92,6 +93,7 @@
     <ClCompile Include="src\World\Cube.cpp" />
     <ClCompile Include="src\World\FileIOThread.cpp" />
     <ClCompile Include="src\World\MeshThread.cpp" />
+    <ClCompile Include="src\World\SkyBox.cpp" />
     <ClCompile Include="src\World\TerrainGeneration.cpp" />
     <ClCompile Include="src\World\TerrainThread.cpp" />
     <ClCompile Include="src\World\World.cpp" />
@@ -101,6 +103,8 @@
     <None Include="src\Rendering\Shaders\cubeSelection.frag" />
     <None Include="src\Rendering\Shaders\cubeSelection.vert" />
     <None Include="src\Rendering\Shaders\fragment.frag" />
+    <None Include="src\Rendering\Shaders\skybox.frag" />
+    <None Include="src\Rendering\Shaders\skybox.vert" />
     <None Include="src\Rendering\Shaders\text.frag" />
     <None Include="src\Rendering\Shaders\text.vert" />
     <None Include="src\Rendering\Shaders\UIShader.frag" />

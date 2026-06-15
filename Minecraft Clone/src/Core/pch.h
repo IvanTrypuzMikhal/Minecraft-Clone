@@ -25,3 +25,4 @@
 #include <memory>
 #include <Rendering/ResourceManager.h>
 #include <Gameplay/Input/InputManager.h>
+#include <World/SkyBox.h>

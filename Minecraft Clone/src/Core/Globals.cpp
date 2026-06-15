@@ -19,4 +19,6 @@ namespace Globals {
     constexpr float INTERACTION_DISTANCE{ 5.0 };
 
     constexpr int REGION_BLOCK_SIZE{ 4 * 1024 }; 
+
+	constexpr float TICK_RATE{ 1.0f / 20.0f };
 }

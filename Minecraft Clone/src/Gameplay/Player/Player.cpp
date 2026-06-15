@@ -154,6 +154,7 @@
 	void Player::checkCollisionOnAxis(float delta, int axis) {
 		glm::vec3 movement(0.0f);
 		movement[axis] += m_velocity[axis] * delta;
+		updateAABB();
 		CollisionRes res = moveAndCollide(movement.x, movement.y, movement.z);
 		if (res.collision) {
 			m_playerPosition[axis] -= m_velocity[axis] * delta;
@@ -192,7 +193,7 @@
 	}
 
 	void Player::checkShiftingCollisionAxis(float delta, int axis) {
-		updateAABB();
+		
 		bool hasBlockBellow = false;
 		std::vector<AABB> blocksBellow;
 		blocksBellow.reserve(9);
@@ -201,6 +202,7 @@
 		glm::vec3 oldPosition = m_playerPosition;
 
 		updateAABB();
+
 		checkCollisionOnAxis(delta, axis);
 
 		for (const AABB& abb : blocksBellow) {

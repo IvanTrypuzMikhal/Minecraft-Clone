@@ -8,6 +8,7 @@ Engine::Engine() {
 	ResourceManager::loadShaderProgram("textShader", "src/Rendering/Shaders/text.vert", "src/Rendering/Shaders/text.frag");
 	ResourceManager::loadShaderProgram("cubeSelectionShader", "src/Rendering/Shaders/cubeSelection.vert", "src/Rendering/Shaders/cubeSelection.frag");
 	ResourceManager::loadShaderProgram("uiShader", "src/Rendering/Shaders/UIShader.vert", "src/Rendering/Shaders/UIShader.frag");
+	ResourceManager::loadShaderProgram("skyboxShader", "src/Rendering/Shaders/skybox.vert", "src/Rendering/Shaders/skybox.frag");
 	ResourceManager::loadTexture("worldTexture", "src/Assets/Textures/textures.png", GL_RGBA);
 	ResourceManager::loadTexture("uiTexture", "src/Assets/Textures/gui-atlas.png", GL_RGBA);
 
@@ -18,6 +19,7 @@ Engine::Engine() {
 	m_uiRenderer = std::make_unique<UIRenderer>();
 	m_hud = std::make_unique<HUD>(*m_uiRenderer, *m_window);
 	m_world = std::make_unique<World>(ResourceManager::getShaderProgram("worldShader"));
+	m_skybox = std::make_unique<SkyBox>();
 	m_player = std::make_unique<Player>(m_world.get());
 
 
@@ -31,12 +33,16 @@ void Engine::run() {
 	Camera* camera = m_player->getCamera();
 
 	while (!m_window->shouldClose()) {
-
+		m_time.update();
 		processInput();
+
+		while (m_time.isTickReady()) {
+			tick();
+		}
+		
 		update();
 		render();
 
-		m_time.update();
 		glfwSwapBuffers(m_window->getWindow());
 		glfwPollEvents();
 	}
@@ -65,7 +71,7 @@ void Engine::update() {
 	Camera* camera = m_player->getCamera();
 
 	m_world->updateCameraPosition(camera->getCameraPosition());
-	m_world->updateWorldState();
+	//m_world->updateWorldState();
 	
 	m_player->update(m_time.getDelta());
 
@@ -87,6 +93,10 @@ void Engine::render() {
 	// Render the world
 	ResourceManager::getTexture("worldTexture")->setTexture();
 	m_world->renderWorld(projection);
+
+
+	glm::mat4 view = glm::mat4(glm::mat3(camera->view()));
+	m_skybox->render(view, projection, m_time.getWorldTime());
 
 	// Render the cube selection outline if a block is hit
 	BlockHit hit;
@@ -110,5 +120,9 @@ void Engine::processInput() {
 		m_player->mouseProcessInput();
 		m_player->getCamera()->scrollProcessInput();
 	}
-	
+}
+
+void Engine::tick() {
+	m_world->updateWorldState();
+	m_time.updateWorldTime();
 }
