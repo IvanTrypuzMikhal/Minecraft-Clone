@@ -23,8 +23,12 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="src\Assets\Textures\gui-atlas.png" />
+    <Image Include="src\Assets\Textures\moon_phases.png" />
     <Image Include="src\Assets\Textures\oak-leaves-normal-original-default.png" />
     <Image Include="src\Assets\Textures\oak-wood.png" />
+    <Image Include="src\Assets\Textures\sun.png" />
+    <Image Include="src\Assets\Textures\sun_transparent.png" />
+    <Image Include="src\Assets\Textures\Sun_vv.png" />
     <Image Include="src\Assets\Textures\textures.png" />
   </ItemGroup>
   <ItemGroup>
@@ -100,6 +104,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-tidy" />
+    <None Include="src\Rendering\Shaders\celestialBody.frag" />
+    <None Include="src\Rendering\Shaders\celestialBody.vert" />
     <None Include="src\Rendering\Shaders\cubeSelection.frag" />
     <None Include="src\Rendering\Shaders\cubeSelection.vert" />
     <None Include="src\Rendering\Shaders\fragment.frag" />

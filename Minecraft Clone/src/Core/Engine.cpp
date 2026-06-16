@@ -3,16 +3,8 @@
 Engine::Engine() {
 	
 	m_window = std::make_unique<Window>(Globals::HEIGHT, Globals::WIDTH, "Minecraft");
-
-	ResourceManager::loadShaderProgram("worldShader", "src/Rendering/Shaders/vertex.vert", "src/Rendering/Shaders/fragment.frag");
-	ResourceManager::loadShaderProgram("textShader", "src/Rendering/Shaders/text.vert", "src/Rendering/Shaders/text.frag");
-	ResourceManager::loadShaderProgram("cubeSelectionShader", "src/Rendering/Shaders/cubeSelection.vert", "src/Rendering/Shaders/cubeSelection.frag");
-	ResourceManager::loadShaderProgram("uiShader", "src/Rendering/Shaders/UIShader.vert", "src/Rendering/Shaders/UIShader.frag");
-	ResourceManager::loadShaderProgram("skyboxShader", "src/Rendering/Shaders/skybox.vert", "src/Rendering/Shaders/skybox.frag");
-	ResourceManager::loadTexture("worldTexture", "src/Assets/Textures/textures.png", GL_RGBA);
-	ResourceManager::loadTexture("uiTexture", "src/Assets/Textures/gui-atlas.png", GL_RGBA);
-
-	InputManager::Init(m_window->getWindow());
+	
+	initAssets();
 
 	m_time = Time();
 	m_cubeSelection = std::make_unique<CubeSelection>();
@@ -21,7 +13,6 @@ Engine::Engine() {
 	m_world = std::make_unique<World>(ResourceManager::getShaderProgram("worldShader"));
 	m_skybox = std::make_unique<SkyBox>();
 	m_player = std::make_unique<Player>(m_world.get());
-
 
 	m_context = AppContext{ .window = m_window.get(), .player = m_player.get(), .camera = m_player->getCamera(), .world = m_world.get()};
 	glfwSetWindowUserPointer(m_window->getWindow(), &m_context);
@@ -125,4 +116,19 @@ void Engine::processInput() {
 void Engine::tick() {
 	m_world->updateWorldState();
 	m_time.updateWorldTime();
+}
+
+void Engine::initAssets() {
+	InputManager::Init(m_window->getWindow());
+	ResourceManager::loadShaderProgram("worldShader", "src/Rendering/Shaders/vertex.vert", "src/Rendering/Shaders/fragment.frag");
+	ResourceManager::loadShaderProgram("textShader", "src/Rendering/Shaders/text.vert", "src/Rendering/Shaders/text.frag");
+	ResourceManager::loadShaderProgram("cubeSelectionShader", "src/Rendering/Shaders/cubeSelection.vert", "src/Rendering/Shaders/cubeSelection.frag");
+	ResourceManager::loadShaderProgram("uiShader", "src/Rendering/Shaders/UIShader.vert", "src/Rendering/Shaders/UIShader.frag");
+	ResourceManager::loadShaderProgram("skyboxShader", "src/Rendering/Shaders/skybox.vert", "src/Rendering/Shaders/skybox.frag");
+	ResourceManager::loadShaderProgram("celestialBodyShader", "src/Rendering/Shaders/celestialBody.vert", "src/Rendering/Shaders/celestialBody.frag");
+	ResourceManager::loadTexture("worldTexture", "src/Assets/Textures/textures.png", GL_RGBA);
+	ResourceManager::loadTexture("uiTexture", "src/Assets/Textures/gui-atlas.png", GL_RGBA);
+	ResourceManager::loadTexture("sunGlow", "src/Assets/Textures/sun.png", GL_RGB);
+	ResourceManager::loadTexture("sunTexture", "src/Assets/Textures/sun_transparent.png", GL_RGBA);
+
 }

@@ -246,6 +246,8 @@
     </None>
     <None Include="src\Rendering\Shaders\skybox.vert" />
     <None Include="src\Rendering\Shaders\skybox.frag" />
+    <None Include="src\Rendering\Shaders\celestialBody.frag" />
+    <None Include="src\Rendering\Shaders\celestialBody.vert" />
   </ItemGroup>
   <!-- Assets -->
   <ItemGroup>
@@ -261,6 +263,10 @@
     <Image Include="src\Assets\Textures\oak-wood.png">
       <Filter>Assets\Textures</Filter>
     </Image>
+    <Image Include="src\Assets\Textures\Sun_vv.png" />
+    <Image Include="src\Assets\Textures\sun.png" />
+    <Image Include="src\Assets\Textures\moon_phases.png" />
+    <Image Include="src\Assets\Textures\sun_transparent.png" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="src\Assets\TextFont\1_Minecraft-Regular.otf">

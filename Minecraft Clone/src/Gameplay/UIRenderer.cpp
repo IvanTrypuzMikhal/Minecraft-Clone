@@ -12,6 +12,8 @@ void UIRenderer::begin() {
 }
 
 void UIRenderer::flush(const Window* window) {
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glDisable(GL_DEPTH_TEST);
     if (m_batch.empty()) return;
     m_vbo->upload(m_batch);
@@ -21,6 +23,7 @@ void UIRenderer::flush(const Window* window) {
     m_vao->use();
     glDrawArrays(GL_TRIANGLES, 0, m_batch.size() / 4);
     glEnable(GL_DEPTH_TEST);
+    glDisable(GL_BLEND);
 }
 
 void UIRenderer::fushInverted(const Window* window) {

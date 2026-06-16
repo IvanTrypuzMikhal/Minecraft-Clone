@@ -10,6 +10,7 @@ Texture::Texture(const char* filename, unsigned int format) {
 	if (!data) {
 		throw std::exception("TEXTURE::FAILED::TO::LOAD");
 	}
+	std::cerr << "Texture loaded: " << filename << " (" << width << "x" << height << ", " << nrChannels << " channels)" << std::endl;
 	glGenTextures(1, &m_id);
 	glBindTexture(GL_TEXTURE_2D, m_id);
 	
@@ -24,5 +25,6 @@ Texture::Texture(const char* filename, unsigned int format) {
 unsigned int Texture::getTexture() const { return m_id; }
 
 void Texture::setTexture() const{
+	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_id);
 }

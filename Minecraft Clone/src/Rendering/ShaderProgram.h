@@ -15,6 +15,7 @@ public:
 	[[nodiscard]] unsigned int get() const;
 	void use() const;
 
+	void setBool(const char* location, bool value) const;
 	void setFloat(const char* location, float x) const;
 	void setVec2(const char* location, float x, float y) const;
 	void setVec2(const char* location, glm::vec2& vec) const;

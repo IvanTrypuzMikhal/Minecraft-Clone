@@ -7,11 +7,14 @@ std::unordered_map<std::string, std::shared_ptr<Texture>> ResourceManager::m_tex
 void ResourceManager::loadShaderProgram(const std::string& name, const char* vertexPath, const char* fragmentPath) {
 	auto shaderProgram = std::make_shared<ShaderProgram>(vertexPath, fragmentPath);
 	m_shaderPrograms[name] = shaderProgram;
+	std::cerr << "- ResourceManager::VERTEX::SHADER::LOADED: " << vertexPath << std::endl;
+	std::cerr << "- ResourceManager::FRAGMENT::SHADER::LOADED: " << fragmentPath << std::endl;
 }
 
 void ResourceManager::loadTexture(const std::string& name, const char* filename, unsigned int format) {
 	auto texture = std::make_shared<Texture>(filename, format);
 	m_textures[name] = texture;
+	std::cerr << "- ResourceManager::TEXTURE::LOADED: " << filename << std::endl;
 }
 
 std::shared_ptr<ShaderProgram> ResourceManager::getShaderProgram(const std::string& name){

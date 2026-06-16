@@ -13,6 +13,7 @@ public:
 	void render();
 	void processInput();
 	void stateUpdate();
+	void initAssets();
 
 private:
 

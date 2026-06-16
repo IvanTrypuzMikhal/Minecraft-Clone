@@ -97,6 +97,10 @@ void ShaderProgram::use() const{
 	glUseProgram(m_id);
 }
 
+void ShaderProgram::setBool(const char* location, bool value) const {
+	glUniform1i(glGetUniformLocation(m_id, location), (int)value);
+}
+
 void ShaderProgram::setFloat(const char* location, float x) const {
 	glUniform1f(glGetUniformLocation(m_id, location), x);
 }
