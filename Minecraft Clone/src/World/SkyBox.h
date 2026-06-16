@@ -21,6 +21,7 @@ public:
 	void render(const glm::mat4& view, const glm::mat4& projection, float worldTime);
 	void renderCelestialBody(const CelestialBody& body, const glm::mat4& view, const glm::mat4& projection, float worldTime);
 	void getSkyboxColor(float worldTime, glm::vec3& skyColor, glm::vec3& fogColor) const;
+	int  getMoonPhase(float worldTime) const;
 
 private:
 	std::unique_ptr<Vao> m_vao;
@@ -30,8 +31,11 @@ private:
 	// Sun / Moon
 	CelestialBody m_sun;
 	CelestialBody m_sun_glow;
+	CelestialBody m_moon;
+	CelestialBody m_moon_glow;
 
-
+	// Stars
+	std::vector<glm::vec3> m_starPositions;
 
 	// Skybox colors
 	glm::vec3 m_dayColor = glm::vec3(0.4706f, 0.6549f, 1.000f);

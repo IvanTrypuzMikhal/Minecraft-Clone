@@ -21,7 +21,6 @@ public:
 	) : m_cameraPosition{ cameraPosition }, m_cameraTarget{ cameraTarget }, m_up{ upVector } {}
 	~Camera() = default;
 
-	void processInput(GLFWwindow* camera, float delta);
 	void mouseProcessInput();
 	void scrollProcessInput();
 

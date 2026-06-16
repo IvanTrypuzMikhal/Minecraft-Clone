@@ -72,11 +72,21 @@ SkyBox::SkyBox() {
     m_sun.m_shader = ResourceManager::getShaderProgram("celestialBodyShader");
     m_sun.m_texture = ResourceManager::getTexture("sunTexture");
 
-    celestialAttributes = { {.index = 0, .size = 3, .offset = 0 }, {.index = 1, .size = 2, .offset = 3} };
     m_sun_glow.m_vbo = std::make_unique<Vbo>(celestialBodyVertices);
     m_sun_glow.m_vao = std::make_unique<Vao>(m_sun.m_vbo->get(), 5, celestialAttributes);
     m_sun_glow.m_shader = ResourceManager::getShaderProgram("celestialBodyShader");
     m_sun_glow.m_texture = ResourceManager::getTexture("sunGlow");
+
+
+    m_moon.m_vbo = std::make_unique<Vbo>(celestialBodyVertices);
+    m_moon.m_vao = std::make_unique<Vao>(m_sun.m_vbo->get(), 5, celestialAttributes);
+    m_moon.m_shader = ResourceManager::getShaderProgram("celestialBodyShader");
+    m_moon.m_texture = ResourceManager::getTexture("moonTexture");
+
+    m_moon_glow.m_vbo = std::make_unique<Vbo>(celestialBodyVertices);
+    m_moon_glow.m_vao = std::make_unique<Vao>(m_sun.m_vbo->get(), 5, celestialAttributes);
+    m_moon_glow.m_shader = ResourceManager::getShaderProgram("celestialBodyShader");
+    m_moon_glow.m_texture = ResourceManager::getTexture("moonGlow");
 }
 
 void SkyBox::render(const glm::mat4& view, const glm::mat4& projection, float worldTime) {
@@ -92,35 +102,55 @@ void SkyBox::render(const glm::mat4& view, const glm::mat4& projection, float wo
 	glBindVertexArray(m_vao->get());
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 
+    // I'll have to use 2 textures and different blend functions to render becouse i dont know how to make the black background of the sun glow texture transparent and leave the glow.
     glEnable(GL_BLEND);
+    int faseActual = getMoonPhase(worldTime);
 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE);
     m_sun_glow.m_shader->use();
-	m_sun_glow.m_shader->setBool("isGlow", true);
-	std::cout << "Rendering sun glow" << std::endl;
+    m_sun_glow.m_shader->setBool("isGlow", true);
+    m_sun_glow.m_shader->setBool("isMoon", false); 
     renderCelestialBody(m_sun_glow, view, projection, worldTime);
 
+    m_moon_glow.m_shader->use();
+    m_moon_glow.m_shader->setBool("isGlow", true);
+    m_moon_glow.m_shader->setBool("isMoon", true);
+    m_moon_glow.m_shader->setInt("moonPhase", faseActual); 
+    renderCelestialBody(m_moon_glow, view, projection, worldTime);
+
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    m_sun.m_shader->use();
+    m_sun.m_shader->setBool("isGlow", false);
+    m_sun.m_shader->setBool("isMoon", false); 
     renderCelestialBody(m_sun, view, projection, worldTime);
 
+    m_moon.m_shader->use();
+    m_moon.m_shader->setBool("isGlow", false);
+    m_moon.m_shader->setBool("isMoon", true);
+    m_moon.m_shader->setInt("moonPhase", faseActual);
+    renderCelestialBody(m_moon, view, projection, worldTime);
+
     glDisable(GL_BLEND);
-
     glDepthFunc(GL_LESS);
-
-
 }
 
 void SkyBox::renderCelestialBody(const CelestialBody& body, const glm::mat4& view, const glm::mat4& projection, float worldTime) {
 
 	float currentTime = fmod(worldTime, 24000.0f);
     float degrees = (currentTime / 24000.0f) * 360.0f;
+
+	if (body.m_texture == m_moon.m_texture || body.m_texture == m_moon_glow.m_texture) {
+		degrees += 180.0f;
+	}
+
     glm::mat4 model = glm::mat4(1.0f);
 	
     model = glm::rotate(model, glm::radians(degrees), glm::vec3(1.0f, 0.0f, 0.0f)); 
     model = glm::translate(model, glm::vec3(0.0f, 0.0f, -100.0f));
-	model = glm::scale(model, glm::vec3(20.0f));
+	model = glm::scale(model, glm::vec3(30.0f));
+
     body.m_shader->use();
-    body.m_shader->setMat4("view", view); 
+    body.m_shader->setMat4("view", view);
     body.m_shader->setMat4("projection", projection);
     body.m_shader->setMat4("model", model);
     body.m_texture->setTexture();
@@ -155,4 +185,10 @@ void SkyBox::getSkyboxColor(float worldTime, glm::vec3& skyColor, glm::vec3& fog
         skyColor = glm::mix(m_nightColor, m_dayColor, t);
         fogColor = glm::mix(m_nightFog, m_dayFog, t);
     }
+}
+
+int SkyBox::getMoonPhase(float worldTime) const {
+    int totalDays = static_cast<int>(worldTime / 24000.0f);
+	int phase = totalDays % 8;
+	return phase;
 }

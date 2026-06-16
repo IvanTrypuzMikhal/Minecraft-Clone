@@ -24,6 +24,7 @@
   <ItemGroup>
     <Image Include="src\Assets\Textures\gui-atlas.png" />
     <Image Include="src\Assets\Textures\moon_phases.png" />
+    <Image Include="src\Assets\Textures\moon_phases_glow.png" />
     <Image Include="src\Assets\Textures\oak-leaves-normal-original-default.png" />
     <Image Include="src\Assets\Textures\oak-wood.png" />
     <Image Include="src\Assets\Textures\sun.png" />

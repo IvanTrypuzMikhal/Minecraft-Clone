@@ -267,6 +267,7 @@
     <Image Include="src\Assets\Textures\sun.png" />
     <Image Include="src\Assets\Textures\moon_phases.png" />
     <Image Include="src\Assets\Textures\sun_transparent.png" />
+    <Image Include="src\Assets\Textures\moon_phases_glow.png" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="src\Assets\TextFont\1_Minecraft-Regular.otf">

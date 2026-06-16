@@ -79,7 +79,7 @@ void Engine::render() {
 	// Set up matrices
 	ResourceManager::getShaderProgram("worldShader")->use();
 	camera->setView(*ResourceManager::getShaderProgram("worldShader"));
-	glm::mat4 projection = glm::perspective(glm::radians(camera->getFov()), static_cast<float>(m_window->getWidth()) / static_cast<float>(m_window->getHeight()), 0.05f, 500.0f);
+	glm::mat4 projection = glm::perspective(glm::radians(camera->getFov()), static_cast<float>(m_window->getWidth()) / static_cast<float>(m_window->getHeight()), 0.05f, 1000.0f);
 
 	// Render the world
 	ResourceManager::getTexture("worldTexture")->setTexture();
@@ -130,5 +130,6 @@ void Engine::initAssets() {
 	ResourceManager::loadTexture("uiTexture", "src/Assets/Textures/gui-atlas.png", GL_RGBA);
 	ResourceManager::loadTexture("sunGlow", "src/Assets/Textures/sun.png", GL_RGB);
 	ResourceManager::loadTexture("sunTexture", "src/Assets/Textures/sun_transparent.png", GL_RGBA);
-
+	ResourceManager::loadTexture("moonTexture", "src/Assets/Textures/moon_phases.png", GL_RGBA);
+	ResourceManager::loadTexture("moonGlow", "src/Assets/Textures/moon_phases_glow.png", GL_RGB);
 }
