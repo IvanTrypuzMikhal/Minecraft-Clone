@@ -101,3 +101,74 @@ float Camera::getCameraLookAtY() const {
 float Camera::getCameraLookAtZ() const {
 	return m_cameraFront.z;
 }
+
+void Camera::getFrustum(const glm::mat4& projection, Frustum& frustum) const {
+	// No model matrix is ever applied to the camera, so we can just use the view matrix directly
+	glm::mat4 M = projection * view();
+	Plane leftPlane;
+	leftPlane.normal.x = M[0][3] + M[0][0];
+	leftPlane.normal.y = M[1][3] + M[1][0];
+	leftPlane.normal.z = M[2][3] + M[2][0];
+	leftPlane.distance = M[3][3] + M[3][0];
+
+	float length = glm::length(leftPlane.normal);
+	leftPlane.normal /= length;
+	leftPlane.distance /= length;
+
+	Plane rightPlane;
+	rightPlane.normal.x = M[0][3] - M[0][0];
+	rightPlane.normal.y = M[1][3] - M[1][0];
+	rightPlane.normal.z = M[2][3] - M[2][0];
+	rightPlane.distance = M[3][3] - M[3][0];
+
+	length = glm::length(rightPlane.normal);
+	rightPlane.normal /= length;
+	rightPlane.distance /= length;
+
+	Plane bottomPlane;
+	bottomPlane.normal.x = M[0][3] + M[0][1];
+	bottomPlane.normal.y = M[1][3] + M[1][1];
+	bottomPlane.normal.z = M[2][3] + M[2][1];
+	bottomPlane.distance = M[3][3] + M[3][1];
+
+	length = glm::length(bottomPlane.normal);
+	bottomPlane.normal /= length;
+	bottomPlane.distance /= length;
+
+	Plane topPlane;
+	topPlane.normal.x = M[0][3] - M[0][1];
+	topPlane.normal.y = M[1][3] - M[1][1];
+	topPlane.normal.z = M[2][3] - M[2][1];
+	topPlane.distance = M[3][3] - M[3][1];
+
+	length = glm::length(topPlane.normal);
+	topPlane.normal /= length;
+	topPlane.distance /= length;
+
+	Plane nearPlane;
+	nearPlane.normal.x = M[0][3] + M[0][2];
+	nearPlane.normal.y = M[1][3] + M[1][2];
+	nearPlane.normal.z = M[2][3] + M[2][2];
+	nearPlane.distance = M[3][3] + M[3][2];
+
+	length = glm::length(nearPlane.normal);
+	nearPlane.normal /= length;
+	nearPlane.distance /= length;
+
+	Plane farPlane;
+	farPlane.normal.x = M[0][3] - M[0][2];
+	farPlane.normal.y = M[1][3] - M[1][2];
+	farPlane.normal.z = M[2][3] - M[2][2];
+	farPlane.distance = M[3][3] - M[3][2];
+
+	length = glm::length(farPlane.normal);
+	farPlane.normal /= length;
+	farPlane.distance /= length;
+
+	frustum.planes[0] = leftPlane;
+	frustum.planes[1] = rightPlane;
+	frustum.planes[2] = bottomPlane;
+	frustum.planes[3] = topPlane;
+	frustum.planes[4] = nearPlane;
+	frustum.planes[5] = farPlane;
+}

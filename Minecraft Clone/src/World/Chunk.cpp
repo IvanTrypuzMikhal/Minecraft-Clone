@@ -5,6 +5,7 @@ static BlockType getBlockType(int y, int surfaceY);
 static std::pair<int, int> getAtlasCoordinates(BlockType type, BlockFace face);
 uint32_t packVertex(float x, float y, float z, float u, float v, int textureId, int ao);
 
+// When creating a new chunk we first fill the chunk with the correct blocks based on the terrain generator in !WORLD COORDINATES!
 Chunk::Chunk(const std::shared_ptr<ShaderProgram> shader, int x, int z, const TerrainGenerator& terrain) : m_shader{ shader }, m_worldPosition{x, z} {
 	fillBlocks(terrain);
 }
@@ -17,6 +18,7 @@ void Chunk::setBuffers() {
 
 }
 
+// !WE WILL PASS THE WORLD POSITION OF THE CHUNK ONLY HERE!
 void Chunk::render(const glm::mat4& projection) {
 	m_shader->use();
 	m_shader->setMat4("projection", projection);
@@ -30,6 +32,7 @@ void Chunk::render(const glm::mat4& projection) {
 	glDrawArrays(GL_TRIANGLES, 0, m_mesh.size());
 }
 
+// Here we build the mesh for the chunk in !LOCAL COORDINATES! 
 void Chunk::buildMesh(const ChunkPackage& chunkPackage)
 
 {

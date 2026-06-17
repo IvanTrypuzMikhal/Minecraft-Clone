@@ -6,6 +6,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 #include <Gameplay/Input/InputManager.h>
+#include "Frustum.h"
 
 class ShaderProgram;
 
@@ -39,6 +40,7 @@ public:
 	[[nodiscard]] glm::vec3 getCameraLookAt() const;
 	[[nodiscard]] glm::vec3& getCameraPosition();
 	[[nodiscard]] glm::mat4 view() const;
+	[[nodiscard]] void getFrustum(const glm::mat4& projection, Frustum& frustum) const;
 
 	void setView(ShaderProgram& shader) const;
 	void setFirstInput();

@@ -1,6 +1,6 @@
 #pragma once
 #include <Gameplay/Camera.h>
-#include <Gameplay/AABB.h>
+#include <Gameplay/Frustum.h>
 #include <World/World.h>
 
 class Player

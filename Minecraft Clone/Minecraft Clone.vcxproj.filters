@@ -216,6 +216,7 @@
     <ClInclude Include="src\Gameplay\Input\InputManager.h" />
     <ClInclude Include="src\Gameplay\Input\keycodes.h" />
     <ClInclude Include="src\World\SkyBox.h" />
+    <ClInclude Include="src\Gameplay\Frustum.h" />
   </ItemGroup>
   <!-- Shaders -->
   <ItemGroup>

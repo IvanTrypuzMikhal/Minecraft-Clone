@@ -44,6 +44,7 @@
     <ClInclude Include="src\Gameplay\Camera.h" />
     <ClInclude Include="src\Gameplay\CubeSelection.h" />
     <ClInclude Include="src\Gameplay\DebugUI.h" />
+    <ClInclude Include="src\Gameplay\Frustum.h" />
     <ClInclude Include="src\Gameplay\HUD.h" />
     <ClInclude Include="src\Gameplay\HUDSprites.h" />
     <ClInclude Include="src\Gameplay\Input\InputManager.h" />

@@ -12,19 +12,19 @@
 #include <utility>
 #include <map>
 #include <memory>
-#include <Gameplay/AABB.h>
+#include <Gameplay/Frustum.h>
 
 struct BlockHit;
 
 class World
 {
 public:
-	World(std::shared_ptr<ShaderProgram> shader) : m_terrain{ TerrainGenerator() }, m_shader { shader }, m_terrainThread{TerrainThread(m_shader, m_terrain)} {
+	World(std::shared_ptr<ShaderProgram> shader) : m_terrain{ TerrainGenerator() }, m_shader{ shader }, m_terrainThread{ TerrainThread(m_shader, m_terrain) } {
 	}
 	~World() = default;
 
 	void renderWorld(const glm::mat4& projection);
-	void updateCameraPosition(const glm::vec3& position);
+	void updateCamera(const glm::vec3& position, const Frustum& frustum);
 	bool checkNearbyChunksTerrainReady(int x, int z);
 	bool checkNearbyChunksDecorationReady(int x, int z);
 	
@@ -58,6 +58,7 @@ private:
 	FileIOThread m_fileIOThread;
 
 	glm::vec3 m_cameraPosition;
+	Frustum& m_frustum = *new Frustum();
 
 	TerrainGenerator m_terrain;
 };

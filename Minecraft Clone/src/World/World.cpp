@@ -2,6 +2,8 @@
 #include <Gameplay/Raycaster.h>
 #include <chrono>
 
+
+// Will need to take care of the nested if statements for them not to be too deep, maybe create a function for state handling.
 void World::renderWorld(const glm::mat4& projection) {
 	const int positiveZ = static_cast<int>(m_cameraPosition.z + Globals::RENDER_RADIOUS);
 	const int negativeZ = static_cast<int>(m_cameraPosition.z - Globals::RENDER_RADIOUS);
@@ -14,7 +16,31 @@ void World::renderWorld(const glm::mat4& projection) {
 			std::pair<int, int> coords = std::pair<int, int>(x, z);
 			if (m_chunks.contains(coords)) {
 				if (m_chunks[coords].state == MESH_READY || m_chunks[coords].state == DIRTY) {
-					m_chunks[coords].chunk->render(projection);
+					// Idk why but with different AABB values the performance changes
+					// Looking UP with the second AABB gives the same performance as the first one but looking DOWN.
+					// I guess i'll have to store in the chunk its maximum and minimum height to create a more accurate AABB.
+
+
+					// With my specs without frustum culling I get around 120 fps, and with frusum:
+					// This gives around 300 fps with 40 render distance
+					// Looking DOWN at the ground gives around 1000 fps with 40 render distance
+					/*
+					AABB chunkAABB = {
+						glm::vec3(x * Globals::CHUNK_WIDTH, -Globals::CHUNK_HEIGHT / 2  , z * Globals::CHUNK_WIDTH),
+						glm::vec3((x + 1) * Globals::CHUNK_WIDTH, Globals::CHUNK_HEIGHT , (z + 1) * Globals::CHUNK_WIDTH)
+					};
+					*/
+
+					// This gives around 300 fps with 40 render distance
+					// Looking UP at the ground gives around 1000 fps with 40 render distance
+					AABB chunkAABB = {
+						glm::vec3(x * Globals::CHUNK_WIDTH, -Globals::CHUNK_HEIGHT  , z * Globals::CHUNK_WIDTH),
+						glm::vec3((x + 1) * Globals::CHUNK_WIDTH, 0 , (z + 1) * Globals::CHUNK_WIDTH)
+					};
+
+					if (m_frustum.isAABBInFrustum(chunkAABB)) {
+						m_chunks[coords].chunk->render(projection);
+					}
 				}
 			}
 			else {
@@ -234,10 +260,12 @@ void World::checkFinishedChunksLoadedFromMemory() {
 }
 
 
-void World::updateCameraPosition(const glm::vec3& position) {
+void World::updateCamera(const glm::vec3& position, const Frustum& frustum) {
 	m_cameraPosition.x = std::floor(position.x / Globals::CHUNK_WIDTH);
 	m_cameraPosition.y = position.y;
 	m_cameraPosition.z = std::floor(position.z / Globals::CHUNK_WIDTH);
+
+	m_frustum = frustum;
 }										
 
 bool World::checkNearbyChunksTerrainReady(int x, int z) {

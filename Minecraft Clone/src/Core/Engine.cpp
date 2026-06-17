@@ -61,7 +61,10 @@ void Engine::stateUpdate() {
 void Engine::update() {
 	Camera* camera = m_player->getCamera();
 
-	m_world->updateCameraPosition(camera->getCameraPosition());
+	glm::mat4 projection = glm::perspective(glm::radians(camera->getFov()), static_cast<float>(m_window->getWidth()) / static_cast<float>(m_window->getHeight()), 0.05f, 1000.0f);
+	Frustum frustum;
+	camera->getFrustum(projection, frustum);
+	m_world->updateCamera(camera->getCameraPosition(), frustum);
 	//m_world->updateWorldState();
 	
 	m_player->update(m_time.getDelta());
