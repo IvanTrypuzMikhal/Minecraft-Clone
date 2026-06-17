@@ -88,7 +88,8 @@ SkyBox::SkyBox() {
     m_moon_glow.m_shader = ResourceManager::getShaderProgram("celestialBodyShader");
     m_moon_glow.m_texture = ResourceManager::getTexture("moonGlow");
 }
-
+// This is bad performance wise but i don't have the knowledge to create the glow in the shader yet.
+// Temp solution for now.
 void SkyBox::render(const glm::mat4& view, const glm::mat4& projection, float worldTime) {
     glDepthFunc(GL_LEQUAL);
     m_shader->use();

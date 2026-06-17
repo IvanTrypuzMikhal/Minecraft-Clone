@@ -4,6 +4,7 @@
 static BlockType getBlockType(int y, int surfaceY);
 static std::pair<int, int> getAtlasCoordinates(BlockType type, BlockFace face);
 uint32_t packVertex(float x, float y, float z, float u, float v, int textureId, int ao);
+uint32_t packVertexAttributes(uint8_t lighting);
 
 // When creating a new chunk we first fill the chunk with the correct blocks based on the terrain generator in !WORLD COORDINATES!
 Chunk::Chunk(const std::shared_ptr<ShaderProgram> shader, int x, int z, const TerrainGenerator& terrain) : m_shader{ shader }, m_worldPosition{x, z} {
@@ -11,15 +12,15 @@ Chunk::Chunk(const std::shared_ptr<ShaderProgram> shader, int x, int z, const Te
 }
 
 void Chunk::setBuffers() {
-	std::vector<VertexAttribute> block{ {0, 1, 0, GL_UNSIGNED_INT } };
+	std::vector<VertexAttribute> block{ { .index = 0, .size = 1, .offset = 0, .type = GL_UNSIGNED_INT }, {.index = 1, .size = 1, .offset = 1, .type = GL_UNSIGNED_INT } };
 	m_vbo = std::make_unique<Vbo>();
-	m_vao = std::make_unique<Vao>(m_vbo->get(), 1, block);
+	m_vao = std::make_unique<Vao>(m_vbo->get(), 2, block);
 	m_vbo->upload(m_mesh);
 
 }
 
 // !WE WILL PASS THE WORLD POSITION OF THE CHUNK ONLY HERE!
-void Chunk::render(const glm::mat4& projection) {
+void Chunk::render(const glm::mat4& projection, float ambientLightIntensity) {
 	m_shader->use();
 	m_shader->setMat4("projection", projection);
 	glm::vec3 chunkPos(
@@ -28,8 +29,9 @@ void Chunk::render(const glm::mat4& projection) {
 		static_cast<float>(m_worldPosition.second * Globals::CHUNK_WIDTH)
 	);
 	m_shader->setVec3("chunkPos", chunkPos);
+	m_shader->setFloat("timeLightFactor", ambientLightIntensity);
 	m_vao->use();
-	glDrawArrays(GL_TRIANGLES, 0, m_mesh.size());
+	glDrawArrays(GL_TRIANGLES, 0, m_mesh.size() / 2);
 }
 
 // Here we build the mesh for the chunk in !LOCAL COORDINATES! 
@@ -66,7 +68,8 @@ void Chunk::buildMesh(const ChunkPackage& chunkPackage)
 							const int ao = (ao1 && ao2) ? 0 : 3 - (ao1 + ao2 + ao3);
 							
 							const uint32_t packedVertex = packVertex(vx, vy, vz, u, v, textureId, ao);
-							pushVertex(packedVertex);
+							const uint32_t packedAttributes = packVertexAttributes(m_lighting[x][y][z]);
+							pushVertex(packedVertex, packedAttributes);
 						}
 					}
 
@@ -224,18 +227,33 @@ void Chunk::fillBlocks(const TerrainGenerator& terrain) {
 			const int worldX = m_worldPosition.first * Globals::CHUNK_WIDTH + x;
 			const int worldZ = m_worldPosition.second * Globals::CHUNK_WIDTH + z;
 			const int surfaceY = terrain.getHeight(worldX, worldZ);
+			// Not the best solution becouse what theres some sort of cliff and the first block gets the light level of 15 and the blocks under it get the light level of 0?
+			// There should be a better solution to calculate the light level based on the blocks around it, but for now this will do.
 
+
+			bool firstBlock = false;
 			for (int y = 0; y < Globals::CHUNK_HEIGHT; y++) {
+				BlockType blockType = getBlockType(y, surfaceY);
 
 				// Here we are iterating under the bounds so we can use [] instead of .at() to avoid the overhead of bounds checking
-				m_blocks[x][y][z] = getBlockType(y, surfaceY);
+				m_blocks[x][y][z] = blockType;
+				
+				// After we found the first solid block we set every other block light to level 0
+				uint8_t lightLevel = firstBlock ? 4 : 15;
+				// For now we will set the indirect light level to 0 for every block, but we'll change this later
+				lightLevel |= 0 << 4;
+				m_lighting[x][y][z] = lightLevel;
+				
+				// Then we set the firstBlock flag to true so we know that we have found the first solid block and we can set the light level to 0 for every other block
+				if (blockType != BlockType::Air && !firstBlock) firstBlock = true;
 			}
 		}
 	}
 }
 
-void Chunk::pushVertex(uint32_t packedVertex) {
+void Chunk::pushVertex(uint32_t packedVertex, uint32_t packedAttributes) {
 	m_buildMesh.push_back(packedVertex);
+	m_buildMesh.push_back(packedAttributes);
 }
 
 uint32_t packVertex(float x, float y, float z, float u, float v, int textureId, int ao) {
@@ -256,6 +274,13 @@ uint32_t packVertex(float x, float y, float z, float u, float v, int textureId, 
 	packedVertex |= (intTextureId & 0xFF) << 21;	// 8 bits
 	packedVertex |= (intAo & 0x3) << 29;			// 2 bits	
 	return packedVertex;
+}
+
+uint32_t packVertexAttributes(uint8_t lighting) {
+	uint32_t packedAttributes{ 0 };
+
+	packedAttributes |= lighting;			
+	return packedAttributes;
 }
 
 static BlockType getBlockType(int y, int surfaceY) {

@@ -23,10 +23,10 @@ public:
 	~Chunk() = default;
 
 	void buildMesh(const ChunkPackage& chunkPackage);
-	void render(const glm::mat4& projection);
+	void render(const glm::mat4& projection, float ambientLightIntensity);
 	void fillBlocks(const TerrainGenerator& terrain);
 	void generateTrees(const ChunkPackage& chunkPackage, int seed);
-	void pushVertex(uint32_t packedVertex);
+	void pushVertex(uint32_t packedVertex, uint32_t packedAttributes);
 	void setBuffers();
 	void applyDeltas(const ChunkSnapshot& snapshot);
 	bool isAir(int x, int y, int z, const ChunkPackage& chunkPackage) ;
@@ -44,12 +44,18 @@ public:
 	BlockType blockTypeCast(unsigned char id) const;
 
 private:
+	// Chunk data
 	std::array<std::array<std::array<BlockType, 16>, 256>,16> m_blocks = {BlockType::Air};
+	std::array<std::array<std::array<uint8_t, 16>, 256>, 16> m_lighting = { 0 }; 	// First 4 bits are global lighting and second 4 bits are indirect lighting. Each block can have a value from 0 to 15 for each lighting type.
 	std::unordered_map<uint16_t, BlockType> m_deltasChanges;
 	std::vector<uint32_t> m_mesh;
 	std::vector<uint32_t> m_buildMesh;
+	std::pair<int, int> m_worldPosition;
+
+
+
+	// Rendering data
 	const std::shared_ptr<ShaderProgram> m_shader;
 	std::unique_ptr<Vao> m_vao;
 	std::unique_ptr<Vbo> m_vbo;
-	std::pair<int, int> m_worldPosition;
 };

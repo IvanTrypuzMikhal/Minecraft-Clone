@@ -39,7 +39,7 @@ void World::renderWorld(const glm::mat4& projection) {
 					};
 
 					if (m_frustum.isAABBInFrustum(chunkAABB)) {
-						m_chunks[coords].chunk->render(projection);
+						m_chunks[coords].chunk->render(projection, getAmbientLightIntensity());
 					}
 				}
 			}
@@ -260,12 +260,14 @@ void World::checkFinishedChunksLoadedFromMemory() {
 }
 
 
-void World::updateCamera(const glm::vec3& position, const Frustum& frustum) {
+void World::updateCamera(const glm::vec3& position, const Frustum& frustum, float worldTime) {
 	m_cameraPosition.x = std::floor(position.x / Globals::CHUNK_WIDTH);
 	m_cameraPosition.y = position.y;
 	m_cameraPosition.z = std::floor(position.z / Globals::CHUNK_WIDTH);
 
 	m_frustum = frustum;
+
+	m_worldTime = worldTime;
 }										
 
 bool World::checkNearbyChunksTerrainReady(int x, int z) {
@@ -501,4 +503,27 @@ bool World::hasBlockBellow(AABB playerAABB, int yPos) const {
 	if (getBlockAt(blockPos.x, blockPos.y, blockPos.z) != BlockType::Air) return true;
 
 	return false;
+}
+
+float World::getAmbientLightIntensity() const {
+	float ticks = fmod(m_worldTime, 24000.0f);
+	if (ticks >= 0 && ticks < 12000) {
+		return 1.0f;
+	}
+
+	if (ticks >= 12000 && ticks < 13670) {
+		float factor = (float)(ticks - 12000) / (13670 - 12000);
+		return 1.0f - (factor * (1.0f - 0.2666f));
+	}
+
+	if (ticks >= 13670 && ticks < 22330) {
+		return 0.2666f;
+	}
+
+	if (ticks >= 22330 && ticks < 24000) {
+		float factor = (float)(ticks - 22330) / (24000 - 22330);
+		return 0.2666f + (factor * (1.0f - 0.2666f));
+	}
+
+	return 1.0f;
 }

@@ -61,6 +61,9 @@
 	void Player::update(float delta) {
 		calculateVelocity(delta);
 
+		// This thing is buggy as hell. It sometimes works, sometimes doesn't.
+		// I think the area check maybe something to do with it. Or maybe wrong AABB's idk.
+		// Anyways i dont have too much interest in fixing it right now.
 		if (m_crouch && m_onGround) {
 			checkShiftingCollisionAxis(delta, 0);
 			checkShiftingCollisionAxis(delta, 2);

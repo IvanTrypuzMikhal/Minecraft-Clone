@@ -13,6 +13,7 @@
 #include <map>
 #include <memory>
 #include <Gameplay/Frustum.h>
+#include <Core/Time.h>
 
 struct BlockHit;
 
@@ -24,7 +25,7 @@ public:
 	~World() = default;
 
 	void renderWorld(const glm::mat4& projection);
-	void updateCamera(const glm::vec3& position, const Frustum& frustum);
+	void updateCamera(const glm::vec3& position, const Frustum& frustum, float worldTime);
 	bool checkNearbyChunksTerrainReady(int x, int z);
 	bool checkNearbyChunksDecorationReady(int x, int z);
 	
@@ -43,6 +44,7 @@ public:
 	BlockType getBlockAt(int x, int y, int z) const;
 
 	void getNearbyChunks(std::pair<int, int> chunkPos, ChunkPackage& package);
+	float getAmbientLightIntensity() const;
 
 private:
 
@@ -59,6 +61,7 @@ private:
 
 	glm::vec3 m_cameraPosition;
 	Frustum& m_frustum = *new Frustum();
+	float m_worldTime = 0.0f;
 
 	TerrainGenerator m_terrain;
 };
