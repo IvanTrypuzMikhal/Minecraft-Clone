@@ -68,6 +68,7 @@
     <ClInclude Include="src\World\SkyBox.h" />
     <ClInclude Include="src\World\TerrainGeneration.h" />
     <ClInclude Include="src\World\TerrainThread.h" />
+    <ClInclude Include="src\World\ThreadPool.h" />
     <ClInclude Include="src\World\TSQueue.h" />
     <ClInclude Include="src\World\World.h" />
   </ItemGroup>
@@ -102,6 +103,7 @@
     <ClCompile Include="src\World\SkyBox.cpp" />
     <ClCompile Include="src\World\TerrainGeneration.cpp" />
     <ClCompile Include="src\World\TerrainThread.cpp" />
+    <ClCompile Include="src\World\ThreadPool.cpp" />
     <ClCompile Include="src\World\World.cpp" />
   </ItemGroup>
   <ItemGroup>

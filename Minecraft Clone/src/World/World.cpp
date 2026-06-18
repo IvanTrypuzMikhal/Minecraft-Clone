@@ -50,28 +50,27 @@ void World::renderWorld(const glm::mat4& projection) {
 				// If not in saving chunks, not in memory and not requested then we just generate it as usual.
 				if (!m_requestedChunks.contains(coords)) {
 					if (m_savingChunks.contains(coords)) {
-						
 						// We rebuild the snapshot from the deltas stored in memory and enqueue it for terrain generation.
 						auto it = m_savingChunks.find(coords);
 						ChunkSnapshot snapshot;
 						snapshot.coords = it->first;
 						snapshot.deltas_counts.count = it->second.count;
 						snapshot.deltas_counts.deltas = it->second.deltas;
-
-						m_terrainThread.terrainQueue().push(coords);
+						auto job = getTerrainGenerationTask(coords);
+						if (job == nullptr) throw std::exception("BAD::TERRAIN::GENERATION::TASK::TERMINATING");
+						m_threadPool.taskQueue().push(job);
 						m_pendingDeltas.insert({ coords, snapshot });
 					}
 					else if (m_mainMemSavedChunks.contains(coords)) {
 						m_fileIOThread.loadFromMemoryQueue().push(coords);
-						m_terrainThread.terrainQueue().push(coords);
+						m_threadPool.taskQueue().push(getTerrainGenerationTask(coords));
 						m_fileIOThread.notifyThread();
 					}
 					else {
 						m_requestedChunks.insert(coords);
-						m_terrainThread.terrainQueue().push(coords);
+						m_threadPool.taskQueue().push(getTerrainGenerationTask(coords));
 					}
 				}
-				if (!m_requestedChunks.empty()) m_terrainThread.notifyThread();
 			}
 		}
 	}
@@ -91,9 +90,9 @@ void World::updateWorldState() {
 // When a new chunk arrives check for all chunks stored in some buffer which need to be updated
 // instead of checking in a 5x5 grid
 void World::checkChunksWithTerrain() {
-	while (!m_terrainThread.finishedTerrainChunks().empty()) {
+	while (!m_finishedTerrainChunks.empty()) {
 
-		FinishedChunk fc = m_terrainThread.finishedTerrainChunks().pop();
+		FinishedChunk fc = m_finishedTerrainChunks.pop();
 		std::pair<int, int> current = fc.coords;
 
 		// Add it to the chunk map
@@ -158,8 +157,8 @@ void World::checkChunksWithTerrain() {
 }
 
 void World::checkFinishedChunksWithMesh() {
-	while (!m_meshThread.finishedMeshChunks().empty()) {
-		std::pair<int, int> coords = m_meshThread.finishedMeshChunks().pop();
+	while (!m_finishedMeshChunks.empty()) {
+		std::pair<int, int> coords = m_finishedMeshChunks.pop();
 
 		auto it = m_chunks.find(coords);
 		if (it != m_chunks.end()) {
@@ -363,8 +362,7 @@ void World::enqueMeshByCoords(std::pair<int, int> chunkPos) {
 	package.coords = std::pair(chunkPos.first, chunkPos.second);
 	package.center = it->second.chunk;
 	getNearbyChunks(std::pair(chunkPos.first, chunkPos.second), package);
-	m_meshThread.meshQueue().push(package);
-	m_meshThread.notifyThread();
+	m_threadPool.taskQueue().push(getMeshBuildingTask(package));
 }
 
 void World::addBlock(BlockHit hit, BlockType type, const AABB& playerAABB) {
@@ -403,8 +401,7 @@ void World::addBlock(BlockHit hit, BlockType type, const AABB& playerAABB) {
 		package.coords = chunkPos;
 		package.center = it->second.chunk;
 		getNearbyChunks(chunkPos, package);
-		m_meshThread.meshQueue().push(package);
-		m_meshThread.notifyThread();
+		m_threadPool.taskQueue().push(getMeshBuildingTask(package));
 	}
 	it->second.state = DIRTY;
 }
@@ -526,4 +523,20 @@ float World::getAmbientLightIntensity() const {
 	}
 
 	return 1.0f;
+}
+
+std::function<void()> World::getTerrainGenerationTask(std::pair<int, int> coords) {
+	return [this, coords]() {
+		auto newChunk = std::make_shared<Chunk>(this->m_shader, coords.first, coords.second, this->m_terrain);
+		ChunkState chunkState = { std::move(newChunk), TERRAIN_READY, 0.0f };
+
+		this->m_finishedTerrainChunks.push({ std::move(chunkState), coords });
+	};
+}
+
+std::function<void()> World::getMeshBuildingTask(ChunkPackage package) {
+	return [this, package]() {
+			package.center->buildMesh(package);
+			this->m_finishedMeshChunks.push(package.coords);
+		};
 }

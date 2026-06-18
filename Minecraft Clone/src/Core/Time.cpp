@@ -1,4 +1,5 @@
 #include "Time.h"
+#include <glm/glm.hpp>
 
 
 void Time::update() {
@@ -42,5 +43,5 @@ float Time::getWorldTime() const {
 }
 
 void Time::updateWorldTime() {
-    m_worldTime += 1;
+    m_worldTime += 100;
 }

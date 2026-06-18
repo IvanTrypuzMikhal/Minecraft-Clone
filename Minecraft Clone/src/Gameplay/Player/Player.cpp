@@ -103,7 +103,7 @@
 			m_lastFrameCrouching = false;
 		}
 		else if (m_run && m_moveForward) {
-			m_speed = 7.0f;
+			m_speed = 50.0f;
 			m_lastFrameRunning = true;
 		}
 		else if (m_lastFrameRunning && !m_moveForward) {

@@ -17,7 +17,6 @@ public:
 	[[nodiscard]] float getTickAcumulator() const;
 	[[nodiscard]] float getWorldTime() const;
 
-
 private:
 	float m_lastTime{ 0.0f };
 	float m_deltaTime{ 0.0f };
