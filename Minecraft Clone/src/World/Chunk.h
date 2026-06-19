@@ -29,10 +29,11 @@ public:
 	void pushVertex(uint32_t packedVertex, uint32_t packedAttributes);
 	void setBuffers();
 	void applyDeltas(const ChunkSnapshot& snapshot);
+	void calculateLightingPropagation(const ChunkPackage& chunkPackage);
 	bool isAir(int x, int y, int z, const ChunkPackage& chunkPackage) ;
 	bool castsAO(BlockType type);
 	void addDelta(int x, int y, int z, BlockType blockType);
-
+	int getMaxHeight() const;
 
 	std::vector<uint32_t> getMesh();
 
@@ -52,7 +53,7 @@ private:
 	std::vector<uint32_t> m_buildMesh;
 	std::pair<int, int> m_worldPosition;
 
-
+	int m_maxHeight = 0;
 
 	// Rendering data
 	const std::shared_ptr<ShaderProgram> m_shader;

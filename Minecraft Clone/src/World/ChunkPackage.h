@@ -12,7 +12,10 @@ struct PairHash {
 enum State : unsigned char
 {
 	TERRAIN_READY,
+	DECORATING,
 	DECORATED,
+	CALCULATING_LIGHTING,
+	LIGHTING_READY,
 	MESH_BUILDING,
 	MESH_READY,
 	DIRTY,
@@ -24,22 +27,6 @@ struct ChunkState
 {
 	std::shared_ptr<Chunk> chunk;
 	State state;
-	float totalMs{ 0.0f };
-};
-
-
-struct ChunkPackage
-{
-	std::pair<int, int> coords;
-	std::shared_ptr<Chunk> center;
-	std::shared_ptr<Chunk> left;
-	std::shared_ptr<Chunk> right;
-	std::shared_ptr<Chunk> front;
-	std::shared_ptr<Chunk> back;
-	std::shared_ptr<Chunk> topLeft;
-	std::shared_ptr<Chunk> topRight;
-	std::shared_ptr<Chunk> bottomLeft;
-	std::shared_ptr<Chunk> bottomRight;
 };
 
 struct FinishedChunk
@@ -64,4 +51,20 @@ struct ChunkSnapshot
 {
 	std::pair<int, int> coords;
 	Deltas deltas_counts;
+};
+
+struct ChunkPackage
+{
+	std::pair<int, int> coords;
+	std::shared_ptr<Chunk> center;
+	std::shared_ptr<Chunk> left;
+	std::shared_ptr<Chunk> right;
+	std::shared_ptr<Chunk> front;
+	std::shared_ptr<Chunk> back;
+	std::shared_ptr<Chunk> topLeft;
+	std::shared_ptr<Chunk> topRight;
+	std::shared_ptr<Chunk> bottomLeft;
+	std::shared_ptr<Chunk> bottomRight;
+	ChunkSnapshot snapshot;
+	bool hasDeltas = false;
 };

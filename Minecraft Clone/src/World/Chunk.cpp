@@ -137,6 +137,9 @@ std::vector<uint32_t> Chunk::getMesh(){
 	return m_mesh;
 }
 
+
+// Dont remember shit how does this work
+// Also i have to change the inverted Y axis in my world. Too many problems
 void Chunk::generateTrees(const ChunkPackage& chunkPackage, int seed) {
 	
 	std::random_device rd;
@@ -184,6 +187,8 @@ void Chunk::generateTrees(const ChunkPackage& chunkPackage, int seed) {
 				int leafY = leafStartHeight + y;
 				int leafZ = treeZ + z;
 
+				//if (leafY > m_maxHeight) m_maxHeight = leafY;
+
 				std::shared_ptr<Chunk> targetChunk = shared_from_this();
 
 
@@ -227,6 +232,7 @@ void Chunk::fillBlocks(const TerrainGenerator& terrain) {
 			const int worldX = m_worldPosition.first * Globals::CHUNK_WIDTH + x;
 			const int worldZ = m_worldPosition.second * Globals::CHUNK_WIDTH + z;
 			const int surfaceY = terrain.getHeight(worldX, worldZ);
+			if (surfaceY > m_maxHeight) m_maxHeight = surfaceY;
 			// Not the best solution becouse what theres some sort of cliff and the first block gets the light level of 15 and the blocks under it get the light level of 0?
 			// There should be a better solution to calculate the light level based on the blocks around it, but for now this will do.
 
@@ -376,4 +382,12 @@ BlockType Chunk::blockTypeCast(unsigned char id) const{
 void Chunk::addDelta(int x, int y, int z, BlockType blockType) {
 	uint16_t deltaKey = (x << 12) | (y << 4) | z;
 	m_deltasChanges[deltaKey] = blockType;
+}
+
+int Chunk::getMaxHeight() const {
+	return m_maxHeight;
+}
+
+void Chunk::calculateLightingPropagation(const ChunkPackage& chunkPackage) {
+	// For now we do nothing. Just adding the function to work with the Chunk pipeline. Later we will implement the lighting propagation algorithm.
 }

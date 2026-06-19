@@ -28,7 +28,7 @@ void TerrainThread::asyncTerrainLoading() {
 		float ms = std::chrono::duration<float, std::milli>(
 			std::chrono::high_resolution_clock::now() - start).count();
 
-		ChunkState chunkState = { std::move(newChunk), TERRAIN_READY, ms };
+		ChunkState chunkState = { std::move(newChunk), TERRAIN_READY};
 		m_finishedTerrainChunks.push({ std::move(chunkState), coords });
 	}
 }

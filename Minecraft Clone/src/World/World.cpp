@@ -5,37 +5,22 @@
 
 // Will need to take care of the nested if statements for them not to be too deep, maybe create a function for state handling.
 void World::renderWorld(const glm::mat4& projection) {
-	const int positiveZ = static_cast<int>(m_cameraPosition.z + Globals::RENDER_RADIOUS);
-	const int negativeZ = static_cast<int>(m_cameraPosition.z - Globals::RENDER_RADIOUS);
-	const int positiveX = static_cast<int>(m_cameraPosition.x + Globals::RENDER_RADIOUS);
-	const int negativeX = static_cast<int>(m_cameraPosition.x - Globals::RENDER_RADIOUS);
+	const int positiveGenerationRadiousZ = static_cast<int>(m_cameraPosition.z + Globals::GENERATION_RADIOUS);
+	const int negativeGenerationRadiousZ = static_cast<int>(m_cameraPosition.z - Globals::GENERATION_RADIOUS);
+	const int positiveGenerationRadiousX = static_cast<int>(m_cameraPosition.x + Globals::GENERATION_RADIOUS);
+	const int negativeGenerationRadiousX = static_cast<int>(m_cameraPosition.x - Globals::GENERATION_RADIOUS);
 	
 	// Chen in radious -+ x, -+ z which chunks are ready to render and which not
-	for (int z = negativeZ; z < positiveZ; z++) {
-		for (int x = negativeX; x < positiveX; x++) {
+	for (int z = negativeGenerationRadiousZ; z < positiveGenerationRadiousZ; z++) {
+		for (int x = negativeGenerationRadiousX; x < positiveGenerationRadiousX; x++) {
 			std::pair<int, int> coords = std::pair<int, int>(x, z);
+			
 			if (m_chunks.contains(coords)) {
 				if (m_chunks[coords].state == MESH_READY || m_chunks[coords].state == DIRTY) {
-					// Idk why but with different AABB values the performance changes
-					// Looking UP with the second AABB gives the same performance as the first one but looking DOWN.
-					// I guess i'll have to store in the chunk its maximum and minimum height to create a more accurate AABB.
-
-
-					// With my specs without frustum culling I get around 120 fps, and with frusum:
-					// This gives around 300 fps with 40 render distance
-					// Looking DOWN at the ground gives around 1000 fps with 40 render distance
-					/*
-					AABB chunkAABB = {
-						glm::vec3(x * Globals::CHUNK_WIDTH, -Globals::CHUNK_HEIGHT / 2  , z * Globals::CHUNK_WIDTH),
-						glm::vec3((x + 1) * Globals::CHUNK_WIDTH, Globals::CHUNK_HEIGHT , (z + 1) * Globals::CHUNK_WIDTH)
-					};
-					*/
-
-					// This gives around 300 fps with 40 render distance
-					// Looking UP at the ground gives around 1000 fps with 40 render distance
 					AABB chunkAABB = {
 						glm::vec3(x * Globals::CHUNK_WIDTH, -Globals::CHUNK_HEIGHT  , z * Globals::CHUNK_WIDTH),
-						glm::vec3((x + 1) * Globals::CHUNK_WIDTH, 0 , (z + 1) * Globals::CHUNK_WIDTH)
+						// - 10 to have a little bit of margin for the frustum culling to not cull chunks that are close to the camera but not in the frustum yet.
+						glm::vec3((x + 1) * Globals::CHUNK_WIDTH, -m_chunks[coords].chunk->getMaxHeight() + 10 , (z + 1) * Globals::CHUNK_WIDTH)
 					};
 
 					if (m_frustum.isAABBInFrustum(chunkAABB)) {
@@ -79,6 +64,10 @@ void World::renderWorld(const glm::mat4& projection) {
 void World::updateWorldState() {
 	// Check chunks with generated terrain
 	checkChunksWithTerrain();
+	// Check chunks with finished decoration
+	checkFinishedChunksWithDecoration();
+	// We check chunks with finished lighting
+	checkFinishedChunksWithLighting();
 	// We update each chunk with finished mesh to be ready for rendering
 	checkFinishedChunksWithMesh();
 	// Check chunks that are out of range to be freed from memory
@@ -86,74 +75,57 @@ void World::updateWorldState() {
 	// Check chunks with finished loading from memory
 	checkFinishedChunksLoadedFromMemory();
 }
-// TODO: Change approach to a buffer/queued based one.
-// When a new chunk arrives check for all chunks stored in some buffer which need to be updated
-// instead of checking in a 5x5 grid
+
 void World::checkChunksWithTerrain() {
 	while (!m_finishedTerrainChunks.empty()) {
 
 		FinishedChunk fc = m_finishedTerrainChunks.pop();
 		std::pair<int, int> current = fc.coords;
-
-		// Add it to the chunk map
 		m_chunks.insert({ current, std::move(fc.chunkState) });
-		m_requestedChunks.erase(fc.coords);
+ 		m_requestedChunks.erase(current);
 
-		// Retreive its neighbors in a 5x5 grid
-		std::pair<int, int> candidatos[25];
-		for (int dz = -2; dz <= 2; dz++) {
-			for (int dx = -2; dx <= 2; dx++) {
-				// Index is calculated as: 
-				//int index = (dz + dx + 4) + 4 * (dz + 2);
-				int index = 5 * dz + dx + 12;
-				candidatos[index] = { current.first + dx, current.second + dz };
-			}
+		promoteChunk(fc.coords);
+		for (const auto& neighbor : get8Neighbors(fc.coords)) {
+			promoteChunk(neighbor);
 		}
+	}
+}
 
-		// For each candidate chunk to be decorated
-		for (const auto& coord : candidatos) {
-			auto it = m_chunks.find(coord);
+void World::checkFinishedChunksWithDecoration() {
+	while (!m_finishedDecoratedChunks.empty()) {
+		std::pair<int, int> coords = m_finishedDecoratedChunks.pop();
+		auto it = m_chunks.find(coords);
+		if (it != m_chunks.end()) {
+			if (it->second.state == DECORATING) {
+				it->second.state = DECORATED;
+				free(m_pendingDeltas[coords].deltas_counts.deltas);
+				m_pendingDeltas.erase(coords);
 
-			// We check that its ready for mesh generation and its neighbors
-			if (it != m_chunks.end() && it->second.state == TERRAIN_READY) {
-				if (checkNearbyChunksTerrainReady(coord.first, coord.second)) {
-					auto start = std::chrono::high_resolution_clock::now();
-					
-					ChunkPackage package;
-					package.coords = coord;
-					getNearbyChunks(coord, package);
-					it->second.chunk->generateTrees(package, m_terrain.getSeed());
-					it->second.state = DECORATED;
-					
-					// If the chunk has deltas stored we apply them
-					if (m_pendingDeltas.contains(coord)) {
-						it->second.chunk->applyDeltas(m_pendingDeltas[coord]);
-						free(m_pendingDeltas[coord].deltas_counts.deltas);
-						m_pendingDeltas.erase(coord);
-					}
-
-					it->second.totalMs += std::chrono::duration<float, std::milli>(
-						std::chrono::high_resolution_clock::now() - start).count();
-
-				}
-			}
-		}
-
-		// For each candidate chunk to be rendered
-		for (const auto& coord : candidatos) {
-			auto it = m_chunks.find(coord);
-
-			// We check that its ready for mesh generation and its neighbors
-			if (it != m_chunks.end() && it->second.state == DECORATED) {
-				if (checkNearbyChunksDecorationReady(coord.first, coord.second)) {
-
-					// If every chunk its redy then we build mesh around the center chunk and equeue it for rendering
-					it->second.state = MESH_BUILDING;
-					enqueMeshByCoords(coord);
+				promoteChunk(coords);
+ 				for (const auto& neighbor : get8Neighbors(coords)) {
+					promoteChunk(neighbor);
 				}
 			}
 		}
 	}
+}
+
+void World::checkFinishedChunksWithLighting() {
+	while (!m_finishedLightingChunks.empty()) {
+		std::pair<int, int> coords = m_finishedLightingChunks.pop();
+		auto it = m_chunks.find(coords);
+		if (it != m_chunks.end()) {
+			if (it->second.state == CALCULATING_LIGHTING) {
+				it->second.state = LIGHTING_READY;
+
+				promoteChunk(coords);
+				for (const auto& neighbor : get8Neighbors(coords)) {
+					promoteChunk(neighbor);
+				}
+			}
+		}
+	}
+
 }
 
 void World::checkFinishedChunksWithMesh() {
@@ -167,17 +139,8 @@ void World::checkFinishedChunksWithMesh() {
 			it->second.chunk->swapMesh();
 			it->second.chunk->setBuffers();
 			if (it->second.state != DIRTY) {
-				//std::cout << "Chunk " << coords.first << "," << coords.second << " mesh ready for rendering.\n";
 				it->second.state = MESH_READY;
 			}
-			else if(it->second.state == DIRTY){
-				//std::cout << "Chunk " << coords.first << "," << coords.second << " mesh ready for rendering but its dirty, it will be saved to memory and freed from RAM when its out of range.\n";
-			}
-			it->second.totalMs += std::chrono::duration<float, std::milli>(
-				std::chrono::high_resolution_clock::now() - start).count();
-			//std::cout << "Chunk " << coords.first << "," << coords.second
-			//	<< " total: " << it->second.totalMs << "ms\n";
-
 		}
 	}
 }
@@ -269,37 +232,6 @@ void World::updateCamera(const glm::vec3& position, const Frustum& frustum, floa
 	m_worldTime = worldTime;
 }										
 
-bool World::checkNearbyChunksTerrainReady(int x, int z) {
-	std::pair<int, int> targets[9] = {
-			{x,   z},
-			{x + 1, z}, {x - 1, z}, {x, z + 1}, {x, z - 1},
-			{x + 1, z + 1}, {x - 1, z + 1}, {x + 1, z - 1}, {x - 1, z - 1}
-	};
-	for (const auto& target : targets) {
-		auto it = m_chunks.find(target);
-		if (it == m_chunks.end() || it->second.state < TERRAIN_READY) {
-			return false;
-		}
-	}
-	return true;
-}
-
-bool World::checkNearbyChunksDecorationReady(int x, int z) {
-	std::pair<int, int> targets[9] = {
-		{x,   z},
-		{x + 1, z}, {x - 1, z}, {x, z + 1}, {x, z - 1},
-		{x + 1, z + 1}, {x - 1, z + 1}, {x + 1, z - 1}, {x - 1, z - 1}
-	};
-
-	for (const auto& target : targets) {
-		auto it = m_chunks.find(target);
-		if (it == m_chunks.end() || it->second.state < DECORATED) {
-			return false;
-		}
-	}
-	return true;
-}
-
 BlockType World::getBlockAt(int x, int y, int z) const {
 	std::pair<int, int> chunkPos = std::pair(x >> 4, z >> 4);
 
@@ -331,7 +263,7 @@ void World::deleteBlock(BlockHit hit) {
 
 	it->second.chunk->deleteBlock(localX, localY, localZ);
 
-	if (checkNearbyChunksDecorationReady(chunkPos.first, chunkPos.second)) {
+	if (checkNearbyChunksSameState(chunkPos, DECORATED)) {
 		enqueMeshByCoords(chunkPos);
 	}
 
@@ -380,7 +312,6 @@ void World::addBlock(BlockHit hit, BlockType type, const AABB& playerAABB) {
 
 	if (playerAABB.intersects(AABB(glm::vec3((float)globalX, (float)globalY, (float)globalZ), glm::vec3((float)globalX + 1.05, (float)globalY, (float)globalZ + 1.05))) ||
 		playerAABB.intersects(AABB(glm::vec3((float)globalX, (float)globalY + 1, (float)globalZ), glm::vec3((float)globalX + 1.05, (float)globalY + 1, (float)globalZ + 1.05)))) {
-		//std::cout << "Cannot place block, player is intersecting the block's AABB." << std::endl;
 		return;
 	}
 
@@ -395,7 +326,7 @@ void World::addBlock(BlockHit hit, BlockType type, const AABB& playerAABB) {
 
 	it->second.chunk->addBlock(localX, localY, localZ, type);
 
-	if (checkNearbyChunksDecorationReady(chunkPos.first, chunkPos.second)) {
+	if (checkNearbyChunksSameState(chunkPos, DECORATED)) {
 
 		ChunkPackage package;
 		package.coords = chunkPos;
@@ -502,6 +433,7 @@ bool World::hasBlockBellow(AABB playerAABB, int yPos) const {
 	return false;
 }
 
+
 float World::getAmbientLightIntensity() const {
 	float ticks = fmod(m_worldTime, 24000.0f);
 	if (ticks >= 0 && ticks < 12000) {
@@ -528,7 +460,7 @@ float World::getAmbientLightIntensity() const {
 std::function<void()> World::getTerrainGenerationTask(std::pair<int, int> coords) {
 	return [this, coords]() {
 		auto newChunk = std::make_shared<Chunk>(this->m_shader, coords.first, coords.second, this->m_terrain);
-		ChunkState chunkState = { std::move(newChunk), TERRAIN_READY, 0.0f };
+		ChunkState chunkState = { std::move(newChunk), TERRAIN_READY};
 
 		this->m_finishedTerrainChunks.push({ std::move(chunkState), coords });
 	};
@@ -536,7 +468,92 @@ std::function<void()> World::getTerrainGenerationTask(std::pair<int, int> coords
 
 std::function<void()> World::getMeshBuildingTask(ChunkPackage package) {
 	return [this, package]() {
-			package.center->buildMesh(package);
-			this->m_finishedMeshChunks.push(package.coords);
-		};
+		package.center->buildMesh(package);
+		this->m_finishedMeshChunks.push(package.coords);
+	};
+}
+
+std::function<void()> World::getDecorationTask(ChunkPackage package) {
+	return [this, package]() {
+		package.center->generateTrees(package, m_terrain.getSeed());
+
+		if (package.hasDeltas) {
+			package.center->applyDeltas(package.snapshot);
+		}
+
+		this->m_finishedDecoratedChunks.push(package.coords);
+	};
+}
+
+std::function<void()> World::getLightingTask(ChunkPackage package) {
+	return [this, package]() {
+		package.center->calculateLightingPropagation(package);
+		this->m_finishedLightingChunks.push(package.coords);
+	};
+}
+
+void World::promoteChunk(std::pair<int, int> coords) {
+	auto neighbors = get8Neighbors(coords);
+
+	auto it = m_chunks.find(coords);
+	if (it == m_chunks.end()) return;
+
+	State currentState = it->second.state;
+	if (!checkNearbyChunksSameState(coords, currentState)) return;
+
+	if (it->second.state == TERRAIN_READY) {
+		it->second.state = DECORATING;
+		ChunkPackage package;
+		package.coords = coords;
+		package.center = it->second.chunk;
+		getNearbyChunks(coords, package);
+		
+		if (m_pendingDeltas.contains(coords)) {
+			package.hasDeltas = true;
+			package.snapshot = m_pendingDeltas[coords];
+		}
+		m_threadPool.taskQueue().push(getDecorationTask(package));		
+	}
+	else if (it->second.state == DECORATED) {
+		it->second.state = CALCULATING_LIGHTING;
+
+		ChunkPackage package;
+		package.coords = coords;
+		package.center = it->second.chunk;
+		getNearbyChunks(coords, package);
+
+		m_threadPool.taskQueue().push(getLightingTask(package));
+	}
+	else if (it->second.state == LIGHTING_READY) {
+		it->second.state = MESH_BUILDING;
+		enqueMeshByCoords(coords);
+	}
+}
+
+bool World::checkNearbyChunksSameState(std::pair<int, int> coords, State state) {
+	int x = coords.first;
+	int z = coords.second;
+	std::pair<int, int> targets[9] = {
+		{x,   z},
+		{x + 1, z}, {x - 1, z}, {x, z + 1}, {x, z - 1},
+		{x + 1, z + 1}, {x - 1, z + 1}, {x + 1, z - 1}, {x - 1, z - 1}
+	};
+
+	for (const auto& target : targets) {
+		auto it = m_chunks.find(target);
+		if (it == m_chunks.end() || it->second.state < state) {
+			return false;
+		}
+	}
+	return true;
+}
+
+std::array<std::pair<int, int>, 8> World::get8Neighbors(std::pair<int, int> coords) const {
+	int x = coords.first;
+	int z = coords.second;
+
+	return {
+		std::pair{x + 1, z}, {x - 1, z}, {x, z + 1}, {x, z - 1},
+		{x + 1, z + 1}, {x - 1, z + 1}, {x + 1, z - 1}, {x - 1, z - 1}
+	};
 }
