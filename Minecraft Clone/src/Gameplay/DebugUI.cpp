@@ -1,7 +1,7 @@
 #include "DebugUI.h"
 
 // A lot of casting and string formatting, but it is only for debug purposes, so it is fine for now
-void DebugUI::renderText(const std::unique_ptr<World>& world, const Camera* cam, const Window& window, const Time& time) {
+void DebugUI::renderText(const std::unique_ptr<World>& world, const Camera* cam, const std::unique_ptr<Window>& window, const Time& time) {
 	glm::vec3 camPosition = cam->getCameraPosition();
 	float pitch = cam->getPitch();
 	float yaw = cam->getYaw();
@@ -10,8 +10,8 @@ void DebugUI::renderText(const std::unique_ptr<World>& world, const Camera* cam,
 	float lookAtY = cam->getCameraLookAtY();
 	float lookAtZ = cam->getCameraLookAtZ();
 
-	int height = window.getHeight();
-	int width = window.getWidth();
+	int height = window->getHeight();
+	int width = window->getWidth();
 
 	int chunkX = static_cast<int>(std::floor(camPosition.x / 16.0f));
 	int chunkZ = static_cast<int>(std::floor(camPosition.z / 16.0f));

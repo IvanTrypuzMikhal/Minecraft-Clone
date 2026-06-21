@@ -19,7 +19,6 @@ Engine::Engine() {
 
 }
 
-
 void Engine::run() {
 	Camera* camera = m_player->getCamera();
 
@@ -102,7 +101,7 @@ void Engine::render() {
 	m_hud->render();
 	// TODO: Horrendous performance reduction when rendering fuking text. 
 	// Gotta change this. Will leave it for now. Just for testing purposes.
-	//debugUI.renderText(world , player.getCamera(), window, time);
+	//m_debugUI->renderText(m_world , m_player->getCamera(), m_window, m_time);
 }
 
 void Engine::processInput() {

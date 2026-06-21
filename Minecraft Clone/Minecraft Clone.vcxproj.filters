@@ -118,6 +118,7 @@
     <ClCompile Include="src\Gameplay\Input\InputManager.cpp" />
     <ClCompile Include="src\World\SkyBox.cpp" />
     <ClCompile Include="src\World\ThreadPool.cpp" />
+    <ClCompile Include="src\World\ChunkPipeline\ChunkManager.cpp" />
   </ItemGroup>
   <!-- Headers -->
   <ItemGroup>
@@ -219,6 +220,10 @@
     <ClInclude Include="src\World\SkyBox.h" />
     <ClInclude Include="src\Gameplay\Frustum.h" />
     <ClInclude Include="src\World\ThreadPool.h" />
+    <ClInclude Include="src\World\ChunkPipeline\ChunkManager.h" />
+    <ClInclude Include="src\World\ChunkPipeline\State.h" />
+    <ClInclude Include="src\World\ChunkPipeline\DecorationState.h" />
+    <ClInclude Include="src\World\ChunkPipeline\TerrainState.h" />
   </ItemGroup>
   <!-- Shaders -->
   <ItemGroup>

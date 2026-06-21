@@ -5,6 +5,19 @@
 
 // Will need to take care of the nested if statements for them not to be too deep, maybe create a function for state handling.
 void World::renderWorld(const glm::mat4& projection) {
+	for (const auto& chunk : m_chunkManager.getRenderableChunks()) {
+		std::pair<int, int> coords = chunk->getWorldPosition();
+
+		AABB chunkAABB = {
+			glm::vec3(coords.first * Globals::CHUNK_WIDTH, -Globals::CHUNK_HEIGHT, coords.second * Globals::CHUNK_WIDTH),
+			glm::vec3((coords.first + 1) * Globals::CHUNK_WIDTH, -chunk->getMaxHeight() + 10, (coords.second + 1) * Globals::CHUNK_WIDTH)
+		};
+
+		if (m_frustum.isAABBInFrustum(chunkAABB)) {
+			chunk->render(projection, getAmbientLightIntensity());
+		}
+	}
+	/*
 	const int positiveGenerationRadiousZ = static_cast<int>(m_cameraPosition.z + Globals::GENERATION_RADIOUS);
 	const int negativeGenerationRadiousZ = static_cast<int>(m_cameraPosition.z - Globals::GENERATION_RADIOUS);
 	const int positiveGenerationRadiousX = static_cast<int>(m_cameraPosition.x + Globals::GENERATION_RADIOUS);
@@ -59,9 +72,11 @@ void World::renderWorld(const glm::mat4& projection) {
 			}
 		}
 	}
+	*/
 }
 
 void World::updateWorldState() {
+	/*
 	// Check chunks with generated terrain
 	checkChunksWithTerrain();
 	// Check chunks with finished decoration
@@ -74,8 +89,10 @@ void World::updateWorldState() {
 	checkChunksToBeFreed();
 	// Check chunks with finished loading from memory
 	checkFinishedChunksLoadedFromMemory();
+	*/
+	m_chunkManager.update(m_cameraPosition);
 }
-
+/*
 void World::checkChunksWithTerrain() {
 	while (!m_finishedTerrainChunks.empty()) {
 
@@ -125,7 +142,6 @@ void World::checkFinishedChunksWithLighting() {
 			}
 		}
 	}
-
 }
 
 void World::checkFinishedChunksWithMesh() {
@@ -220,8 +236,7 @@ void World::checkFinishedChunksLoadedFromMemory() {
 		m_pendingDeltas[snapshot.coords] = snapshot;
 	}
 }
-
-
+*/
 void World::updateCamera(const glm::vec3& position, const Frustum& frustum, float worldTime) {
 	m_cameraPosition.x = std::floor(position.x / Globals::CHUNK_WIDTH);
 	m_cameraPosition.y = position.y;
@@ -233,6 +248,8 @@ void World::updateCamera(const glm::vec3& position, const Frustum& frustum, floa
 }										
 
 BlockType World::getBlockAt(int x, int y, int z) const {
+	return m_chunkManager.getBlockAt(x, y, z);
+	/*
 	std::pair<int, int> chunkPos = std::pair(x >> 4, z >> 4);
 
 	auto it = m_chunks.find(chunkPos);
@@ -249,9 +266,12 @@ BlockType World::getBlockAt(int x, int y, int z) const {
 	}
 	//std::cout << "Block at: " << localX << ", " << localY << ", " << localZ << std::endl;
 	return it->second.chunk->getBlock(localX, localY, localZ);
+	*/
 }
 
 void World::deleteBlock(BlockHit hit) {
+	return m_chunkManager.deleteBlock(hit);
+	/*
 	std::pair<int, int> chunkPos = std::pair(hit.x >> 4, hit.z >> 4);
 
 	auto it = m_chunks.find(chunkPos);
@@ -285,8 +305,9 @@ void World::deleteBlock(BlockHit hit) {
 		enqueMeshByCoords({ chunkPos.first, chunkPos.second + 1 });
 	}
 	it->second.state = DIRTY;
+	*/
 }
-
+/*
 void World::enqueMeshByCoords(std::pair<int, int> chunkPos) {
 	auto it = m_chunks.find({ chunkPos.first, chunkPos.second});
 	if (it == m_chunks.end()) return;
@@ -296,9 +317,10 @@ void World::enqueMeshByCoords(std::pair<int, int> chunkPos) {
 	getNearbyChunks(std::pair(chunkPos.first, chunkPos.second), package);
 	m_threadPool.taskQueue().push(getMeshBuildingTask(package));
 }
-
+*/
 void World::addBlock(BlockHit hit, BlockType type, const AABB& playerAABB) {
-
+	return m_chunkManager.addBlock(hit, type, playerAABB);
+	/*
 	int globalX = hit.x;
 	int globalY = -hit.y - 1;
 	int globalZ = hit.z;
@@ -335,8 +357,9 @@ void World::addBlock(BlockHit hit, BlockType type, const AABB& playerAABB) {
 		m_threadPool.taskQueue().push(getMeshBuildingTask(package));
 	}
 	it->second.state = DIRTY;
+	*/
 }
-
+/*
 void World::getNearbyChunks(std::pair<int, int> chunkPos, ChunkPackage& package) {
 	 
 	auto it = m_chunks.find({chunkPos.first - 1, chunkPos.second});
@@ -372,7 +395,7 @@ void World::getNearbyChunks(std::pair<int, int> chunkPos, ChunkPackage& package)
 	if (it == m_chunks.end()) return;
 	package.bottomRight = it->second.chunk;
 }
-
+*/
 // We dont pass the player position by reference because we want to floor it to get the block coordinates
 // So we avoid modifing the player position outside of this function
 
@@ -456,7 +479,7 @@ float World::getAmbientLightIntensity() const {
 
 	return 1.0f;
 }
-
+/*
 std::function<void()> World::getTerrainGenerationTask(std::pair<int, int> coords) {
 	return [this, coords]() {
 		auto newChunk = std::make_shared<Chunk>(this->m_shader, coords.first, coords.second, this->m_terrain);
@@ -557,3 +580,4 @@ std::array<std::pair<int, int>, 8> World::get8Neighbors(std::pair<int, int> coor
 		{x + 1, z + 1}, {x - 1, z + 1}, {x + 1, z - 1}, {x - 1, z - 1}
 	};
 }
+*/

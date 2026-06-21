@@ -16,7 +16,10 @@ void Chunk::setBuffers() {
 	m_vbo = std::make_unique<Vbo>();
 	m_vao = std::make_unique<Vao>(m_vbo->get(), 2, block);
 	m_vbo->upload(m_mesh);
+	m_vertexCount = static_cast<unsigned int>(m_mesh.size() / 2);
 
+	m_mesh.clear();
+	m_mesh.shrink_to_fit();
 }
 
 // !WE WILL PASS THE WORLD POSITION OF THE CHUNK ONLY HERE!
@@ -31,7 +34,7 @@ void Chunk::render(const glm::mat4& projection, float ambientLightIntensity) {
 	m_shader->setVec3("chunkPos", chunkPos);
 	m_shader->setFloat("timeLightFactor", ambientLightIntensity);
 	m_vao->use();
-	glDrawArrays(GL_TRIANGLES, 0, m_mesh.size() / 2);
+	glDrawArrays(GL_TRIANGLES, 0, m_vertexCount);
 }
 
 // Here we build the mesh for the chunk in !LOCAL COORDINATES! 

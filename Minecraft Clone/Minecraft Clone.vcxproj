@@ -61,6 +61,10 @@
     <ClInclude Include="src\Rendering\Vbo.h" />
     <ClInclude Include="src\World\Chunk.h" />
     <ClInclude Include="src\World\ChunkPackage.h" />
+    <ClInclude Include="src\World\ChunkPipeline\ChunkManager.h" />
+    <ClInclude Include="src\World\ChunkPipeline\DecorationState.h" />
+    <ClInclude Include="src\World\ChunkPipeline\State.h" />
+    <ClInclude Include="src\World\ChunkPipeline\TerrainState.h" />
     <ClInclude Include="src\World\Cube.h" />
     <ClInclude Include="src\World\CubeData.h" />
     <ClInclude Include="src\World\FileIOThread.h" />
@@ -97,6 +101,7 @@
     <ClCompile Include="src\Rendering\Vao.cpp" />
     <ClCompile Include="src\Rendering\Vbo.cpp" />
     <ClCompile Include="src\World\Chunk.cpp" />
+    <ClCompile Include="src\World\ChunkPipeline\ChunkManager.cpp" />
     <ClCompile Include="src\World\Cube.cpp" />
     <ClCompile Include="src\World\FileIOThread.cpp" />
     <ClCompile Include="src\World\MeshThread.cpp" />

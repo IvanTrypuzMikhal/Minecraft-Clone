@@ -8,8 +8,8 @@ class Player
 public:
 	Player(
 		World* world,
-		glm::vec3 playerPosition = glm::vec3(0.0f, -80.0f, 0.0f),
-		glm::vec3 playerTarget = glm::vec3(0.0f, -80.0f, -3.0f)
+		glm::vec3 playerPosition = glm::vec3(0.0f, -50.0f, 0.0f),
+		glm::vec3 playerTarget = glm::vec3(0.0f, -50.0f, -3.0f)
 		):	m_playerPosition {playerPosition}, 
 		m_worldPosition{ glm::vec3(playerPosition.x, -playerPosition.y, playerPosition.z) },
 			m_playerTarget {playerTarget}, 

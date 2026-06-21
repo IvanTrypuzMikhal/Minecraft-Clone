@@ -10,7 +10,7 @@ namespace Globals {
     constexpr int CHUNK_WIDTH{ 16 };
     constexpr int CHUNK_HEIGHT{ 256 };
 
-    constexpr int RENDER_RADIOUS{ 10 };
+    constexpr int RENDER_RADIOUS{ 5 };
 	constexpr int GENERATION_RADIOUS{ RENDER_RADIOUS + 3 };
 
     constexpr int GRASS_LEVEL{ 128 };

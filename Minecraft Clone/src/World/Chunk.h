@@ -34,6 +34,7 @@ public:
 	bool castsAO(BlockType type);
 	void addDelta(int x, int y, int z, BlockType blockType);
 	int getMaxHeight() const;
+	std::pair<int, int> getWorldPosition() const { return m_worldPosition; }
 
 	std::vector<uint32_t> getMesh();
 
@@ -54,6 +55,7 @@ private:
 	std::pair<int, int> m_worldPosition;
 
 	int m_maxHeight = 0;
+	unsigned int m_vertexCount = 0;
 
 	// Rendering data
 	const std::shared_ptr<ShaderProgram> m_shader;
