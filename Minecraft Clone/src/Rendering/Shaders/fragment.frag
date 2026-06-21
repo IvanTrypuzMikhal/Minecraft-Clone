@@ -15,8 +15,10 @@ void main()
     // For now, we will just use the ambient light factor to determine if the block is a surface block or not.
     // The problem with passing a bit of is surface or not is that it correlates with the lighting factor of the block so idk it should be fine. Dont know yet.
 
-    float ambientLightIntensity = ambientLightFactorIntensity > 4 ? ambientLightFactorIntensity * timeLightFactor : ambientLightFactorIntensity;
-    float finalLight = ambientLightIntensity / 15.0;
+    float currentSkyLight = ambientLightFactorIntensity * timeLightFactor;
+    float caveAmbientMin = 1.5;
+    float finalLight = max(currentSkyLight, caveAmbientMin) / 15.0;
+
 
     vec4 texColor = texture(ourTexture, TextCoord);
     if(texColor.a < 0.5)

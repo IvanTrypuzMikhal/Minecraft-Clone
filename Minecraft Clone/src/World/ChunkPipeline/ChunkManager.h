@@ -28,6 +28,7 @@ public:
 	void checkFinishedChunksLoadedFromMemory();
 	void promoteChunk(std::pair<int, int> coords);
 	void enqueMeshByCoords(std::pair<int, int> chunkPos);
+	void enqueLightingByCoords(std::pair<int, int> chunkPos, bool isDirty);
 	bool checkNearbyChunksSameState(std::pair<int, int> coords, State state);
 	void getNearbyChunks(std::pair<int, int> chunkPos, ChunkPackage& package);
 	std::array<std::pair<int, int>, 8> get8Neighbors(std::pair<int, int> coords) const;

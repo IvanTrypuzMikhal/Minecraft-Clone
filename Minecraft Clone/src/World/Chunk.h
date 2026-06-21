@@ -12,6 +12,7 @@
 #include <memory>
 #include <random>
 #include <array>
+#include <queue>
 
 struct ChunkPackage;
 struct ChunkSnapshot;
@@ -40,11 +41,17 @@ public:
 
 	[[nodiscard]] BlockType getBlock(int x, int y, int z) const;
 	[[nodiscard]] const std::unordered_map<uint16_t, BlockType>& getDeltasChanges() const;
+	[[nodiscard]] bool isDirty() const { return m_isDirty; }
 	void deleteBlock(int x, int y, int z);
 	void addBlock(int x, int y, int z, BlockType blockType);
 	void swapMesh();
 	BlockType blockTypeCast(unsigned char id) const;
-
+	uint8_t getSkyLight(int x, int y, int z) const;
+	uint8_t getLightAt(int x, int y, int z, const ChunkPackage& package) const;
+	void setLightAt(int x, int y, int z, uint8_t value, const ChunkPackage& package);
+	void setSkyLight(int x, int y, int z, uint8_t& value);
+	void setDirty(bool dirty) { m_isDirty = dirty; }
+	void calculateFirstBlock(int x, int z);
 private:
 	// Chunk data
 	std::array<std::array<std::array<BlockType, 16>, 256>,16> m_blocks = {BlockType::Air};
@@ -53,7 +60,7 @@ private:
 	std::vector<uint32_t> m_mesh;
 	std::vector<uint32_t> m_buildMesh;
 	std::pair<int, int> m_worldPosition;
-
+	bool m_isDirty = false;
 	int m_maxHeight = 0;
 	unsigned int m_vertexCount = 0;
 

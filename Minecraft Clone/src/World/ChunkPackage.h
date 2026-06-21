@@ -18,7 +18,6 @@ enum State : unsigned char
 	LIGHTING_READY,
 	MESH_BUILDING,
 	MESH_READY,
-	DIRTY,
 	SAVING,
 	LOADING,
 };

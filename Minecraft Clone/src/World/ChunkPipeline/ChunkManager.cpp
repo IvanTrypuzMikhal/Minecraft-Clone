@@ -1,6 +1,8 @@
 #include "ChunkManager.h"
 #include <Gameplay/Raycaster.h>
 
+// Complete dissaster. Gotta change the state pipeline to a more plug and play system.
+// However this does the job for now. I will refactor this later to be more modular and less spaghetti code.
 
 void ChunkManager::update(const glm::vec3& cameraPosition) {
 
@@ -50,7 +52,6 @@ void ChunkManager::generateNearbyChunksRequests() {
 			}
 			else if (m_mainMemSavedChunks.contains(coords)) {
 				m_fileIOThread.loadFromMemoryQueue().push(coords);
-				m_threadPool.taskQueue().push(getTerrainGenerationTask(coords));
 				m_fileIOThread.notifyThread();
 			}
 			else {
@@ -64,7 +65,7 @@ void ChunkManager::generateNearbyChunksRequests() {
 std::vector<std::shared_ptr<Chunk>> ChunkManager::getRenderableChunks() {
 	std::vector<std::shared_ptr<Chunk>> renderableChunks;
 	for (const auto& [coords, chunkState] : m_chunks) {
-		if (chunkState.state == MESH_READY || chunkState.state == DIRTY) {
+		if (chunkState.state == MESH_READY || chunkState.chunk->isDirty()) {
 			renderableChunks.push_back(chunkState.chunk);
 		}
 	}
@@ -131,18 +132,17 @@ void ChunkManager::checkFinishedChunksWithMesh() {
 		if (it != m_chunks.end()) {
 			it->second.chunk->swapMesh();
 			it->second.chunk->setBuffers();
-			if (it->second.state != DIRTY) {
-				it->second.state = MESH_READY;
-			}
+			it->second.state = MESH_READY;
+			
 		}
 	}
 }
 
 void ChunkManager::checkChunksToBeFreed() {
-	int minX = static_cast<int>(m_cameraPosition.x - Globals::RENDER_RADIOUS) - 5;
-	int maxX = static_cast<int>(m_cameraPosition.x + Globals::RENDER_RADIOUS) + 5;
-	int minZ = static_cast<int>(m_cameraPosition.z - Globals::RENDER_RADIOUS) - 5;
-	int maxZ = static_cast<int>(m_cameraPosition.z + Globals::RENDER_RADIOUS) + 5;
+	int minX = static_cast<int>(m_cameraPosition.x - Globals::GENERATION_RADIOUS);
+	int maxX = static_cast<int>(m_cameraPosition.x + Globals::GENERATION_RADIOUS);
+	int minZ = static_cast<int>(m_cameraPosition.z - Globals::GENERATION_RADIOUS);
+	int maxZ = static_cast<int>(m_cameraPosition.z + Globals::GENERATION_RADIOUS);
 
 	// We cant delete chunks while iterating the map because it will cause undefined behavior, so we just store the chunks to be deleted and after iterating we delete them.
 	std::vector<std::pair<int, int>> chunksToErase;
@@ -153,14 +153,11 @@ void ChunkManager::checkChunksToBeFreed() {
 		if (coords.first >= minX && coords.first <= maxX && coords.second >= minZ && coords.second <= maxZ)	continue;
 
 		// Just delete the chunk and free its memory. Not modifyed so it can be rebuilded again if needed.
-		if (chunkState.state == MESH_READY ||
-			chunkState.state == TERRAIN_READY ||
-			chunkState.state == DECORATED ||
-			chunkState.state == MESH_BUILDING) {
+		if (chunkState.state != SAVING  && chunkState.state != LOADING && !chunkState.chunk->isDirty()) {
 			chunksToErase.push_back(coords);
 		}
 		// If its in an other state fron dirty then we dont touch it. It has to be dirty to be saved to memory if we want to free it from RAM.
-		else if (chunkState.state == DIRTY) {
+		else if (chunkState.chunk->isDirty()) {
 			chunksToErase.push_back(coords);
 			//std::cout << "Chunk " << coords.first << "," << coords.second << " is dirty, saving to memory and erasing from chunk map.\n";
 			// Just for learning purposes I want to use C style memory management instead of using modern C++ ones.
@@ -211,6 +208,7 @@ void ChunkManager::checkFinishedChunksLoadedFromMemory() {
 	while (!m_fileIOThread.finishedLoadQueue().empty()) {
 		ChunkSnapshot snapshot = m_fileIOThread.finishedLoadQueue().pop();
 		m_pendingDeltas[snapshot.coords] = snapshot;
+		m_threadPool.taskQueue().push(getTerrainGenerationTask(snapshot.coords));
 	}
 }
 
@@ -251,13 +249,25 @@ void ChunkManager::promoteChunk(std::pair<int, int> coords) {
 }
 
 void ChunkManager::enqueMeshByCoords(std::pair<int, int> chunkPos) {
-	auto it = m_chunks.find({ chunkPos.first, chunkPos.second });
+	auto it = m_chunks.find(chunkPos);
 	if (it == m_chunks.end()) return;
 	ChunkPackage package;
-	package.coords = std::pair(chunkPos.first, chunkPos.second);
+	package.coords = chunkPos;
 	package.center = it->second.chunk;
-	getNearbyChunks(std::pair(chunkPos.first, chunkPos.second), package);
+	getNearbyChunks(chunkPos, package);
 	m_threadPool.taskQueue().push(getMeshBuildingTask(package));
+}
+
+void ChunkManager::enqueLightingByCoords(std::pair<int, int> chunkPos, bool isDirty) {
+	auto it = m_chunks.find(chunkPos);
+	if (it == m_chunks.end()) return;
+	ChunkPackage package;
+	package.coords = chunkPos;
+	package.center = it->second.chunk;
+	getNearbyChunks(chunkPos, package);
+	it->second.state = CALCULATING_LIGHTING;
+	it->second.chunk->setDirty(isDirty);
+	m_threadPool.taskQueue().push(getLightingTask(package));
 }
 
 bool ChunkManager::checkNearbyChunksSameState(std::pair<int, int> coords, State state) {
@@ -393,28 +403,29 @@ void ChunkManager::deleteBlock(BlockHit hit) {
 
 	it->second.chunk->deleteBlock(localX, localY, localZ);
 
-	if (checkNearbyChunksSameState(chunkPos, DECORATED)) {
-		enqueMeshByCoords(chunkPos);
+	if (checkNearbyChunksSameState(chunkPos, LIGHTING_READY)) {
+		enqueLightingByCoords(chunkPos, true);
 	}
 
 	// If break cube in chunk edge also update neighbor chunks
 
 	if (localX == 0) {
-		enqueMeshByCoords({ chunkPos.first - 1, chunkPos.second });
+		enqueLightingByCoords({ chunkPos.first - 1, chunkPos.second }, true);
 	}
 
 	else if (localX == 15) {
-		enqueMeshByCoords({ chunkPos.first + 1, chunkPos.second });
+		enqueLightingByCoords({ chunkPos.first + 1, chunkPos.second }, true);
 	}
 
 	if (localZ == 0) {
-		enqueMeshByCoords({ chunkPos.first, chunkPos.second - 1 });
+		enqueLightingByCoords({ chunkPos.first, chunkPos.second - 1 }, true);
 	}
 
 	else if (localZ == 15) {
-		enqueMeshByCoords({ chunkPos.first, chunkPos.second + 1 });
+		enqueLightingByCoords({ chunkPos.first, chunkPos.second + 1 }, true);
 	}
-	it->second.state = DIRTY;
+	it->second.state = CALCULATING_LIGHTING;
+	it->second.chunk->setDirty(true);
 
 }
 
@@ -446,15 +457,11 @@ void ChunkManager::addBlock(BlockHit hit, BlockType type, const AABB& playerAABB
 
 	it->second.chunk->addBlock(localX, localY, localZ, type);
 
-	if (checkNearbyChunksSameState(chunkPos, DECORATED)) {
+	if (checkNearbyChunksSameState(chunkPos, LIGHTING_READY)) {
 
-		ChunkPackage package;
-		package.coords = chunkPos;
-		package.center = it->second.chunk;
-		getNearbyChunks(chunkPos, package);
-		m_threadPool.taskQueue().push(getMeshBuildingTask(package));
+		enqueLightingByCoords(chunkPos, true);
 	}
-	it->second.state = DIRTY;
-
+	it->second.state = CALCULATING_LIGHTING;
+	it->second.chunk->setDirty(true);
 }
 

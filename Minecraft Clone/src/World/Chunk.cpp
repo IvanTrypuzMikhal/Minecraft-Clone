@@ -6,6 +6,8 @@ static std::pair<int, int> getAtlasCoordinates(BlockType type, BlockFace face);
 uint32_t packVertex(float x, float y, float z, float u, float v, int textureId, int ao);
 uint32_t packVertexAttributes(uint8_t lighting);
 
+// TODO: Refactor chunkTarget to be a func.
+
 // When creating a new chunk we first fill the chunk with the correct blocks based on the terrain generator in !WORLD COORDINATES!
 Chunk::Chunk(const std::shared_ptr<ShaderProgram> shader, int x, int z, const TerrainGenerator& terrain) : m_shader{ shader }, m_worldPosition{x, z} {
 	fillBlocks(terrain);
@@ -248,7 +250,7 @@ void Chunk::fillBlocks(const TerrainGenerator& terrain) {
 				m_blocks[x][y][z] = blockType;
 				
 				// After we found the first solid block we set every other block light to level 0
-				uint8_t lightLevel = firstBlock ? 4 : 15;
+				uint8_t lightLevel = firstBlock ? 0 : 15;
 				// For now we will set the indirect light level to 0 for every block, but we'll change this later
 				lightLevel |= 0 << 4;
 				m_lighting[x][y][z] = lightLevel;
@@ -341,12 +343,13 @@ const std::unordered_map<uint16_t, BlockType>& Chunk::getDeltasChanges() const {
 void Chunk::deleteBlock(int x, int y, int z) {
 	m_blocks.at(x).at(y).at(z) = BlockType::Air;
 	addDelta(x, y, z, BlockType::Air);
+	calculateFirstBlock(x, z);
 }
 
 void Chunk::addBlock(int x, int y, int z, BlockType blockType) {
 	m_blocks.at(x).at(y).at(z) = blockType;
 	addDelta(x, y, z, blockType);
-
+	calculateFirstBlock(x, z);
 	//std::cout << "Block added at: " << x << ", " << y << ", " << z << " with type: " << static_cast<int>(blockType) << std::endl;
 	//std::cout << "New block with delta: " << deltaKey << std::endl;
 }
@@ -391,6 +394,152 @@ int Chunk::getMaxHeight() const {
 	return m_maxHeight;
 }
 
+uint8_t Chunk::getSkyLight(int x, int y, int z) const {
+	if (y < 0 || y >= Globals::CHUNK_HEIGHT) return 0;
+	if (x < 0 || x >= Globals::CHUNK_WIDTH || z < 0 || z >= Globals::CHUNK_WIDTH) return 0;
+	return m_lighting[x][y][z] & 0x0F;
+}
+
+uint8_t Chunk::getLightAt(int x, int y, int z, const ChunkPackage& package) const {
+	if (y < 0 || y >= Globals::CHUNK_HEIGHT) return 0;
+	std::shared_ptr<Chunk> targetChunk = nullptr;
+
+	int chunkX = 0;
+	int chunkZ = 0;
+
+	if (x < 0) {
+		chunkX = -1;
+		x += Globals::CHUNK_WIDTH;
+	}
+	else if (x >= Globals::CHUNK_WIDTH) {
+		chunkX = 1;
+		x -= Globals::CHUNK_WIDTH;
+	}
+
+	if (z < 0) {
+		chunkZ = -1;
+		z += Globals::CHUNK_WIDTH;
+	}
+	else if (z >= Globals::CHUNK_WIDTH) {
+		chunkZ = 1;
+		z -= Globals::CHUNK_WIDTH;
+	}
+
+	if (chunkX == 0 && chunkZ == 0)   targetChunk = package.center;
+	else if (chunkX == -1 && chunkZ == 0)  targetChunk = package.left;
+	else if (chunkX == 1 && chunkZ == 0)   targetChunk = package.right;
+	else if (chunkX == 0 && chunkZ == -1)  targetChunk = package.back;
+	else if (chunkX == 0 && chunkZ == 1)   targetChunk = package.front;
+														 
+	else if (chunkX == -1 && chunkZ == -1) targetChunk = package.topLeft;
+	else if (chunkX == 1 && chunkZ == -1)  targetChunk = package.topRight;
+	else if (chunkX == -1 && chunkZ == 1)  targetChunk = package.bottomLeft;
+	else if (chunkX == 1 && chunkZ == 1)   targetChunk = package.bottomRight;
+
+	return targetChunk->getSkyLight(x, y, z);
+}
+
+void Chunk::setSkyLight(int x, int y, int z, uint8_t& value) {
+	if (y < 0 || y >= Globals::CHUNK_HEIGHT) return;
+	if (x < 0 || x >= Globals::CHUNK_WIDTH || z < 0 || z >= Globals::CHUNK_WIDTH) return;
+	m_lighting[x][y][z] = (m_lighting[x][y][z] & 0xF0) | (value & 0x0F);
+}
+
+void Chunk::setLightAt(int x, int y, int z, uint8_t value, const ChunkPackage& package) {
+	if (y < 0 || y >= Globals::CHUNK_HEIGHT) return;
+	std::shared_ptr<Chunk> targetChunk = nullptr;
+
+	int chunkX = 0;
+	int chunkZ = 0;
+
+	if (x < 0) {
+		chunkX = -1;
+		x += Globals::CHUNK_WIDTH;
+	}
+	else if (x >= Globals::CHUNK_WIDTH) {
+		chunkX = 1;
+		x -= Globals::CHUNK_WIDTH;
+	}
+
+	if (z < 0) {
+		chunkZ = -1;
+		z += Globals::CHUNK_WIDTH;
+	}
+	else if (z >= Globals::CHUNK_WIDTH) {
+		chunkZ = 1;
+		z -= Globals::CHUNK_WIDTH;
+	}
+
+	if (chunkX == 0 && chunkZ == 0)   targetChunk = package.center;
+	else if (chunkX == -1 && chunkZ == 0)  targetChunk = package.left;
+	else if (chunkX == 1 && chunkZ == 0)   targetChunk = package.right;
+	else if (chunkX == 0 && chunkZ == -1)  targetChunk = package.back;
+	else if (chunkX == 0 && chunkZ == 1)   targetChunk = package.front;
+
+	else if (chunkX == -1 && chunkZ == -1) targetChunk = package.topLeft;
+	else if (chunkX == 1 && chunkZ == -1)  targetChunk = package.topRight;
+	else if (chunkX == -1 && chunkZ == 1)  targetChunk = package.bottomLeft;
+	else if (chunkX == 1 && chunkZ == 1)   targetChunk = package.bottomRight;
+
+	if (targetChunk) {
+		targetChunk->setSkyLight(x, y, z, value);
+
+		if (targetChunk != package.center) {
+			//targetChunk->markAsDirty();
+		}
+	}
+}
+
 void Chunk::calculateLightingPropagation(const ChunkPackage& chunkPackage) {
-	// For now we do nothing. Just adding the function to work with the Chunk pipeline. Later we will implement the lighting propagation algorithm.
+	std::queue<glm::vec3> lightQueue;
+
+	for (int x = 0; x < Globals::CHUNK_WIDTH; x++) {
+		for (int z = 0; z < Globals::CHUNK_WIDTH; z++) {
+			for (int y = 0; y < Globals::CHUNK_HEIGHT; y++) {
+				if (m_blocks[x][y][z] != BlockType::Air) {
+					
+					uint8_t lightLevel = m_lighting[x][y][z];
+
+					if (lightLevel == 15) lightQueue.push(glm::vec3(x, y, z));
+				}
+			}
+		}
+	}
+
+	while (!lightQueue.empty()) {
+		glm::ivec3 curr = lightQueue.front();
+		lightQueue.pop();
+		uint8_t currentLight = getLightAt(curr.x, curr.y, curr.z, chunkPackage);
+
+		glm::ivec3 directions[6] = {
+			{1, 0, 0}, {-1, 0, 0},
+			{0, 1, 0}, {0, -1, 0},
+			{0, 0, 1}, {0, 0, -1}
+		};
+		for (const auto& dir : directions) {
+			glm::ivec3 neighbor = curr + dir;
+
+			if (neighbor.y < 0 || neighbor.y >= 256) continue;
+			
+			uint8_t neighborLight = getLightAt(neighbor.x, neighbor.y, neighbor.z, chunkPackage);
+			if (neighborLight < currentLight - 1) {
+			    setLightAt(neighbor.x, neighbor.y, neighbor.z, currentLight - 1, chunkPackage);
+			    lightQueue.push(neighbor);
+			}
+		}
+	}
+}
+
+void Chunk::calculateFirstBlock(int x, int z) {
+	int lastBlockY;
+	for (int y = 0; y < Globals::CHUNK_HEIGHT; y++) {
+		if (m_blocks[x][y][z] != BlockType::Air) {
+			m_lighting[x][y][z] = 15;
+			lastBlockY = y;
+			break;
+		}
+	}
+	for (int y = lastBlockY + 1; y < Globals::CHUNK_HEIGHT; y++) {
+		m_lighting[x][y][z] = 0;
+	}
 }
